@@ -14,10 +14,14 @@ Under refactoring, code review and testing before alpha release.
 
 ## License
 
-**dmntk** is distributed under the terms of both:
-- the MIT license,
-- the Apache License (Version 2.0).
-  See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
+**dmntk** is distributed under the terms of both
+
+- the [MIT](LICENSE-MIT) license
+- the [Apache License](LICENSE-APACHE) (Version 2.0)
+
+at your option.
+
+See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
 
 
 
