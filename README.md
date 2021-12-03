@@ -1,9 +1,23 @@
 # Decision Model and Notation Toolkit
 
-## Overview
+[![MIT licensed][mit-badge]][mit-url]
+[![Apache 2.0 licensed][apache-badge]][apache-url]
 
-Version 1.0.0 of **dmntk**.
+[mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+[mit-url]: LICENSE-MIT
+[apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[apache-url]: LICENSE-APACHE
 
-Currently under code refactoring, code review, tests update and manual testing.
+## Project status
+
+Under refactoring, code review and testing before alpha release.
 
 ## License
+
+**dmntk** is distributed under the terms of both:
+- the MIT license,
+- the Apache License (Version 2.0).
+  See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
+
+
+

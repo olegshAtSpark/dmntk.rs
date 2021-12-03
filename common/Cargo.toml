@@ -1,0 +1,12 @@
+[package]
+name = "common"
+version = "0.1.0"
+authors = ["Dariusz Depta <dariusz.depta@engos.software>"]
+description = "DMNTK | Common definitions"
+edition = "2021"
+
+[dependencies]
+serde = "1.0.130"
+serde_derive = "1.0.130"
+serde_yaml = "0.8.21"
+uriparse = "0.6.3"
