@@ -1,7 +1,3 @@
-**DMNTK** | Decision Model and Notation Toolkit
-
-# common
-
-## Overview
+**common** | **DMNTK** | Decision Model and Notation Toolkit
 
 Common definitions.
