@@ -16,8 +16,8 @@ Under refactoring, code review and testing before alpha release.
 
 Licensed under either of
 
-- [MIT license](http://opensource.org/licenses/MIT)
-- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](https://opensource.org/licenses/MIT)
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 at your option.
 
