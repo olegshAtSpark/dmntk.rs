@@ -8,6 +8,7 @@ members = [
   "feel-grammar",
   "feel-evaluator",
   "feel-parser",
+  "gendoc",
   "model",
   "model-evaluator",
   "recognizer",
