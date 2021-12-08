@@ -40,7 +40,8 @@ tasks:
   release:
     desc: Builds in release mode
     cmds:
-      - cmd: cargo build --release
+      - cmd: cargo clean
+      - cmd: cargo +stable build --release
 
   test:
     desc: Runs tests in debug mode
