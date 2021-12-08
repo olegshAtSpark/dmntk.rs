@@ -1,12 +1,17 @@
 **DMNTK** | Decision Model and Notation Toolkit
 
+[![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
+![Code coverage][coverage-badge]
 
+[crates-badge]: https://img.shields.io/crates/v/dmntk-common.svg
+[crates-url]: https://crates.io/crates/dmntk-common
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
 [mit-url]: LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-url]: LICENSE-APACHE
+[coverage-badge]: https://img.shields.io/badge/Coverage-100%25-green.svg
 
 ## dmntk-common
 

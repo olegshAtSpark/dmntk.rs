@@ -1,0 +1,13 @@
+[package]
+name = "dmntk-feel-grammar"
+version = "0.0.40-dev"
+authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
+description = "DMNTK | FEEL grammar"
+documentation = "https://docs.rs/dmntk-feel-grammar"
+repository = "https://github.com/dmntk/dmntk.rs.git"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+[dependencies]
+convert_case = "0.4.0"
+regex = "1.5.4"
