@@ -7,5 +7,6 @@ members = [
   "feel-grammar",
   "feel-evaluator",
   "feel-parser",
-  "model"
+  "model",
+  "recognizer",
 ]
