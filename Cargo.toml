@@ -8,5 +8,6 @@ members = [
   "feel-evaluator",
   "feel-parser",
   "model",
+  "model-evaluator",
   "recognizer",
 ]
