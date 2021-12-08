@@ -1,21 +1,17 @@
 [package]
-name = "dmntk-feel"
+name = "dmntk-feel-evaluator"
 version = "0.0.40-dev"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
-description = "DMNTK | FEEL definitions"
-documentation = "https://docs.rs/dmntk-feel"
+description = "DMNTK | FEEL evaluator"
+documentation = "https://docs.rs/dmntk-feel-evaluator"
 repository = "https://github.com/dmntk/dmntk.rs.git"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-ascii_tree = "0.1.1"
-chrono = "0.4.19"
-chrono-tz = "0.6.0"
-derivative = "2.2.0"
 dmntk-common = { path = "../common" }
+dmntk-feel = { path = "../feel" }
+dmntk-feel-parser = { path = "../feel-parser" }
 lazy_static = "1.4.0"
 regex = "1.5.4"
-rust_decimal = { version = "1.17.0", features = ["maths", "std"]}
-rust_decimal_macros = "1.17.0"
 thiserror = "1.0.30"

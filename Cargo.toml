@@ -4,5 +4,6 @@ members = [
   "common",
   "feel",
   "feel-grammar",
+  "feel-evaluator",
   "feel-parser",
 ]
