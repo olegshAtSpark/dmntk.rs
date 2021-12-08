@@ -10,9 +10,9 @@
 [crates-badge]: https://img.shields.io/crates/v/dmntk-feel.svg
 [crates-url]: https://crates.io/crates/dmntk-feel
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: LICENSE-MIT
+[mit-url]: ../LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[apache-url]: LICENSE-APACHE
+[apache-url]: ../LICENSE-APACHE
 [coverage-badge]: https://img.shields.io/badge/Coverage-68%25-green.svg
 
 ## Overview
@@ -23,8 +23,8 @@
 
 Licensed under either of
 
-- [MIT license](https://opensource.org/licenses/MIT)
-- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](../LICENSE-MIT))
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](../LICENSE-APACHE))
 
 at your option.
 
