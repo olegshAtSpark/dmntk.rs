@@ -17,7 +17,7 @@ tasks:
   cov-open:
     desc: Runs code coverage and opens it in browser
     cmds:
-      - cmd: cargo tarpaulin --out Html --output-dir ./target/tarpaulin
+      - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
       - cmd: echo -e '#!/usr/bin/env bash\n\nfirefox ./target/tarpaulin/tarpaulin-report.html &' > ./target/tarpaulin/open-report.sh
       - cmd: chmod +x ./target/tarpaulin/open-report.sh
       - cmd: ./target/tarpaulin/open-report.sh
@@ -25,7 +25,7 @@ tasks:
   cov:
     desc: Runs code coverage
     cmds:
-      - cmd: cargo tarpaulin --out Html --output-dir ./target/tarpaulin
+      - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
 
   doc-open:
     desc: Generates documentation and opens it in browser
