@@ -17,7 +17,7 @@
 
 # Overview
 
-Common definitions used by other components of **dmntk** project.
+Common definitions used by other components in [dmntk](https://github.com/dmntk) project.
 
 ## License
 

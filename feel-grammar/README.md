@@ -17,10 +17,12 @@
 
 ## Overview
 
-FEEL grammar and parsing tables generator used in **dmntk** project. This crate contains: 
+FEEL grammar and parsing tables generator used in [dmntk](https://github.com/dmntk) project.
 
-- Definition of the grammar for `FEEL` language in the format acceptable by `Bison` parser generator.
-- LALR parsing tables generator for `Rust` language.
+This crate implements: 
+
+- The grammar for `FEEL` language in the format acceptable by `Bison` parser generator.
+- The generator of LALR parsing tables for `Rust` language.
 
 Excerpt from [Decision Model and Notation™](https://www.omg.org/spec/DMN/1.3/PDF) specification, ver. 1.3, pp. 105-179:
 

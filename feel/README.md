@@ -5,7 +5,7 @@
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
-![Code coverage][coverage-badge]]
+![Code coverage][coverage-badge]
 
 [crates-badge]: https://img.shields.io/crates/v/dmntk-feel.svg
 [crates-url]: https://crates.io/crates/dmntk-feel
@@ -17,7 +17,7 @@
 
 ## Overview
 
-`FEEL` definitions used by crates in `DMNTK` project.
+`FEEL` definitions used by other components in [dmntk](https://github.com/dmntk) project.
 
 ## License
 

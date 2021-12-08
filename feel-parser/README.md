@@ -17,7 +17,7 @@
 
 ## Overview
 
-`FEEL` parser used by crates in `DMNTK` project.
+`FEEL` parser used by other components in [dmntk](https://github.com/dmntk) project.
 
 ## License
 
