@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions namespace="https://dmntk.io"
+             name="non-compliant-test-0088"
+             id="_62bacf64-6498-43ff-9585-820cf9e8f929"
+             xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/">
+    <description>Recursion</description>
+    <itemDefinition name="iTreeNode">
+        <itemComponent name="children" isCollection="true">
+            <!-- self reference type -->
+            <typeRef>iTreeNode</typeRef>
+        </itemComponent>
+        <itemComponent name="value">
+            <typeRef>number</typeRef>
+        </itemComponent>
+    </itemDefinition>
+    <businessKnowledgeModel name="fibonacci" id="_fibonacci">
+        <variable name="fibonacci"/>
+        <encapsulatedLogic>
+            <formalParameter name="num" typeRef="number"/>
+            <literalExpression>
+                <text>if (num &lt; 2) then num else (fibonacci(num - 1) + fibonacci(num - 2))</text>
+            </literalExpression>
+        </encapsulatedLogic>
+    </businessKnowledgeModel>
+    <decision name="fibonacci_001" id="_fibonacci_001">
+        <variable name="fibonacci_001"/>
+        <knowledgeRequirement>
+            <requiredKnowledge href="#_fibonacci"/>
+        </knowledgeRequirement>
+        <literalExpression>
+            <text>fibonacci(10)</text>
+        </literalExpression>
+    </decision>
+    <!-- ***************** -->
+    <businessKnowledgeModel name="scanTree" id="_scanTree">
+        <variable name="scanTree"/>
+        <encapsulatedLogic>
+            <formalParameter name="node" typeRef="iTreeNode"/>
+            <literalExpression>
+                <text>
+                    if (count(node.children) = 0) then
+                    node.value
+                    else
+                    node.value + sum(for n in node.children return scanTree(n))
+                </text>
+            </literalExpression>
+        </encapsulatedLogic>
+    </businessKnowledgeModel>
+    <inputData name="treeData" id="_treeData">
+        <variable name="treeData" typeRef="iTreeNode"/>
+    </inputData>
+    <decision name="tree_001" id="_tree_001">
+        <variable name="tree_001"/>
+        <informationRequirement>
+            <requiredInput href="#_treeData"/>
+        </informationRequirement>
+        <knowledgeRequirement>
+            <requiredKnowledge href="#_scanTree"/>
+        </knowledgeRequirement>
+        <literalExpression>
+            <text>scanTree(treeData)</text>
+        </literalExpression>
+    </decision>
+</definitions>
