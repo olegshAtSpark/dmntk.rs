@@ -42,7 +42,7 @@ is implemented in [dmntk-feel-parser](https://crates.io/crates/dmntk-feel-parser
 
 Inputs and outputs of **dmntk-feel-grammar** crate are depicted in the following diagram:
 
-![Component](./component.svg)
+![feel-grammar](./feel-grammar.svg)
 
 **dmntk-feel-grammar** takes `Yacc/Bison` compatible grammar file as an input.
 Grammar file for `FEEL` language is defined as a source file named `feel.y` and compiled
