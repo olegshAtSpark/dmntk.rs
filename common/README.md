@@ -10,9 +10,9 @@
 [crates-badge]: https://img.shields.io/crates/v/dmntk-common.svg
 [crates-url]: https://crates.io/crates/dmntk-common
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: LICENSE-MIT
+[mit-url]: ../LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[apache-url]: LICENSE-APACHE
+[apache-url]: ../LICENSE-APACHE
 [coverage-badge]: https://img.shields.io/badge/Coverage-100%25-green.svg
 
 # Overview
