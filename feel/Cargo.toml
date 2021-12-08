@@ -1,0 +1,21 @@
+[package]
+name = "dmntk-feel"
+version = "0.0.40-dev"
+authors = ["Dariusz Depta <dariusz.depta@engos.software>"]
+description = "DMNTK | FEEL definitions"
+documentation = "https://docs.rs/dmntk-feel"
+repository = "https://github.com/dmntk/dmntk.rs.git"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+[dependencies]
+ascii_tree = "0.1.1"
+chrono = "0.4.19"
+chrono-tz = "0.6.0"
+derivative = "2.2.0"
+dmntk-common = { path = "../common" }
+lazy_static = "1.4.0"
+regex = "1.5.4"
+rust_decimal = { version = "1.17.0", features = ["maths", "std"]}
+rust_decimal_macros = "1.17.0"
+thiserror = "1.0.30"

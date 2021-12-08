@@ -1,23 +1,23 @@
 **DMNTK** | Decision Model and Notation Toolkit
 
-## dmntk-common
+# dmntk-feel-parser
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
 ![Code coverage][coverage-badge]
 
-[crates-badge]: https://img.shields.io/crates/v/dmntk-common.svg
-[crates-url]: https://crates.io/crates/dmntk-common
+[crates-badge]: https://img.shields.io/crates/v/dmntk-feel-parser.svg
+[crates-url]: https://crates.io/crates/dmntk-feel-parser
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
 [mit-url]: LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-url]: LICENSE-APACHE
-[coverage-badge]: https://img.shields.io/badge/Coverage-100%25-green.svg
+[coverage-badge]: https://img.shields.io/badge/Coverage-94%25-green.svg
 
-# Overview
+## Overview
 
-Common definitions used by other components of **dmntk** project.
+`FEEL` parser used by crates in `DMNTK` project.
 
 ## License
 

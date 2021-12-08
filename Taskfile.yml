@@ -47,6 +47,11 @@ tasks:
     cmds:
       - cmd: cargo test
 
+  testq:
+    desc: Runs tests in debug and quiet mode
+    cmds:
+      - cmd: cargo test -q
+
   clippy:
     desc: Runs clippy for all targets
     cmds:

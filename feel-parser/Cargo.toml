@@ -1,0 +1,22 @@
+[package]
+name = "dmntk-feel-parser"
+version = "0.0.40-dev"
+authors = ["Dariusz Depta <dariusz.depta@engos.software>"]
+description = "DMNTK | FEEL parser"
+documentation = "https://docs.rs/dmntk-feel-parser"
+repository = "https://github.com/dmntk/dmntk.rs.git"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+[features]
+parsing-tables = []
+
+[dependencies]
+dmntk-common = { path = "../common" }
+dmntk-feel = { path = "../feel" }
+
+[dev-dependencies]
+difference = "2.0.0"
+
+[build-dependencies]
+dmntk-feel-grammar = { path = "../feel-grammar" }

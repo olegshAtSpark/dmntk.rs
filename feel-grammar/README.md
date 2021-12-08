@@ -1,5 +1,7 @@
 **DMNTK** | Decision Model and Notation Toolkit
 
+# dmntk-feel-grammar
+
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
@@ -13,14 +15,12 @@
 [apache-url]: LICENSE-APACHE
 [coverage-badge]: https://img.shields.io/badge/Coverage-100%25-green.svg
 
-# dmntk-feel-grammar
+## Overview
 
-FEEL grammar and parsing tables generator used in **dmntk** project:
+FEEL grammar and parsing tables generator used in **dmntk** project. This crate contains: 
 
 - Definition of the grammar for `FEEL` language in the format acceptable by `Bison` parser generator.
 - LALR parsing tables generator for `Rust` language.
-
-## Overview
 
 Excerpt from [Decision Model and Notation™](https://www.omg.org/spec/DMN/1.3/PDF) specification, ver. 1.3, pp. 105-179:
 
