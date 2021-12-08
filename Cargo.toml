@@ -2,6 +2,7 @@
 
 members = [
   "common",
+  "evaluator",
   "examples",
   "feel",
   "feel-grammar",

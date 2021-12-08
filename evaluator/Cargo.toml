@@ -1,0 +1,13 @@
+[package]
+name = "dmntk-evaluator"
+version = "0.0.40-dev"
+authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
+description = "DMNTK | FEEL and DMN model evaluator"
+documentation = "https://docs.rs/dmntk-evaluator"
+repository = "https://github.com/dmntk/dmntk.rs.git"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+[dependencies]
+dmntk-feel-evaluator = { path = "../feel-evaluator" }
+dmntk-model-evaluator = { path = "../model-evaluator" }
