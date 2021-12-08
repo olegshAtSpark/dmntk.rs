@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-server"
-version = "0.0.40-dev"
+version = "0.0.40"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | API server"
 documentation = "https://docs.rs/dmntk-server"
@@ -11,12 +11,12 @@ edition = "2021"
 [dependencies]
 actix-web = "3.3.2"
 base64 = "0.13.0"
-dmntk-common = { path = "../common" }
-dmntk-evaluator = { path = "../evaluator" }
-dmntk-feel = { path = "../feel" }
-dmntk-feel-parser = { path = "../feel-parser" }
-dmntk-model = { path = "../model" }
-dmntk-workspace = { path = "../workspace" }
+dmntk-common = "0.0.40"
+dmntk-evaluator = "0.0.40"
+dmntk-feel = "0.0.40"
+dmntk-feel-parser = "0.0.40"
+dmntk-model = "0.0.40"
+dmntk-workspace = "0.0.40"
 serde = "1.0.130"
 serde_derive = "1.0.130"
 thiserror = "1.0.30"
