@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-recognizer"
-version = "0.0.40-dev"
+version = "0.0.40"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Decision table recognizer"
 documentation = "https://docs.rs/dmntk-recognizer"
@@ -9,5 +9,5 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = { path = "../common" }
-dmntk-model = { path = "../model" }
+dmntk-common = "0.0.40"
+dmntk-model = "0.0.40"
