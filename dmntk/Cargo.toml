@@ -1,6 +1,6 @@
 [package]
 name = "dmntk"
-version = "0.0.40-dev"
+version = "0.0.40"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Decision Model and Notation Toolkit"
 documentation = "https://docs.rs/dmntk"
@@ -12,14 +12,14 @@ edition = "2021"
 actix-web = "3.3.2"
 base64 = "0.13.0"
 clap = { version = "2.33.3", features = ["yaml"] }
-dmntk-common = { path = "../common" }
-dmntk-evaluator = { path = "../evaluator" }
-dmntk-feel = { path = "../feel" }
-dmntk-feel-parser = { path = "../feel-parser" }
-dmntk-model = { path = "../model" }
-dmntk-recognizer = { path = "../recognizer" }
-dmntk-server = { path = "../server" }
-dmntk-workspace = { path = "../workspace" }
+dmntk-common = "0.0.40"
+dmntk-evaluator = "0.0.40"
+dmntk-feel = "0.0.40"
+dmntk-feel-parser = "0.0.40"
+dmntk-model = "0.0.40"
+dmntk-recognizer = "0.0.40"
+dmntk-server = "0.0.40"
+dmntk-workspace = "0.0.40"
 serde = "1.0.130"
 serde_derive = "1.0.130"
 serde_yaml = "0.8.21"
