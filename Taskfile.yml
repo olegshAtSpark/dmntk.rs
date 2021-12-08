@@ -43,6 +43,12 @@ tasks:
       - cmd: cargo clean
       - cmd: cargo +stable build --release
 
+  run:
+    desc: Runs the server in release mode
+    cmds:
+      - cmd: cargo clean
+      - cmd: cargo +stable run --release -- run -p 12000
+
   test:
     desc: Runs tests in debug mode
     cmds:

@@ -223,7 +223,7 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_textual_expression_from_file(&ctx_file_name, &feel_file_name);
       Ok(())
     }
-    Action::StartServer(opt_host, opt_port) => crate::server::start_server(opt_host, opt_port).await,
+    Action::StartServer(opt_host, opt_port) => dmntk_server::start_server(opt_host, opt_port).await,
     Action::DoNothing => Ok(()),
   }
 }

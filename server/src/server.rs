@@ -32,15 +32,18 @@
 
 use crate::dto::{InputNodeDto, OutputNodeDto, WrappedValue};
 use crate::errors::*;
-use crate::workspace::Workspace;
-use crate::{DMNTK_COPYRIGHT, DMNTK_NAME, DMNTK_VERSION};
 use actix_web::web::Json;
 use actix_web::{get, post, web, App, HttpServer};
 use dmntk_common::{DmntkError, Result};
 use dmntk_feel::context::FeelContext;
+use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::sync::Mutex;
+
+const DMNTK_NAME: &str = env!("CARGO_PKG_NAME");
+const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
+const DMNTK_COPYRIGHT: &str = env!("CARGO_PKG_AUTHORS");
 
 /// Shared workspace with decision model definitions.
 struct ApplicationData {

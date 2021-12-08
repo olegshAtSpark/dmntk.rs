@@ -46,16 +46,6 @@ pub enum WorkspaceError {
   InvalidBase64Encoding,
   #[error("invalid UTF-8 content")]
   InvalidUtf8Content,
-  #[error("artifact '{0}' with name '{1}' was not found")]
-  ArtifactNotFound(String, String),
-  #[error("'{0}' is not a valid name of invoked artifact")]
-  InvalidInvokedArtifactName(String),
-  #[error("definitions with name '{0}' already exist in workspace")]
-  DefinitionsWithNameAlreadyExist(String),
-  #[error("definitions with identifier '{0}' already exist in workspace")]
-  DefinitionsWithIdAlreadyExist(String),
-  #[error("definitions with tag '{0}' already exist in workspace")]
-  DefinitionsWithTagAlreadyExist(String),
   #[error("can not lock workspace")]
   CanNotLockWorkspace,
 }
@@ -80,26 +70,6 @@ pub fn err_invalid_base64_encoding() -> DmntkError {
 
 pub fn err_invalid_utf8_content() -> DmntkError {
   WorkspaceError::InvalidUtf8Content.into()
-}
-
-pub fn err_artifact_not_found(artifact: String, name: String) -> DmntkError {
-  WorkspaceError::ArtifactNotFound(artifact, name).into()
-}
-
-pub fn err_invalid_invoked_artifact_name(name: String) -> DmntkError {
-  WorkspaceError::InvalidInvokedArtifactName(name).into()
-}
-
-pub fn err_definitions_with_name_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithNameAlreadyExist(name).into()
-}
-
-pub fn err_definitions_with_id_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithIdAlreadyExist(name).into()
-}
-
-pub fn err_definitions_with_tag_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithTagAlreadyExist(name).into()
 }
 
 pub fn err_can_not_lock_workspace() -> DmntkError {

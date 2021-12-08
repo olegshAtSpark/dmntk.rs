@@ -13,4 +13,6 @@ members = [
   "model",
   "model-evaluator",
   "recognizer",
+  "server",
+  "workspace"
 ]

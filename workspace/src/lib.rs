@@ -30,27 +30,14 @@
  * limitations under the License.
  */
 
-//! Entrypoint of `DMNTK`.
-
-extern crate actix_web;
-extern crate base64;
-extern crate clap;
 extern crate dmntk_common;
 extern crate dmntk_evaluator;
 extern crate dmntk_feel;
-extern crate dmntk_feel_parser;
-extern crate dmntk_recognizer;
-extern crate serde;
-extern crate serde_derive;
-extern crate serde_yaml;
+extern crate dmntk_model;
+#[macro_use]
+extern crate thiserror;
 
-mod actions;
+mod errors;
+mod workspace;
 
-const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
-const DMNTK_DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
-
-/// Main entrypoint of `DMNTK`.
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-  actions::do_action().await
-}
+pub use workspace::Workspace;
