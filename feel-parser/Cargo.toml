@@ -19,4 +19,4 @@ dmntk-feel = "0.0.40"
 difference = "2.0.0"
 
 [build-dependencies]
-dmntk-feel-grammar = { path = "../feel-grammar" }
+dmntk-feel-grammar = "0.0.40"
