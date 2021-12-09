@@ -8,9 +8,9 @@
 [crates-badge]: https://img.shields.io/crates/v/dmntk.svg
 [crates-url]: https://crates.io/crates/dmntk
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-MIT
+[mit-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[apache-url]: https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-APACHE
+[apache-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE
 [coverage-badge]: https://img.shields.io/badge/Coverage-0%25-green.svg
 
 ## Overview
@@ -74,8 +74,8 @@ The expected result is:
 
 Licensed under either of
 
-- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-MIT))
-- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-APACHE))
+- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT))
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE))
 
 at your option.
 
