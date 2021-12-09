@@ -4,6 +4,11 @@ silent: true
 
 tasks:
 
+  bench:
+    desc: Runs all benchmarks
+    cmds:
+      - cmd: cargo bench -q | grep 'bench'
+
   build:
     desc: Builds in debug mode
     cmds:
