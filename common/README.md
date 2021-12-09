@@ -10,7 +10,7 @@
 [crates-badge]: https://img.shields.io/crates/v/dmntk-common.svg
 [crates-url]: https://crates.io/crates/dmntk-common
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-MIT
+[mit-url]: https://github.com/dmntk/dmntk.rs/blob/HEAD/LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-url]: https://github.com/dmntk/dmntk.rs/blob/master/LICENSE-APACHE
 [coverage-badge]: https://img.shields.io/badge/Coverage-100%25-green.svg
