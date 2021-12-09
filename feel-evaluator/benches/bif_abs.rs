@@ -34,34 +34,17 @@
 
 extern crate test;
 
-use dmntk_feel::{scope, Scope};
-use dmntk_feel_parser::parse_context;
+use dmntk_feel::values::Value;
+use dmntk_feel::{scope, value_number, FeelNumber, Scope};
+use dmntk_feel_evaluator::prepare;
 use test::Bencher;
 
 #[bench]
-fn feel_parser_context_0001(b: &mut Bencher) {
+fn feel_evaluator_bif_abs_0001(b: &mut Bencher) {
   let scope = scope!();
-  let input = r#"{}"#;
-  b.iter(|| parse_context(&scope, input, false));
-}
-
-#[bench]
-fn feel_parser_context_0002(b: &mut Bencher) {
-  let scope = scope!();
-  let input = " \n { \t } \r ";
-  b.iter(|| parse_context(&scope, input, false));
-}
-
-#[bench]
-fn feel_parser_context_0003(b: &mut Bencher) {
-  let scope = scope!();
-  let input = r#"{age:49}"#;
-  b.iter(|| parse_context(&scope, input, false));
-}
-
-#[bench]
-fn feel_parser_context_0004(b: &mut Bencher) {
-  let scope = scope!();
-  let input = r#"{"name":"John","age":27,"car":{"model":"{Porsche}","production year":2021}}"#;
-  b.iter(|| parse_context(&scope, input, false));
+  let input = r#"abs(-1)"#;
+  let node = dmntk_feel_parser::parse_textual_expression(&scope, input, false).unwrap();
+  let evaluator = prepare(&node).unwrap();
+  assert_eq!(value_number!(1), evaluator(&scope));
+  b.iter(|| evaluator(&scope));
 }
