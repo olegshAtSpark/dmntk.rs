@@ -5,6 +5,8 @@
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
+![build][build-badge]
+![tests][tests-badge]
 ![Code coverage][coverage-badge]
 
 [crates-badge]: https://img.shields.io/crates/v/dmntk-examples.svg

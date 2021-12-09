@@ -5,6 +5,8 @@
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
+![build][build-badge]
+![tests][tests-badge]
 ![Code coverage][coverage-badge]
 
 [crates-badge]: https://img.shields.io/crates/v/dmntk-recognizer.svg
@@ -13,6 +15,8 @@
 [mit-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE
+[build-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/build.yml/badge.svg
+[tests-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/tests.yml/badge.svg
 [coverage-badge]: https://img.shields.io/badge/Coverage-80%25-green.svg
 
 ## Overview
