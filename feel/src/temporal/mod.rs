@@ -734,11 +734,23 @@ mod tests {
 
   #[test]
   fn test_get_local_offset() {
-    assert_eq!(Some(SECONDS_IN_HOUR), get_local_offset((2020, 10, 29), (9, 12, 3, 0)));
-    assert_eq!(
-      get_zone_offset("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)),
-      get_local_offset((2020, 6, 12), (9, 12, 3, 0))
-    );
+    let utc_offset = get_zone_offset("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
+    let warsaw_offset = get_zone_offset("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
+    let local_offset = get_local_offset((2020, 6, 12), (9, 12, 3, 0)).unwrap();
+    if local_offset == warsaw_offset {
+      assert_eq!(Some(SECONDS_IN_HOUR), get_local_offset((2020, 10, 29), (9, 12, 3, 0)));
+      assert_eq!(
+        get_zone_offset("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)),
+        get_local_offset((2020, 6, 12), (9, 12, 3, 0))
+      );
+    }
+    if local_offset == utc_offset {
+      assert_eq!(Some(0), get_local_offset((2020, 10, 29), (9, 12, 3, 0)));
+      assert_eq!(
+        get_zone_offset("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)),
+        get_local_offset((2020, 6, 12), (9, 12, 3, 0))
+      );
+    }
   }
 
   #[test]
