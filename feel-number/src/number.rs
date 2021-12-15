@@ -155,27 +155,20 @@ impl FeelNumber {
 
 impl PartialEq<FeelNumber> for FeelNumber {
   fn eq(&self, rhs: &Self) -> bool {
-    let flag = dec_compare(&self.0, &rhs.0);
-    if dec_is_finite(&flag) {
-      return dec_is_zero(&flag);
-    }
-    false
+    dec_is_zero(&dec_compare_total(&self.0, &rhs.0))
   }
 }
 
 impl PartialOrd for FeelNumber {
   fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
-    let flag = dec_compare(&self.0, &rhs.0);
-    if dec_is_finite(&flag) {
-      if dec_is_zero(&flag) {
-        return Some(Ordering::Equal);
-      }
-      if dec_is_positive(&flag) {
-        return Some(Ordering::Greater);
-      }
-      return Some(Ordering::Less);
+    let flag = dec_compare_total(&self.0, &rhs.0);
+    if dec_is_zero(&flag) {
+      return Some(Ordering::Equal);
     }
-    None
+    if dec_is_positive(&flag) {
+      return Some(Ordering::Greater);
+    }
+    return Some(Ordering::Less);
   }
 }
 

@@ -38,6 +38,7 @@ extern crate chrono_tz;
 #[macro_use]
 extern crate derivative;
 extern crate dmntk_common;
+extern crate dmntk_feel_number;
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
@@ -47,6 +48,7 @@ extern crate rust_decimal_macros;
 extern crate thiserror;
 
 pub use ast::{AstNode, OptAstNode};
+//pub use dmntk_feel_number::FeelNumber;
 pub use evaluator::Evaluator;
 pub use function::FunctionBody;
 pub use names::{Name, OptName, QualifiedName};

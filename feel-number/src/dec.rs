@@ -89,7 +89,7 @@ extern "C" {
 
   fn decQuadAbs(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *mut DecContext) -> *mut DecQuad;
   fn decQuadAdd(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
-  fn decQuadCompare(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
+  fn decQuadCompareTotal(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadDivide(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadFromString(arg1: *mut DecQuad, arg2: *const c_char, arg3: *mut DecContext) -> *mut DecQuad;
   fn decQuadIsFinite(arg1: *const DecQuad) -> c_uint;
@@ -213,10 +213,10 @@ pub fn dec_ceiling(q: &DecQuad) -> DecQuad {
 }
 
 ///
-pub fn dec_compare(q1: &DecQuad, q2: &DecQuad) -> DecQuad {
+pub fn dec_compare_total(q1: &DecQuad, q2: &DecQuad) -> DecQuad {
   let mut qr = DecQuad::default();
   unsafe {
-    decQuadCompare(&mut qr, q1, q2, &mut DEFAULT_CONTEXT.clone());
+    decQuadCompareTotal(&mut qr, q1, q2, &mut DEFAULT_CONTEXT.clone());
   }
   qr
 }
@@ -400,10 +400,10 @@ mod tests {
 
   #[test]
   fn test_dec_compare() {
-    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("-0"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_compare(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("-0"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_compare_total(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
   }
 
   #[test]
