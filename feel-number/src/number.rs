@@ -34,6 +34,7 @@
 
 use crate::dec::*;
 use dmntk_common::Jsonify;
+use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::str::FromStr;
 
@@ -43,10 +44,14 @@ pub struct FeelNumber(DecQuad);
 
 impl FeelNumber {
   /// Creates a new [FeelNumber] from number and scale.
-  pub fn new(number: i128, scale: i32) -> Self {
-    let n = dec_from_string(&format!("{}", number));
-    let s = dec_from_string(&format!("{}", -scale));
-    Self(dec_scale(&n, &s))
+  pub fn new(num: i128, scale: u32) -> Self {
+    let n = dec_from_string(&format!("{}", num));
+    let s = dec_from_string(&format!("{}", -(scale as i64)));
+    Self(dec_scale_b(&n, &s))
+  }
+  /// Creates a new [FeelNumber] from integer value.
+  pub fn int(num: i128) -> Self {
+    Self(dec_scale_b(&dec_from_string(&format!("{}", num)), &DEC_ZERO))
   }
   ///
   pub fn zero() -> Self {
@@ -63,6 +68,114 @@ impl FeelNumber {
   ///
   pub fn nano() -> Self {
     Self(*DEC_NANO)
+  }
+  ///
+  pub fn abs(&self) -> Self {
+    Self(dec_abs(&self.0))
+  }
+  ///
+  pub fn ceiling(&self) -> Self {
+    Self(dec_reduce(&dec_ceiling(&self.0)))
+  }
+  ///
+  pub fn even(&self) -> bool {
+    if dec_is_integer(&self.0) {
+      if dec_is_zero(&dec_remainder(&self.0, &DEC_TWO)) {
+        return true;
+      }
+    }
+    false
+  }
+  ///
+  pub fn exp(&self) -> Self {
+    Self(dec_exp(&self.0))
+  }
+  ///
+  pub fn floor(&self) -> Self {
+    Self(dec_reduce(&dec_floor(&self.0)))
+  }
+  ///
+  pub fn is_integer(&self) -> bool {
+    dec_is_integer(&self.0)
+  }
+  ///
+  pub fn is_positive(&self) -> bool {
+    dec_is_positive(&self.0)
+  }
+  ///
+  pub fn ln(&self) -> Option<Self> {
+    let n = dec_ln(&self.0);
+    if dec_is_finite(&n) {
+      Some(Self(dec_reduce(&n)))
+    } else {
+      None
+    }
+  }
+  ///
+  pub fn odd(&self) -> bool {
+    if dec_is_integer(&self.0) {
+      if !dec_is_zero(&dec_remainder(&self.0, &DEC_TWO)) {
+        return true;
+      }
+    }
+    false
+  }
+  ///
+  pub fn pow(&self, rhs: &FeelNumber) -> Option<Self> {
+    let n = dec_power(&self.0, &rhs.0);
+    if dec_is_finite(&n) {
+      Some(Self(dec_reduce(&n)))
+    } else {
+      None
+    }
+  }
+  ///
+  pub fn round(&self, rhs: FeelNumber) -> Self {
+    Self(dec_rescale(&self.0, &dec_minus(&rhs.0)))
+  }
+  ///
+  pub fn sqrt(&self) -> Option<Self> {
+    let n = dec_square_root(&self.0);
+    if dec_is_finite(&n) {
+      Some(Self(dec_reduce(&n)))
+    } else {
+      None
+    }
+  }
+  ///
+  pub fn square(&self) -> Option<Self> {
+    let n = dec_power(&self.0, &DEC_TWO);
+    if dec_is_finite(&n) {
+      Some(Self(dec_reduce(&n)))
+    } else {
+      None
+    }
+  }
+}
+
+impl PartialEq<FeelNumber> for FeelNumber {
+  fn eq(&self, rhs: &Self) -> bool {
+    let flag = dec_compare(&self.0, &rhs.0);
+    if dec_is_finite(&flag) {
+      return dec_is_zero(&flag);
+    }
+    false
+  }
+}
+
+impl PartialOrd for FeelNumber {
+  fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
+    let flag = dec_compare(&self.0, &rhs.0);
+    if dec_is_finite(&flag) {
+      if dec_is_zero(&flag) {
+        return Some(Ordering::Equal);
+      }
+      if dec_is_positive(&flag) {
+        return Some(Ordering::Greater);
+      }
+      return Some(Ordering::Less);
+    }
+    None
   }
 }
 
@@ -141,7 +254,7 @@ impl std::ops::Neg for FeelNumber {
   type Output = Self;
   ///
   fn neg(self) -> Self::Output {
-    Self(dec_neg(&self.0))
+    Self(dec_minus(&self.0))
   }
 }
 
@@ -181,11 +294,31 @@ fn scientific_to_plain(s: String) -> String {
     let before_exponent = split1.next().unwrap();
     let after_exponent = split1.next().unwrap();
     let exponent_digits = usize::from_str(after_exponent).unwrap();
-    let mut split2 = before_exponent.split('.');
-    let before_decimal = split2.next().unwrap();
-    let after_decimal = split2.next().unwrap();
-    let zeroes = (1..(exponent_digits - after_decimal.len() + 1)).map(|_| "0").collect::<String>();
-    format!("{}{}{}", before_decimal, after_decimal, zeroes)
+    if before_exponent.contains('.') {
+      let mut split2 = before_exponent.split('.');
+      let before_decimal = split2.next().unwrap();
+      let after_decimal = split2.next().unwrap();
+      let zeroes = (0..(exponent_digits - after_decimal.len())).map(|_| "0").collect::<String>();
+      format!("{}{}{}", before_decimal, after_decimal, zeroes)
+    } else {
+      let zeroes = (0..exponent_digits).map(|_| "0").collect::<String>();
+      format!("{}{}", before_exponent, zeroes)
+    }
+  } else if s.contains("E-") {
+    let mut split1 = s.split("E-");
+    let before_exponent = split1.next().unwrap();
+    let after_exponent = split1.next().unwrap();
+    let exponent_digits = usize::from_str(after_exponent).unwrap();
+    if before_exponent.contains('.') {
+      let mut split2 = before_exponent.split('.');
+      let before_decimal = split2.next().unwrap();
+      let after_decimal = split2.next().unwrap();
+      let zeroes = (1..exponent_digits).map(|_| "0").collect::<String>();
+      format!("0.{}{}{}", zeroes, before_decimal, after_decimal)
+    } else {
+      let zeroes = (1..exponent_digits).map(|_| "0").collect::<String>();
+      format!("0.{}{}", zeroes, before_exponent)
+    }
   } else {
     s
   }
@@ -219,11 +352,23 @@ mod tests {
   #[test]
   fn test_stringify() {
     assert_eq!("49", FeelNumber::new(49, 0).to_string());
+    assert_eq!("49", FeelNumber::int(49).to_string());
     assert_eq!("49.0", FeelNumber::new(490, 1).to_string());
-    assert_eq!("4900", FeelNumber::new(490, -1).to_string());
+    assert_eq!("4900", FeelNumber::new(4900, 0).to_string());
     assert_eq!("50", FeelNumber::new(50, 0).to_string());
+    assert_eq!("50", FeelNumber::int(50).to_string());
     assert_eq!("50.5", FeelNumber::new(505, 1).to_string());
     assert_eq!("50.50", FeelNumber::new(5050, 2).to_string());
+  }
+
+  #[test]
+  fn test_abs() {
+    assert_eq!("0", FeelNumber::new(0, 0).abs().to_string());
+    assert_eq!("0", FeelNumber::new(-0, 0).abs().to_string());
+    assert_eq!("1", FeelNumber::new(1, 0).abs().to_string());
+    assert_eq!("1", FeelNumber::new(-1, 0).abs().to_string());
+    assert_eq!("0.123456", FeelNumber::new(123456, 6).abs().to_string());
+    assert_eq!("0.123456", FeelNumber::new(-123456, 6).abs().to_string());
   }
 
   #[test]
@@ -239,27 +384,29 @@ mod tests {
   }
 
   #[test]
-  fn test_sub() {
-    assert_eq!("1", (FeelNumber::new(123, 2) - FeelNumber::new(23, 2)).to_string());
+  fn test_ceiling() {
+    assert_eq!("2", FeelNumber::new(15, 1).ceiling().to_string());
+    assert_eq!("-1", FeelNumber::new(-15, 1).ceiling().to_string());
+    assert_eq!("1", FeelNumber::new(3333, 4).ceiling().to_string());
+    assert_eq!("-0", FeelNumber::new(-3333, 4).ceiling().to_string());
   }
 
   #[test]
-  fn test_sub_assign() {
-    let mut x = FeelNumber::new(123, 2);
-    x -= FeelNumber::new(23, 2);
-    assert_eq!("1", x.to_string());
+  fn test_comparison() {
+    assert!(!(FeelNumber::int(0) > FeelNumber::int(0)));
+    assert!((FeelNumber::int(0) >= FeelNumber::int(0)));
+    assert!((FeelNumber::new(123456, 2) > FeelNumber::new(123456, 3)));
+    assert!((FeelNumber::new(123456, 3) < FeelNumber::new(123456, 2)));
+    assert!((FeelNumber::new(123456, 2) <= FeelNumber::new(123456, 2)));
+    assert!((FeelNumber::new(123456, 2) >= FeelNumber::new(123456, 2)));
   }
 
   #[test]
-  fn test_mul() {
-    assert_eq!("12", (FeelNumber::new(12, 1) * FeelNumber::new(10, 0)).to_string());
-  }
-
-  #[test]
-  fn test_mul_assign() {
-    let mut x = FeelNumber::new(12, 1);
-    x *= FeelNumber::new(10, 0);
-    assert_eq!("12", x.to_string());
+  fn test_constants() {
+    assert_eq!("0", FeelNumber::zero().to_string());
+    assert_eq!("1", FeelNumber::one().to_string());
+    assert_eq!("2", FeelNumber::two().to_string());
+    assert_eq!("1000000000", FeelNumber::nano().to_string());
   }
 
   #[test]
@@ -275,8 +422,113 @@ mod tests {
   }
 
   #[test]
+  fn test_equal() {
+    assert!((FeelNumber::int(0) == FeelNumber::int(0)));
+    assert!(!(FeelNumber::int(0) == FeelNumber::int(1)));
+    assert!(!(FeelNumber::int(1) == FeelNumber::int(0)));
+    assert!((FeelNumber::new(123456, 2) == FeelNumber::new(123456, 2)));
+    assert!(!(FeelNumber::new(123456, 2) == FeelNumber::new(-123456, 2)));
+  }
+
+  #[test]
+  fn test_even() {
+    assert!(FeelNumber::int(-4).even());
+    assert!(!FeelNumber::int(-3).even());
+    assert!(FeelNumber::int(-2).even());
+    assert!(!FeelNumber::int(-1).even());
+    assert!(FeelNumber::int(-0).even());
+    assert!(FeelNumber::int(0).even());
+    assert!(!FeelNumber::int(1).even());
+    assert!(FeelNumber::int(2).even());
+    assert!(!FeelNumber::int(3).even());
+    assert!(FeelNumber::int(4).even());
+    assert!(!FeelNumber::new(41, 1).even());
+  }
+
+  #[test]
+  fn test_exp() {
+    assert_eq!("2.718281828459045235360287471352662", FeelNumber::int(1).exp().to_string());
+    assert_eq!("54.59815003314423907811026120286088", FeelNumber::int(4).exp().to_string());
+  }
+
+  #[test]
+  fn test_floor() {
+    assert_eq!("1", FeelNumber::new(15, 1).floor().to_string());
+    assert_eq!("-2", FeelNumber::new(-15, 1).floor().to_string());
+    assert_eq!("0", FeelNumber::new(3333, 4).floor().to_string());
+    assert_eq!("-1", FeelNumber::new(-3333, 4).floor().to_string());
+  }
+
+  #[test]
+  fn test_is_integer() {
+    assert!(FeelNumber::new(41, 0).is_integer());
+    assert!(!FeelNumber::new(41, 1).is_integer());
+  }
+
+  #[test]
+  fn test_is_positive() {
+    assert!(!FeelNumber::new(-123, 2).is_positive());
+    assert!(!FeelNumber::new(-1, 0).is_positive());
+    assert!(!FeelNumber::new(-0, 0).is_positive());
+    assert!(!FeelNumber::new(0, 0).is_positive());
+    assert!(FeelNumber::new(1, 0).is_positive());
+    assert!(FeelNumber::new(123, 2).is_positive());
+  }
+
+  #[test]
+  fn test_ln() {
+    assert!(FeelNumber::int(-1).ln().is_none());
+    assert!(FeelNumber::int(0).ln().is_none());
+    assert_eq!("0", FeelNumber::int(1).ln().unwrap().to_string());
+    assert_eq!("1.386294361119890618834464242916353", FeelNumber::int(4).ln().unwrap().to_string());
+    assert_eq!("2.302585092994045684017991454684364", FeelNumber::int(10).ln().unwrap().to_string());
+  }
+
+  #[test]
   fn test_minus_zero() {
     assert_eq!("0", FeelNumber::new(-0, 0).to_string());
+  }
+
+  #[test]
+  fn test_mul() {
+    assert_eq!("12", (FeelNumber::new(12, 1) * FeelNumber::new(10, 0)).to_string());
+  }
+
+  #[test]
+  fn test_mul_assign() {
+    let mut x = FeelNumber::new(12, 1);
+    x *= FeelNumber::new(10, 0);
+    assert_eq!("12", x.to_string());
+  }
+
+  #[test]
+  fn test_neg() {
+    assert_eq!("-1.23", (-FeelNumber::new(123, 2)).to_string());
+    assert_eq!("1.23", (-FeelNumber::new(-123, 2)).to_string());
+  }
+
+  #[test]
+  fn test_odd() {
+    assert!(!FeelNumber::int(-4).odd());
+    assert!(FeelNumber::int(-3).odd());
+    assert!(!FeelNumber::int(-2).odd());
+    assert!(FeelNumber::int(-1).odd());
+    assert!(!FeelNumber::int(-0).odd());
+    assert!(!FeelNumber::int(0).odd());
+    assert!(FeelNumber::int(1).odd());
+    assert!(!FeelNumber::int(2).odd());
+    assert!(FeelNumber::int(3).odd());
+    assert!(!FeelNumber::int(4).odd());
+    assert!(!FeelNumber::new(31, 1).odd());
+  }
+
+  #[test]
+  fn test_pow() {
+    assert!(FeelNumber::int(0).pow(&FeelNumber::int(0)).is_none());
+    assert_eq!(
+      "41959.85737359436186095331070746801",
+      FeelNumber::new(122384283, 7).pow(&FeelNumber::new(425, 2)).unwrap().to_string()
+    );
   }
 
   #[test]
@@ -299,32 +551,44 @@ mod tests {
   }
 
   #[test]
-  fn test_neg() {
-    assert_eq!("-1.23", (-FeelNumber::new(123, 2)).to_string());
-    assert_eq!("1.23", (-FeelNumber::new(-123, 2)).to_string());
+  fn test_round() {
+    assert_eq!("123.46", FeelNumber::new(1234567, 4).round(FeelNumber::int(2)).to_string());
+    assert_eq!("123.45", FeelNumber::new(1234547, 4).round(FeelNumber::int(2)).to_string());
+    assert_eq!("100", FeelNumber::new(1234567, 4).round(FeelNumber::int(-2)).to_string());
+    assert_eq!("200", FeelNumber::new(1634567, 4).round(FeelNumber::int(-2)).to_string());
   }
 
   #[test]
-  fn test_constants() {
-    assert_eq!("0", FeelNumber::zero().to_string());
-    assert_eq!("1", FeelNumber::one().to_string());
-    assert_eq!("2", FeelNumber::two().to_string());
-    assert_eq!("1000000000", FeelNumber::nano().to_string());
+  fn test_sqrt() {
+    assert!(FeelNumber::int(-1).sqrt().is_none());
+    assert_eq!("0", FeelNumber::int(0).sqrt().unwrap().to_string());
+    assert_eq!("1", FeelNumber::int(1).sqrt().unwrap().to_string());
+    assert_eq!("1.414213562373095048801688724209698", FeelNumber::int(2).sqrt().unwrap().to_string());
   }
 
-  //
-  // #[test]
-  // fn test_ceiling() {
-  //   assert_eq!("0", FeelNumber::new(-3333, 4).ceil().to_string());
-  // }
-  //
-  // #[test]
-  // fn test_exp() {
-  //   assert_eq!("54.5981500331442362039524596", FeelNumber::new(4, 0).exp().unwrap().to_string());
-  // }
-  //
-  // #[test]
-  // fn test_log() {
-  //   assert_eq!("1.3862943611198905724535279656", FeelNumber::new(4, 0).ln().unwrap().to_string());
-  // }
+  #[test]
+  fn test_square() {
+    assert_eq!("4", FeelNumber::int(2).square().unwrap().to_string());
+    assert_eq!("25", FeelNumber::int(5).square().unwrap().to_string());
+  }
+
+  #[test]
+  fn test_sub() {
+    assert_eq!("1", (FeelNumber::new(123, 2) - FeelNumber::new(23, 2)).to_string());
+  }
+
+  #[test]
+  fn test_sub_assign() {
+    let mut x = FeelNumber::new(123, 2);
+    x -= FeelNumber::new(23, 2);
+    assert_eq!("1", x.to_string());
+  }
+
+  #[test]
+  fn test_scientific_to_plain() {
+    assert_eq!("12300", scientific_to_plain("1.23E+4".to_string()));
+    assert_eq!("100", scientific_to_plain("1E+2".to_string()));
+    assert_eq!("0.00000000000000000000001", scientific_to_plain("1E-23".to_string()));
+    assert_eq!("0.00000000000000001234567", scientific_to_plain("1.234567E-17".to_string()));
+  }
 }
