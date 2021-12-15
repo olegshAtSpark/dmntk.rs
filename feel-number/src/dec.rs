@@ -31,13 +31,15 @@
  */
 
 use lazy_static::lazy_static;
-use libc::{c_char, c_uint};
+use libc::{c_char, c_int, c_uint};
 use std::ffi::{CStr, CString};
 
 const DEC_INIT_DECQUAD: i32 = 128;
 const DEC_QUAD_STRING: usize = 43;
 const DEC_QUAD_STRING_BUFFER: [c_char; DEC_QUAD_STRING] = [0; DEC_QUAD_STRING];
 const DEC_ROUND_CEILING: u32 = 0;
+const DEC_ROUND_HALF_EVEN: u32 = 3;
+const DEC_ROUND_DOWN: u32 = 5;
 const DEC_ROUND_FLOOR: u32 = 6;
 
 lazy_static! {
@@ -92,15 +94,20 @@ extern "C" {
   fn decQuadCompareTotal(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadDivide(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadFromString(arg1: *mut DecQuad, arg2: *const c_char, arg3: *mut DecContext) -> *mut DecQuad;
+  fn decQuadFromInt32(arg1: *mut DecQuad, arg2: c_int) -> *mut DecQuad;
+  fn decQuadFromUInt32(arg1: *mut DecQuad, arg2: c_uint) -> *mut DecQuad;
   fn decQuadIsFinite(arg1: *const DecQuad) -> c_uint;
   fn decQuadIsInteger(arg1: *const DecQuad) -> c_uint;
+  fn decQuadIsNegative(arg1: *const DecQuad) -> c_uint;
   fn decQuadIsPositive(arg1: *const DecQuad) -> c_uint;
   fn decQuadIsZero(arg1: *const DecQuad) -> c_uint;
   fn decQuadMinus(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *mut DecContext) -> *mut DecQuad;
   fn decQuadMultiply(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadRemainder(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadSubtract(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
+  fn decQuadToInt32(arg1: *const DecQuad, arg2: *mut DecContext, arg3: u32) -> c_int;
   fn decQuadToIntegralValue(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *mut DecContext, arg4: u32) -> *mut DecQuad;
+  fn decQuadToUInt32(arg1: *const DecQuad, arg2: *mut DecContext, arg3: u32) -> c_uint;
   fn decQuadToString(arg1: *const DecQuad, arg2: *mut c_char) -> *mut c_char;
   fn decQuadZero(arg1: *mut DecQuad) -> *mut DecQuad;
 }
@@ -122,6 +129,24 @@ pub fn dec_from_string(s: &str) -> DecQuad {
     decQuadFromString(&mut value, c_s.as_ptr(), &mut DEFAULT_CONTEXT.clone());
   }
   value
+}
+
+///
+pub fn dec_from_i32(n: i32) -> DecQuad {
+  let mut qr = DecQuad::default();
+  unsafe {
+    decQuadFromInt32(&mut qr, n);
+  }
+  qr
+}
+
+///
+pub fn dec_from_u32(n: u32) -> DecQuad {
+  let mut qr = DecQuad::default();
+  unsafe {
+    decQuadFromUInt32(&mut qr, n);
+  }
+  qr
 }
 
 /// Converts decimal into string.
@@ -208,6 +233,29 @@ pub fn dec_ceiling(q: &DecQuad) -> DecQuad {
   let mut qr = DecQuad::default();
   unsafe {
     decQuadToIntegralValue(&mut qr, q, &mut DEFAULT_CONTEXT.clone(), DEC_ROUND_CEILING);
+    if decQuadIsNegative(q) == 1 && decQuadIsZero(&qr) == 1 {
+      // if the rounding comes from negative value near zero, then we convert -0 to +0
+      decQuadZero(&mut qr);
+    }
+  }
+  qr
+}
+
+///
+pub fn dec_trunc(q: &DecQuad) -> DecQuad {
+  let mut qr = DecQuad::default();
+  unsafe {
+    decQuadToIntegralValue(&mut qr, q, &mut DEFAULT_CONTEXT.clone(), DEC_ROUND_DOWN);
+  }
+  qr
+}
+
+///
+pub fn dec_fract(q: &DecQuad) -> DecQuad {
+  let mut qr = DecQuad::default();
+  unsafe {
+    decQuadToIntegralValue(&mut qr, q, &mut DEFAULT_CONTEXT.clone(), DEC_ROUND_DOWN);
+    decQuadSubtract(&mut qr, q, &qr, &mut DEFAULT_CONTEXT.clone());
   }
   qr
 }
@@ -340,6 +388,12 @@ pub fn dec_is_integer(q: &DecQuad) -> bool {
 }
 
 ///
+pub fn dec_is_negative(q: &DecQuad) -> bool {
+  let flag = unsafe { decQuadIsNegative(q) };
+  flag == 1
+}
+
+///
 pub fn dec_is_positive(q: &DecQuad) -> bool {
   let flag = unsafe { decQuadIsPositive(q) };
   flag == 1
@@ -349,6 +403,16 @@ pub fn dec_is_positive(q: &DecQuad) -> bool {
 pub fn dec_is_zero(q: &DecQuad) -> bool {
   let flag = unsafe { decQuadIsZero(q) };
   flag == 1
+}
+
+///
+pub fn dec_to_i32(q: &DecQuad) -> i32 {
+  unsafe { decQuadToInt32(q, &mut DEFAULT_CONTEXT.clone(), DEC_ROUND_HALF_EVEN) }
+}
+
+///
+pub fn dec_to_u32(q: &DecQuad) -> u32 {
+  unsafe { decQuadToUInt32(q, &mut DEFAULT_CONTEXT.clone(), DEC_ROUND_HALF_EVEN) }
 }
 
 #[cfg(test)]
@@ -426,6 +490,20 @@ mod tests {
   }
 
   #[test]
+  fn test_dec_from_i32() {
+    assert_eq!("-1", dec_to_string(&dec_from_i32(-1)).unwrap());
+    assert_eq!("0", dec_to_string(&dec_from_i32(-0)).unwrap());
+    assert_eq!("0", dec_to_string(&dec_from_i32(0)).unwrap());
+    assert_eq!("1", dec_to_string(&dec_from_i32(1)).unwrap());
+  }
+
+  #[test]
+  fn test_dec_from_u32() {
+    assert_eq!("0", dec_to_string(&dec_from_u32(0)).unwrap());
+    assert_eq!("1", dec_to_string(&dec_from_u32(1)).unwrap());
+  }
+
+  #[test]
   fn test_dec_floor() {
     assert_eq!("1", dec_to_string(&dec_floor(&dec_from_string("1.5"))).unwrap());
     assert_eq!("-2", dec_to_string(&dec_floor(&dec_from_string("-1.5"))).unwrap());
@@ -438,7 +516,9 @@ mod tests {
     assert_eq!("0", dec_to_string(&value).unwrap());
     let value = dec_from_string("1");
     assert_eq!([0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x08, 0x22], value.0);
-    assert_eq!("1", dec_to_string(&value).unwrap())
+    assert_eq!("1", dec_to_string(&value).unwrap());
+    let value = dec_from_string("1234a");
+    assert_eq!("NaN", dec_to_string(&value).unwrap());
   }
 
   #[test]
@@ -463,6 +543,16 @@ mod tests {
     assert!(dec_is_integer(&dec_from_string("-2")));
     assert!(!dec_is_integer(&dec_from_string("0.5")));
     assert!(!dec_is_integer(&dec_from_string("-0.5")));
+  }
+
+  #[test]
+  fn test_dec_is_negative() {
+    assert!(dec_is_negative(&dec_from_string("-1.23")));
+    assert!(dec_is_negative(&dec_from_string("-1")));
+    assert!(!dec_is_negative(&dec_from_string("-0")));
+    assert!(!dec_is_negative(&dec_from_string("0")));
+    assert!(!dec_is_negative(&dec_from_string("1")));
+    assert!(!dec_is_negative(&dec_from_string("1.23")));
   }
 
   #[test]
@@ -584,11 +674,76 @@ mod tests {
   }
 
   #[test]
+  fn test_dec_to_i32() {
+    assert_eq!(-1, dec_to_i32(&dec_from_string("-1")));
+    assert_eq!(1, dec_to_i32(&dec_from_string("1")));
+  }
+
+  #[test]
+  fn test_dec_to_u32() {
+    assert_eq!(0, dec_to_u32(&dec_from_string("-0")));
+    assert_eq!(0, dec_to_i32(&dec_from_string("0")));
+    assert_eq!(1, dec_to_i32(&dec_from_string("1")));
+  }
+
+  #[test]
   fn test_dec_to_string() {
     assert_eq!("1", dec_to_string(&dec_from_string("1")).unwrap());
     assert_eq!("0.000123", dec_to_string(&dec_from_string("0.000123")).unwrap());
     assert_eq!("1000000000.01", dec_to_string(&dec_from_string("1000000000.01")).unwrap());
     assert_eq!("1E-23", dec_to_string(&dec_from_string("0.00000000000000000000001")).unwrap());
     assert_eq!("1.234567E-17", dec_to_string(&dec_from_string("0.00000000000000001234567")).unwrap());
+  }
+
+  #[test]
+  fn test_dec_trunc() {
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.9"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.8"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.7"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.6"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.5"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.4"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.3"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.2"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.1"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1"))).unwrap());
+    assert_eq!("-0", dec_to_string(&dec_trunc(&dec_from_string("-0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_trunc(&dec_from_string("0"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.1"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.2"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.3"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.4"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.5"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.6"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.7"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.8"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.9"))).unwrap());
+  }
+
+  #[test]
+  fn test_dec_fract() {
+    assert_eq!("-0.9", dec_to_string(&dec_fract(&dec_from_string("-1.9"))).unwrap());
+    assert_eq!("-0.8", dec_to_string(&dec_fract(&dec_from_string("-1.8"))).unwrap());
+    assert_eq!("-0.7", dec_to_string(&dec_fract(&dec_from_string("-1.7"))).unwrap());
+    assert_eq!("-0.6", dec_to_string(&dec_fract(&dec_from_string("-1.6"))).unwrap());
+    assert_eq!("-0.5", dec_to_string(&dec_fract(&dec_from_string("-1.5"))).unwrap());
+    assert_eq!("-0.4", dec_to_string(&dec_fract(&dec_from_string("-1.4"))).unwrap());
+    assert_eq!("-0.3", dec_to_string(&dec_fract(&dec_from_string("-1.3"))).unwrap());
+    assert_eq!("-0.2", dec_to_string(&dec_fract(&dec_from_string("-1.2"))).unwrap());
+    assert_eq!("-0.1", dec_to_string(&dec_fract(&dec_from_string("-1.1"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-1"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("1"))).unwrap());
+    assert_eq!("0.1", dec_to_string(&dec_fract(&dec_from_string("1.1"))).unwrap());
+    assert_eq!("0.2", dec_to_string(&dec_fract(&dec_from_string("1.2"))).unwrap());
+    assert_eq!("0.3", dec_to_string(&dec_fract(&dec_from_string("1.3"))).unwrap());
+    assert_eq!("0.4", dec_to_string(&dec_fract(&dec_from_string("1.4"))).unwrap());
+    assert_eq!("0.5", dec_to_string(&dec_fract(&dec_from_string("1.5"))).unwrap());
+    assert_eq!("0.6", dec_to_string(&dec_fract(&dec_from_string("1.6"))).unwrap());
+    assert_eq!("0.7", dec_to_string(&dec_fract(&dec_from_string("1.7"))).unwrap());
+    assert_eq!("0.8", dec_to_string(&dec_fract(&dec_from_string("1.8"))).unwrap());
+    assert_eq!("0.9", dec_to_string(&dec_fract(&dec_from_string("1.9"))).unwrap());
   }
 }

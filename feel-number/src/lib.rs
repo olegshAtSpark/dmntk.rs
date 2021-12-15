@@ -32,6 +32,7 @@
 
 extern crate lazy_static;
 extern crate libc;
+#[macro_use]
 extern crate thiserror;
 
 mod dec;

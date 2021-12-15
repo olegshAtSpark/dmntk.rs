@@ -56,8 +56,8 @@ fn test_ceiling() {
   te_number(false, scope, "ceiling(--1)", 1, 0);
   te_number(false, scope, "ceiling(-5/2.3*5)", -10, 0);
   te_number(false, scope, "ceiling(n:5.777)", 6, 0);
-  te_number(false, scope, "ceiling(n:-.33333)", -0, 0);
   te_number(false, scope, "ceiling(n:-.33333)", 0, 0);
+  te_number(false, scope, "ceiling(n:.33333)", 1, 0);
   te_number(false, scope, "ceiling(n:Order size)", 24, 0);
   te_null(false, scope, "ceiling(number:5.777)", r#"parameter 'n' not found"#);
 }

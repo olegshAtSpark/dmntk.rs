@@ -145,7 +145,7 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
 /// ???
 pub fn ceiling(value: &Value) -> Value {
   if let Value::Number(v) = value {
-    Value::Number(v.ceil())
+    Value::Number(v.ceiling())
   } else {
     value_null!("ceiling")
   }
@@ -260,9 +260,8 @@ pub fn date_and_time_2(date_value: &Value, time_value: &Value) -> Value {
 pub fn decimal(number: &Value, scale: &Value) -> Value {
   if let Value::Number(n) = number {
     if let Value::Number(s) = scale {
-      let sc: isize = (*s).into();
-      if (-6111..6176).contains(&sc) {
-        Value::Number((*n).round(sc.into()))
+      if s.is_integer() && (-6111..6176).contains(s) {
+        Value::Number((*n).round(s))
       } else {
         value_null!("decimal")
       }
@@ -329,11 +328,9 @@ pub fn even(value: &Value) -> Value {
 /// Returns the Euler’s number e raised to the power of **value** given as a parameter.
 pub fn exp(value: &Value) -> Value {
   if let Value::Number(num) = value {
-    if let Some(num_exp) = num.exp() {
-      return Value::Number(num_exp);
-    }
+    return Value::Number(num.exp());
   }
-  value_null!()
+  value_null!("exp")
 }
 
 /// ???
@@ -417,19 +414,20 @@ pub fn index_of(list: &Value, element: &Value) -> Value {
 pub fn insert_before(list: &Value, position: &Value, new_item: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
     if let Value::Number(pos) = position {
-      let index: i64 = (*pos).into();
-      if index > 0 {
-        let i = (index as usize) - 1;
-        if i < items.len() {
-          items.insert(i, new_item.clone());
-          return Value::List(items);
+      if pos.is_positive() {
+        if let Some(i) = pos.to_usize() {
+          if i < items.len() {
+            items.insert(i, new_item.clone());
+            return Value::List(items);
+          }
         }
       }
-      if index < 0 {
-        let i = index.abs() as usize;
-        if i <= items.as_vec().len() {
-          items.insert(items.len() - i, new_item.clone());
-          return Value::List(items);
+      if pos.is_negative() {
+        if let Some(i) = pos.abs().to_usize() {
+          if i <= items.as_vec().len() {
+            items.insert(items.len() - i, new_item.clone());
+            return Value::List(items);
+          }
         }
       }
     }
@@ -758,22 +756,24 @@ pub fn odd(value: &Value) -> Value {
 }
 
 /// ???
-pub fn remove(list: &Value, position: &Value) -> Value {
+pub fn remove(list: &Value, position_value: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
-    if let Value::Number(pos) = position {
-      let index: i64 = (*pos).into();
-      if index > 0 {
-        let i = (index as usize) - 1;
-        if i < items.as_vec().len() {
-          items.remove(i);
-          return Value::List(items);
+    if let Value::Number(position_number) = position_value {
+      if position_number.is_positive() {
+        if let Some(mut index) = position_number.to_usize() {
+          index -= 1;
+          if index < items.as_vec().len() {
+            items.remove(index);
+            return Value::List(items);
+          }
         }
       }
-      if index < 0 {
-        let i = index.abs() as usize;
-        if i <= items.len() {
-          items.remove(items.len() - i);
-          return Value::List(items);
+      if position_number.is_negative() {
+        if let Some(index) = position_number.abs().to_usize() {
+          if index <= items.len() {
+            items.remove(items.len() - index);
+            return Value::List(items);
+          }
         }
       }
     }
@@ -943,7 +943,11 @@ pub fn stddev(values: &[Value]) -> Value {
   let avg = sum / n;
   let mut sum2 = FeelNumber::zero();
   for number in numbers {
-    sum2 += (number - avg).pow2();
+    if let Some(square) = (number - avg).square() {
+      sum2 += square;
+    } else {
+      return value_null!("stddev: square error");
+    }
   }
   if let Some(stddev) = (sum2 / (n - FeelNumber::one())).sqrt() {
     Value::Number(stddev)
@@ -990,20 +994,23 @@ pub fn sum(values: &[Value]) -> Value {
 }
 
 /// ???
-pub fn sublist2(list: &Value, position: &Value) -> Value {
+pub fn sublist2(list: &Value, position_value: &Value) -> Value {
   if let Value::List(items) = list {
-    if let Value::Number(position) = position {
-      let position: i64 = (*position).into();
-      if position > 0 {
-        let index = (position as usize) - 1;
-        if index < items.len() {
-          return Value::List(Values::new(items.as_vec()[index..].to_vec()));
+    if let Value::Number(position_number) = position_value {
+      if position_number.is_positive() {
+        if let Some(position) = position_number.to_usize() {
+          let index = position - 1;
+          if index < items.len() {
+            return Value::List(Values::new(items.as_vec()[index..].to_vec()));
+          }
         }
       }
-      if position < 0 {
-        let index = position.abs() as usize;
-        if index <= items.len() {
-          return Value::List(Values::new(items.as_vec()[items.len() - index..].to_vec()));
+      if position_number.is_negative() {
+        if let Some(position) = position_number.abs().to_usize() {
+          let index = position;
+          if index <= items.len() {
+            return Value::List(Values::new(items.as_vec()[items.len() - index..].to_vec()));
+          }
         }
       }
     }
@@ -1012,25 +1019,27 @@ pub fn sublist2(list: &Value, position: &Value) -> Value {
 }
 
 /// ???
-pub fn sublist3(list: &Value, position: &Value, length: &Value) -> Value {
+pub fn sublist3(list: &Value, position_value: &Value, length_value: &Value) -> Value {
   if let Value::List(items) = list {
-    if let Value::Number(length) = length {
-      let length: i64 = (*length).into();
-      if length > 0 {
-        if let Value::Number(position) = position {
-          let position: i64 = (*position).into();
-          if position > 0 {
-            let first = (position as usize) - 1;
-            let last = first + (length as usize);
-            if first < items.len() && last <= items.len() {
-              return Value::List(Values::new(items.as_vec()[first..last].to_vec()));
+    if let Value::Number(length_number) = length_value {
+      if let Some(length) = length_number.to_usize() {
+        if let Value::Number(position_number) = position_value {
+          if position_number.is_positive() {
+            if let Some(position) = position_number.to_usize() {
+              let first = position - 1;
+              let last = first + length;
+              if first < items.len() && last <= items.len() {
+                return Value::List(Values::new(items.as_vec()[first..last].to_vec()));
+              }
             }
           }
-          if position < 0 {
-            let first = items.len() - (position.abs() as usize);
-            let last = first + (length as usize);
-            if first < items.len() && last <= items.len() {
-              return Value::List(Values::new(items.as_vec()[first..last].to_vec()));
+          if position_number.is_negative() {
+            if let Some(position) = position_number.abs().to_usize() {
+              let first = items.len() - position;
+              let last = first + length;
+              if first < items.len() && last <= items.len() {
+                return Value::List(Values::new(items.as_vec()[first..last].to_vec()));
+              }
             }
           }
         }
@@ -1045,14 +1054,22 @@ pub fn sublist3(list: &Value, position: &Value, length: &Value) -> Value {
 pub fn substring(input_string_value: &Value, start_position_value: &Value, length_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     if let Value::Number(start_position) = start_position_value {
-      let start: isize = (*start_position).into();
+      let start = if let Some(start_isize) = start_position.to_isize() {
+        start_isize
+      } else {
+        return value_null!("start position is out of range of isize '{}'", start_position.to_string());
+      };
       let input_string_len = input_string.chars().count();
       match length_value {
         Value::Number(length) => {
           if *length < FeelNumber::one() {
             return value_null!();
           }
-          let count: usize = (*length).into();
+          let count = if let Some(length_usize) = length.to_usize() {
+            length_usize
+          } else {
+            return value_null!("length is out of range of usize '{}'", length.to_string());
+          };
           if start > 0 {
             let index = (start - 1) as usize;
             if index < input_string_len && index + count <= input_string_len {
@@ -1143,10 +1160,15 @@ pub fn time_3(hour_value: &Value, minute_value: &Value, second_value: &Value) ->
   if let Value::Number(hour) = hour_value {
     if let Value::Number(minute) = minute_value {
       if let Value::Number(second) = second_value {
-        if hour.is_positive() && minute.is_positive() && second.is_positive() {
+        if (0..24).contains(hour) && (0..60).contains(minute) && (0..60).contains(second) {
           let seconds = second.trunc();
-          let nanoseconds = second.fract() * FeelNumber::nano();
-          if let Some(feel_time) = FeelTime::new_hms_opt((*hour).into(), (*minute).into(), seconds.into(), nanoseconds.into()) {
+          let nanoseconds = (second.fract() * FeelNumber::nano()).trunc();
+          if let Some(feel_time) = FeelTime::new_hms_opt(
+            hour.to_u8().unwrap(),
+            minute.to_u8().unwrap(),
+            seconds.to_u8().unwrap(),
+            nanoseconds.to_u64().unwrap(),
+          ) {
             return Value::Time(feel_time);
           }
         }
@@ -1161,23 +1183,28 @@ pub fn time_4(hour_value: &Value, minute_value: &Value, second_value: &Value, du
   if let Value::Number(hour) = hour_value {
     if let Value::Number(minute) = minute_value {
       if let Value::Number(second) = second_value {
-        if hour.is_positive() && minute.is_positive() && second.is_positive() {
+        if (0..24).contains(hour) && (0..60).contains(minute) && (0..60).contains(second) {
           let seconds = second.trunc();
-          let nanoseconds = second.fract() * FeelNumber::nano();
+          let nanoseconds = (second.fract() * FeelNumber::nano()).trunc();
           match duration_value {
             Value::DaysAndTimeDuration(duration) => {
               if let Some(feel_time) = FeelTime::new_hmso_opt(
-                (*hour).into(),
-                (*minute).into(),
-                seconds.into(),
-                nanoseconds.into(),
+                hour.to_u8().unwrap(),
+                minute.to_u8().unwrap(),
+                seconds.to_u8().unwrap(),
+                nanoseconds.to_u64().unwrap(),
                 duration.as_seconds() as i32,
               ) {
                 return Value::Time(feel_time);
               }
             }
             Value::Null(_) => {
-              if let Some(feel_time) = FeelTime::new_hms_opt((*hour).into(), (*minute).into(), seconds.into(), nanoseconds.into()) {
+              if let Some(feel_time) = FeelTime::new_hms_opt(
+                hour.to_u8().unwrap(),
+                minute.to_u8().unwrap(),
+                seconds.to_u8().unwrap(),
+                nanoseconds.to_u64().unwrap(),
+              ) {
                 return Value::Time(feel_time);
               }
             }
@@ -1294,28 +1321,28 @@ mod tests {
     // *** utility functions ***
 
     ///
-    fn eq_substring(expected: &str, input_string: &str, start_position: i64) {
+    fn eq_substring(expected: &str, input_string: &str, start_position: i128) {
       assert_eq!(
         Value::String(expected.to_string()),
         substring(&Value::String(input_string.to_string()), &value_number!(start_position), &value_null!())
       );
     }
     ///
-    fn eq_substring_null(input_string: &str, start_position: i64) {
+    fn eq_substring_null(input_string: &str, start_position: i128) {
       assert_eq!(
         value_null!(),
         substring(&Value::String(input_string.to_string()), &value_number!(start_position), &value_null!())
       );
     }
     ///
-    fn eq_substring_len(expected: &str, input_string: &str, start_position: i64, length: i64) {
+    fn eq_substring_len(expected: &str, input_string: &str, start_position: i128, length: i128) {
       assert_eq!(
         Value::String(expected.to_string()),
         substring(&Value::String(input_string.to_string()), &value_number!(start_position), &value_number!(length))
       );
     }
     ///
-    fn eq_substring_len_null(input_string: &str, start_position: i64, length: i64) {
+    fn eq_substring_len_null(input_string: &str, start_position: i128, length: i128) {
       assert_eq!(
         value_null!(),
         substring(&Value::String(input_string.to_string()), &value_number!(start_position), &value_number!(length))
