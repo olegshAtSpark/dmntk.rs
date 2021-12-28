@@ -14,6 +14,7 @@ chrono = "0.4.19"
 chrono-tz = "0.6.0"
 derivative = "2.2.0"
 dmntk-common  = "0.0.41"
+dmntk-feel-number = "0.0.41"
 lazy_static = "1.4.0"
 regex = "1.5.4"
 rust_decimal = { version = "1.17.0", features = ["maths", "std"]}
