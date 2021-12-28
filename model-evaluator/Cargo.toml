@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-model-evaluator"
-version = "0.0.40"
+version = "0.0.41"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | DMN model evaluator"
 documentation = "https://docs.rs/dmntk-evaluator"
