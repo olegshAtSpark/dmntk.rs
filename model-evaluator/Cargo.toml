@@ -9,12 +9,12 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = "0.0.40"
-dmntk-feel = "0.0.40"
-dmntk-feel-evaluator = "0.0.40"
-dmntk-feel-parser = "0.0.40"
-dmntk-model = "0.0.40"
-dmntk-recognizer = "0.0.40"
+dmntk-common  = "0.0.41"
+dmntk-feel  = "0.0.41"
+dmntk-feel-evaluator  = "0.0.41"
+dmntk-feel-parser  = "0.0.41"
+dmntk-model  = "0.0.41"
+dmntk-recognizer  = "0.0.41"
 thiserror = "1.0.30"
 
 [dev-dependencies]

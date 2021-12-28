@@ -10,7 +10,7 @@ edition = "2021"
 links = "decnumber"
 
 [dependencies]
-dmntk-common = "0.0.40"
+dmntk-common  = "0.0.41"
 libc = "0.2.112"
 lazy_static = "1.4.0"
 thiserror = "1.0.30"

@@ -9,5 +9,5 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-feel-evaluator = "0.0.40"
-dmntk-model-evaluator = "0.0.40"
+dmntk-feel-evaluator  = "0.0.41"
+dmntk-model-evaluator  = "0.0.41"
