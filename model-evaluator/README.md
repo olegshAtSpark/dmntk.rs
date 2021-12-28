@@ -5,14 +5,18 @@
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
+![build][build-badge]
+![tests][tests-badge]
 ![Code coverage][coverage-badge]
 
 [crates-badge]: https://img.shields.io/crates/v/dmntk-model-evaluator.svg
 [crates-url]: https://crates.io/crates/dmntk-model-evaluator
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: ../LICENSE-MIT
+[mit-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[apache-url]: ../LICENSE-APACHE
+[apache-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE
+[build-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/build.yml/badge.svg
+[tests-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/tests.yml/badge.svg
 [coverage-badge]: https://img.shields.io/badge/Coverage-80%25-green.svg
 
 ## Overview
@@ -23,8 +27,8 @@ DMN™ models evaluator used by other components in [dmntk](https://github.com/d
 
 Licensed under either of
 
-- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](../LICENSE-MIT))
-- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](../LICENSE-APACHE))
+- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT))
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE))
 
 at your option.
 

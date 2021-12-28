@@ -39,13 +39,13 @@ lazy_static! {
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"54.5981500331442362039524596"#);
+  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"54.59815003314423907811026120286088"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision002", &ctx, r#"0.3678794411714423340242774428"#);
+  assert_decision(&DEFINITIONS, "decision002", &ctx, r#"0.3678794411714423215955237701614609"#);
 }
 
 #[test]
@@ -79,7 +79,7 @@ fn _0005() {
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision006", &ctx, r#"54.5981500331442362039524596"#);
+  assert_decision(&DEFINITIONS, "decision006", &ctx, r#"54.59815003314423907811026120286088"#);
 }
 
 #[test]
@@ -91,47 +91,47 @@ fn _0007() {
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision008", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision008", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision009", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision009", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision010", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision010", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision011", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision011", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0012() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision012", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision012", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0013() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision013", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision013", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0014() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision014", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision014", &ctx, r#"null(exp)"#);
 }
 
 #[test]
 fn _0015() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision015", &ctx, r#"null"#);
+  assert_decision(&DEFINITIONS, "decision015", &ctx, r#"null(exp)"#);
 }

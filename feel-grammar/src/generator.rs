@@ -104,9 +104,13 @@ mod tests {
   /// Executes all tests sequentially, because these tests access the same files.
   #[test]
   fn test_all_sequentially() {
-    test_feel_grammar();
-    test_lalr_c_tables();
-    test_lalr_rust_tables();
+    if std::env::var("CI").is_ok() {
+      // skip these tests when running on CI (GitHub Actions)
+    } else {
+      test_feel_grammar();
+      test_lalr_c_tables();
+      test_lalr_rust_tables();
+    }
   }
 
   fn test_feel_grammar() {

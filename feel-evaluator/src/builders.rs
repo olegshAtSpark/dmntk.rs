@@ -131,8 +131,8 @@ fn build_add(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
   let lhe = build_evaluator(lhs)?;
   let rhe = build_evaluator(rhs)?;
   Ok(Box::new(move |scope: &Scope| {
-    let lhv = lhe(scope);
-    let rhv = rhe(scope);
+    let lhv = lhe(scope) as Value;
+    let rhv = rhe(scope) as Value;
     match lhv {
       Value::Number(lh) => match rhv {
         Value::Number(rh) => Value::Number(lh + rh),
@@ -530,8 +530,14 @@ fn build_filter(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
           Value::Number(index) => {
             if index.is_integer() {
               let list_size = values.as_vec().len();
-              if index.is_positive() {
-                let n: usize = index.into();
+              if !index.is_negative() {
+                let n = {
+                  if let Ok(u_index) = usize::try_from(index) {
+                    u_index
+                  } else {
+                    return value_null!("index is out of range {}", index.to_string());
+                  }
+                };
                 if n > 0 && n <= list_size {
                   if let Some(value) = values.as_vec().get(n - 1) {
                     value.to_owned()
@@ -542,7 +548,13 @@ fn build_filter(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
                   value_null!("index in filter is out of range [1..{}], actual index is {}", list_size, n)
                 }
               } else {
-                let n: usize = index.abs().into();
+                let n = {
+                  if let Ok(u_index) = usize::try_from(index.abs()) {
+                    u_index
+                  } else {
+                    return value_null!("index is out of range {}", index.to_string());
+                  }
+                };
                 if n > 0 && n <= list_size {
                   if let Some(value) = values.as_vec().get(list_size - n) {
                     value.to_owned()

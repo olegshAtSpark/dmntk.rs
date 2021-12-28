@@ -36,7 +36,6 @@ use self::errors::*;
 use crate::bif::Bif;
 use crate::context::FeelContext;
 use crate::names::Name;
-use crate::numbers::FeelNumber;
 use crate::strings::ToFeelString;
 use crate::temporal::date::FeelDate;
 use crate::temporal::dt_duration::FeelDaysAndTimeDuration;
@@ -45,6 +44,7 @@ use crate::temporal::{FeelDateTime, FeelTime};
 use crate::types::FeelType;
 use crate::FunctionBody;
 use dmntk_common::{Jsonify, Result};
+use dmntk_feel_number::FeelNumber;
 use std::collections::BTreeMap;
 use std::convert::TryFrom;
 use std::ops::Deref;
@@ -82,7 +82,7 @@ macro_rules! value_null {
 #[macro_export]
 macro_rules! value_number {
   ($n:expr) => {{
-    Value::Number(FeelNumber::new_int($n))
+    Value::Number(FeelNumber::from_i128($n))
   }};
   ($n:expr, $s:expr) => {
     Value::Number(FeelNumber::new($n, $s))
