@@ -257,19 +257,20 @@ pub fn date_and_time_2(date_value: &Value, time_value: &Value) -> Value {
 }
 
 /// Returns `number` rounded to given `scale`.
-pub fn decimal(number: &Value, scale: &Value) -> Value {
-  if let Value::Number(n) = number {
-    if let Value::Number(s) = scale {
-      if s.is_integer() && (-6111..6176).contains(s) {
-        Value::Number((*n).round(s))
+pub fn decimal(number_value: &Value, scale_value: &Value) -> Value {
+  if let Value::Number(number) = number_value {
+    if let Value::Number(scale) = scale_value {
+      let scale = &scale.trunc();
+      if (-6111..6176).contains(scale) {
+        Value::Number((*number).round(scale))
       } else {
-        value_null!("decimal")
+        value_null!("decimal: scale is out of range")
       }
     } else {
-      value_null!("decimal")
+      value_null!("decimal: 1")
     }
   } else {
-    value_null!("decimal")
+    value_null!("decimal: 2")
   }
 }
 
@@ -317,9 +318,9 @@ pub fn ends_with(input_string_value: &Value, match_string_value: &Value) -> Valu
 }
 
 /// Returns true if number is even, false if it is odd.
-pub fn even(value: &Value) -> Value {
-  if let Value::Number(v) = value {
-    Value::Boolean(v.even())
+pub fn even(number_value: &Value) -> Value {
+  if let Value::Number(number) = number_value {
+    Value::Boolean(number.even())
   } else {
     value_null!("even")
   }
@@ -411,19 +412,19 @@ pub fn index_of(list: &Value, element: &Value) -> Value {
 }
 
 /// ???
-pub fn insert_before(list: &Value, position: &Value, new_item: &Value) -> Value {
+pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
-    if let Value::Number(pos) = position {
-      if pos.is_positive() {
-        if let Some(i) = pos.to_usize() {
-          if i < items.len() {
-            items.insert(i, new_item.clone());
+    if let Value::Number(position) = position_value {
+      if position.is_positive() {
+        if let Some(i) = position.to_usize() {
+          if i <= items.len() {
+            items.insert(i - 1, new_item.clone());
             return Value::List(items);
           }
         }
       }
-      if pos.is_negative() {
-        if let Some(i) = pos.abs().to_usize() {
+      if position.is_negative() {
+        if let Some(i) = position.abs().to_usize() {
           if i <= items.as_vec().len() {
             items.insert(items.len() - i, new_item.clone());
             return Value::List(items);
@@ -432,7 +433,7 @@ pub fn insert_before(list: &Value, position: &Value, new_item: &Value) -> Value 
       }
     }
   }
-  value_null!("probably index is out of range")
+  value_null!("index is out of range")
 }
 
 /// ???
@@ -1065,7 +1066,7 @@ pub fn substring(input_string_value: &Value, start_position_value: &Value, lengt
           if *length < FeelNumber::one() {
             return value_null!();
           }
-          let count = if let Some(length_usize) = length.to_usize() {
+          let count = if let Some(length_usize) = length.trunc().to_usize() {
             length_usize
           } else {
             return value_null!("length is out of range of usize '{}'", length.to_string());

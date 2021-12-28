@@ -66,7 +66,7 @@ fn test_name() {
         fr**n*s:1.26,
         wh*t*v*r:1.27}"#,
   );
-  te_number(false, scope, "thing", 2, 0);
+  te_number(false, scope, "thing", 20, 1);
   te_bool(false, scope, "one two three four", true);
   te_null(false, scope, "one and two", "");
   te_string(false, scope, "one or two", "found");

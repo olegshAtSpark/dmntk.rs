@@ -530,7 +530,7 @@ fn build_filter(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
           Value::Number(index) => {
             if index.is_integer() {
               let list_size = values.as_vec().len();
-              if index.is_positive() {
+              if !index.is_negative() {
                 let n = {
                   if let Ok(u_index) = usize::try_from(index) {
                     u_index

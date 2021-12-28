@@ -39,17 +39,17 @@ lazy_static! {
 #[test]
 fn _0001() {
   let ctx = context(r#"{loan: {principal: 600000,rate: 0.0375,termMonths: 360}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2778.6935494327667680885203832"#);
+  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2778.693549432766768088520383236299"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{loan: {principal: 30000,rate: 0.0475,termMonths: 60}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"562.70735937326592715621433136"#);
+  assert_decision(&DEFINITIONS, "payment", &ctx, r#"562.7073593732659271562143285576524"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{loan: {principal: 600000,rate: 0.0399,termMonths: 360}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2861.03377700390163671626278"#);
+  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2861.033777003901636716262779605767"#);
 }

@@ -39,17 +39,17 @@ lazy_static! {
 #[test]
 fn _0001() {
   let ctx = context(r#"{Principal: 600000,Term: 360}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2878.6935494327667680885203832"#);
+  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2878.693549432766768088520383236299"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Principal: 30000,Term: 60}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"649.11754983640029349270001464"#);
+  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"649.117549836400293492700014885945"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Principal: 600000,Term: 365}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2858.1160998965914008714188932"#);
+  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2858.116099896591400871418893289041"#);
 }

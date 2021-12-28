@@ -86,16 +86,6 @@ fn test_date() {
 }
 
 #[test]
-fn test_decimal() {
-  let scope = &te_scope("{}");
-  te_number(false, scope, "decimal(1,2)", 100, 2);
-  te_number(false, scope, "decimal(1/3,2)", 330, 3);
-  te_number(false, scope, "decimal(1/3, 2.5)", 330, 3);
-  te_number(false, scope, "decimal(0.505,2)", 50, 2);
-  te_number(false, scope, "decimal(0.515,2)", 52, 2);
-}
-
-#[test]
 fn test_duration() {
   let scope = &te_scope("{}");
   te_years_and_months_duration(false, scope, r#"duration("P1Y")"#, 1, 0);
@@ -124,55 +114,6 @@ fn test_duration() {
 }
 
 #[test]
-fn test_even() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "even(2)", true);
-  te_bool(false, scope, "even(1)", false);
-  te_bool(false, scope, "even(-2)", true);
-  te_bool(false, scope, "even(-1)", false);
-  te_bool(false, scope, "even(0)", true);
-  te_bool(false, scope, "even(0.0)", true);
-  te_null(false, scope, "even()", "expected 1 parameters, actual number of parameters is 0");
-  te_null(false, scope, "even(4,4)", "expected 1 parameters, actual number of parameters is 2");
-  te_bool(false, scope, "even(number:4)", true);
-  te_null(false, scope, "even(n:4)", r#"parameter 'number' not found"#);
-  te_null(false, scope, "even(null)", "even");
-  te_null(false, scope, r#"even("4")"#, "even");
-  te_null(false, scope, "even(true)", "even");
-  te_null(false, scope, "even(false)", "even");
-  te_null(false, scope, r#"even(duration("P4D"))"#, "even");
-  te_null(false, scope, r#"even(duration("P4Y"))"#, "even");
-  te_null(false, scope, r#"even(date("2018-12-06"))"#, "even");
-  te_null(false, scope, r#"even(time("00:00:00"))"#, "even");
-  te_null(false, scope, r#"even(date and time("2018-12-06T00:00:00"))"#, "even");
-  te_bool(false, scope, "even(2.35)", false);
-  te_bool(false, scope, "even(-2.35)", false);
-  te_bool(false, scope, "even(1.78)", false);
-  te_bool(false, scope, "even(-1.78)", false);
-}
-
-#[test]
-fn test_exp() {
-  let scope = &te_scope("{}");
-  te_be_value(false, scope, "exp(5)", r#"148.41315910257659993476408995"#);
-  te_be_value(false, scope, "exp(4)", r#"54.5981500331442362039524596"#);
-  te_be_value(false, scope, "exp(-1)", r#"0.3678794411714423340242774428"#);
-  te_be_value(false, scope, "exp(0)", r#"1"#);
-  te_be_value(false, scope, "exp(number:4)", r#"54.5981500331442362039524596"#);
-  te_null(false, scope, "exp(n:4)", r#"parameter 'number' not found"#);
-  te_null(false, scope, "exp()", "expected 1 parameters, actual number of parameters is 0");
-  // te_null(false, scope, "exp(4,4)", "");
-  // te_null(false, scope, "exp(null)", "");
-  // te_null(false, scope, r#"exp("4")"#, "");
-  // te_null(false, scope, "exp(true)", "");
-  // te_null(false, scope, r#"exp(duration("P4D"))"#, "");
-  // te_null(false, scope, r#"exp(duration("P4Y"))"#, "");
-  // te_null(false, scope, r#"exp(date("2018-12-06"))"#, "");
-  // te_null(false, scope, r#"exp(time("00:00:00"))"#, "");
-  // te_null(false, scope, r#"exp(date and time("2018-12-06T00:00:00"))"#, "");
-}
-
-#[test]
 fn test_flatten() {
   let scope = &te_scope("{}");
   te_be_value(false, scope, r#"flatten([["w","x"],["y"],["z"]])"#, r#"["w","x","y","z"]"#);
@@ -197,7 +138,13 @@ fn test_floor() {
 fn test_insert_before() {
   let scope = &te_scope(r#"{}"#);
   te_be_value(false, scope, r#"insert before([2,3,4,5],1,1)"#, r#"[1,2,3,4,5]"#);
+  te_be_value(false, scope, r#"insert before([1,2,3,5],4,4)"#, r#"[1,2,3,4,5]"#);
+  te_null(false, scope, r#"insert before([2,3,4,5],0,1)"#, "index is out of range");
+  te_null(false, scope, r#"insert before([2,3,4,5],5,1)"#, "index is out of range");
   te_be_value(false, scope, r#"insert before([1,2,3,5],-1,4)"#, r#"[1,2,3,4,5]"#);
+  te_be_value(false, scope, r#"insert before([2,3,4,5],-4,1)"#, r#"[1,2,3,4,5]"#);
+  te_null(false, scope, r#"insert before([1,2,3,5],0,4)"#, "index is out of range");
+  te_null(false, scope, r#"insert before([1,2,3,5],-5,4)"#, "index is out of range");
 }
 
 #[test]
@@ -216,30 +163,6 @@ fn test_join() {
     r#"DeptTable[number=EmployeeTable[name=LastName].deptNum[1]].manager[1]"#,
     r#""Smith""#,
   );
-}
-
-#[test]
-fn test_log() {
-  let scope = &te_scope("{}");
-  te_be_value(false, scope, "log(4)", r#"1.3862943611198905724535279656"#);
-  te_null(false, scope, "log(-1)", "");
-  te_null(false, scope, "log(0)", "");
-  te_null(false, scope, "log(0.0)", "");
-  te_null(false, scope, "log()", "expected 1 parameters, actual number of parameters is 0");
-  te_null(false, scope, "log(4,4)", "expected 1 parameters, actual number of parameters is 2");
-  te_be_value(false, scope, "log(number:4)", r#"1.3862943611198905724535279656"#);
-  te_null(false, scope, "log(n:4)", r#"parameter 'number' not found"#);
-  te_null(false, scope, "log(null)", "");
-  te_null(false, scope, r#"log("4")"#, "");
-  te_null(false, scope, "log(true)", "");
-  te_null(false, scope, "log(false)", "");
-  te_null(false, scope, r#"log(duration("P4D"))"#, "");
-  te_null(false, scope, r#"log(duration("P4Y"))"#, "");
-  te_null(false, scope, r#"log(date("2018-12-06"))"#, "");
-  te_null(false, scope, r#"log(time("00:00:00"))"#, "");
-  te_null(false, scope, r#"log(date and time("2018-12-06T00:00:00"))"#, "");
-  te_be_value(false, scope, "log(10)", r#"2.3025850929940459010936137922"#);
-  te_number(false, scope, "decimal(log(10),4)", 23026, 4);
 }
 
 #[test]
@@ -504,12 +427,12 @@ fn test_sqrt() {
 #[test]
 fn test_stddev() {
   let scope = &te_scope("{}");
-  te_be_value(false, scope, r#"stddev(2,4,7,5)"#, r#"2.081665999466132735282297707"#);
+  te_be_value(false, scope, r#"stddev(2,4,7,5)"#, r#"2.081665999466132735282297706979931"#);
   te_number(false, scope, r#"decimal(stddev(2,4,7,5),13)"#, 20816659994661, 13);
   te_number(false, scope, r#"decimal(stddev(2,4,7,5),9)"#, 2081665999, 9);
-  te_be_value(false, scope, r#"stddev([2,4,7,5])"#, r#"2.081665999466132735282297707"#);
-  te_be_value(false, scope, r#"stddev(list:[2,4,7,5])"#, r#"2.081665999466132735282297707"#);
-  te_be_value(false, scope, r#"stddev(5,6,8,9)"#, r#"1.8257418583505537115232326094"#);
+  te_be_value(false, scope, r#"stddev([2,4,7,5])"#, r#"2.081665999466132735282297706979931"#);
+  te_be_value(false, scope, r#"stddev(list:[2,4,7,5])"#, r#"2.081665999466132735282297706979931"#);
+  te_be_value(false, scope, r#"stddev(5,6,8,9)"#, r#"1.825741858350553711523232609336007"#);
 }
 
 #[test]

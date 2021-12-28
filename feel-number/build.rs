@@ -36,6 +36,7 @@ fn main() {
   cc::Build::new()
     .define("DECLITEND", Some(target_endian))
     .flag_if_supported("-Wno-unused-value")
+    .flag_if_supported("-Wno-array-bounds")
     .file("decnumber/decimal128.c")
     .file("decnumber/decimal64.c")
     .file("decnumber/decContext.c")

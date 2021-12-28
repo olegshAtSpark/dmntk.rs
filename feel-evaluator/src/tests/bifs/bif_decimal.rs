@@ -30,26 +30,46 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
-
-lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0005, "file: ///3_0005.dmn").unwrap();
-}
+use super::super::*;
 
 #[test]
 fn _0001() {
-  let ctx = context(r#"{Loan: {amount: 600000,rate: 0.0375,term: 360},fee: 100}"#);
-  assert_decision(&DEFINITIONS, "MonthlyPayment", &ctx, r#"2878.693549432766768088520383236299"#);
+  let scope = &te_scope("{}");
+  te_number(false, scope, "decimal(1,2)", 100, 2);
 }
 
 #[test]
 fn _0002() {
-  let ctx = context(r#"{Loan: {amount: 30000,rate: 0.0475,term: 60},fee: 100}"#);
-  assert_decision(&DEFINITIONS, "MonthlyPayment", &ctx, r#"662.7073593732659271562143285576524"#);
+  let scope = &te_scope("{}");
+  te_number(false, scope, "decimal(1/3,2)", 330, 3);
 }
 
 #[test]
 fn _0003() {
-  let ctx = context(r#"{Loan: {amount: 600000,rate: 0.0399,term: 360},fee: 100}"#);
-  assert_decision(&DEFINITIONS, "MonthlyPayment", &ctx, r#"2961.033777003901636716262779605767"#);
+  let scope = &te_scope("{}");
+  te_number(false, scope, "decimal(0.505,2)", 50, 2);
+}
+
+#[test]
+fn _0004() {
+  let scope = &te_scope("{}");
+  te_number(false, scope, "decimal(0.515,2)", 52, 2);
+}
+
+#[test]
+fn _0005() {
+  let scope = &te_scope("{}");
+  te_number(false, scope, "decimal(1/3, 2.5)", 33, 2);
+}
+
+#[test]
+fn _0006() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "decimal(1/3, 6177)", "decimal: scale is out of range");
+}
+
+#[test]
+fn _0007() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "decimal(1/3, -6112)", "decimal: scale is out of range");
 }

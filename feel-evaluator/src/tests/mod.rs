@@ -130,7 +130,7 @@ pub fn te_scope(input: &str) -> Scope {
 }
 
 /// Utility function that tests evaluation of numeric values.
-pub fn te_number(trace: bool, scope: &Scope, s: &str, num: i128, scale: u32) {
+pub fn te_number(trace: bool, scope: &Scope, s: &str, num: i128, scale: i32) {
   textual_expression(trace, scope, s, Value::Number(FeelNumber::new(num, scale)));
 }
 

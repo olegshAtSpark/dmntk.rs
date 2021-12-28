@@ -30,137 +30,118 @@
  * limitations under the License.
  */
 
-use super::*;
+use super::super::*;
 
 #[test]
-fn test_0001() {
+fn _0001() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**0", 1, 0);
+  te_be_value(false, scope, "log(4)", r#"1.386294361119890618834464242916353"#);
 }
 
 #[test]
-fn test_0002() {
+fn _0002() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1**1", 1, 0);
+  te_null(false, scope, "log(-1)", "");
 }
 
 #[test]
-fn test_0003() {
+fn _0003() {
   let scope = &te_scope("{}");
-  te_number(false, scope, " 1 ** 2 ", 1, 0);
+  te_null(false, scope, "log(0)", "");
 }
 
 #[test]
-fn test_0004() {
+fn _0004() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** 2", 9, 0);
+  te_null(false, scope, "log(0.0)", "");
 }
 
 #[test]
-fn test_0005() {
+fn _0005() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "-3 ** 2", 9, 0);
+  te_null(false, scope, "log()", "expected 1 parameters, actual number of parameters is 0");
 }
 
 #[test]
-fn test_0006() {
+fn _0006() {
   let scope = &te_scope("{}");
-  te_number(false, scope, " 5 **2** 3 ", 15625, 0);
+  te_null(false, scope, "log(4,4)", "expected 1 parameters, actual number of parameters is 2");
 }
 
 #[test]
-fn test_0007() {
+fn _0007() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "10**2**-2", 1, 4);
+  te_be_value(false, scope, "log(number:4)", r#"1.386294361119890618834464242916353"#);
 }
 
 #[test]
-fn test_0008() {
+fn _0008() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "( 1 ** 2 ) ** ( 3 ** 4 )", 1, 0);
+  te_null(false, scope, "log(n:4)", r#"parameter 'number' not found"#);
 }
 
 #[test]
-fn test_0009() {
+fn _0009() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "( ( ( 4 ** 3 ) ) )", 64, 0);
+  te_null(false, scope, "log(null)", "");
 }
 
 #[test]
-fn test_0010() {
+fn _0010() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**(2+3)", 32, 0);
+  te_null(false, scope, r#"log("4")"#, "");
 }
 
 #[test]
-fn test_0011() {
+fn _0011() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**2+3", 7, 0);
+  te_null(false, scope, "log(true)", "");
 }
 
 #[test]
-fn test_0012() {
+fn _0012() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1 + 3/2*2 - 2**3", -4, 0);
+  te_null(false, scope, "log(false)", "");
 }
 
 #[test]
-fn test_0013() {
+fn _0013() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1+3/2*2-2**3", -4, 0);
+  te_null(false, scope, r#"log(duration("P4D"))"#, "");
 }
 
 #[test]
-fn test_0014() {
+fn _0014() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** 4 ** 5", 3486784401, 0);
+  te_null(false, scope, r#"log(duration("P4Y"))"#, "");
 }
 
 #[test]
-fn test_0015() {
+fn _0015() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** (4 ** 5)", 3733918487410200435329597541848666, -455);
-  //te_null(false, scope, "3 ** (4 ** 5)", r#"exponentiation result is not a finite number"#);
+  te_null(false, scope, r#"log(date("2018-12-06"))"#, "");
 }
 
 #[test]
-fn test_0016() {
+fn _0016() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#""foo" ** 4"#, r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"log(time("00:00:00"))"#, "");
 }
 
 #[test]
-fn test_0017() {
+fn _0017() {
   let scope = &te_scope("{}");
-  te_null(false, scope, "true ** 4", r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"log(date and time("2018-12-06T00:00:00"))"#, "");
 }
 
 #[test]
-fn test_0018() {
+fn _0018() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"date("2018-12-10") ** 4"#, r#"exponentiation base is not a number"#);
+  te_be_value(false, scope, "log(10)", r#"2.302585092994045684017991454684364"#);
 }
 
 #[test]
-fn test_0019() {
+fn _0019() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"time("10:30:00") ** 4"#, r#"exponentiation base is not a number"#);
-}
-
-#[test]
-fn test_0020() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, r#"date and time("2018-12-10") ** 4"#, r#"exponentiation base is not a number"#);
-}
-
-#[test]
-fn test_0021() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, r#"duration("P2Y") ** 4"#, r#"exponentiation base is not a number"#);
-}
-
-#[test]
-fn test_0022() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, r#"4 ** "foo""#, r#"exponentiation exponent is not a number"#);
+  te_number(false, scope, "decimal(log(10),4)", 23026, 4);
 }

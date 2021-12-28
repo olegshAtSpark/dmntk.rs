@@ -39,7 +39,7 @@ lazy_static! {
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"1.3862943611198905724535279656"#);
+  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"1.386294361119890618834464242916353"#);
 }
 
 #[test]
@@ -79,7 +79,7 @@ fn _0005() {
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision006", &ctx, r#"1.3862943611198905724535279656"#);
+  assert_decision(&DEFINITIONS, "decision006", &ctx, r#"1.386294361119890618834464242916353"#);
 }
 
 #[test]

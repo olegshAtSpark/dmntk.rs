@@ -33,10 +33,9 @@
 //! `FEEL` number type.
 
 use crate::dec::*;
-use crate::number::errors::{err_invalid_number_literal, err_number_conversion_failed};
+use crate::number::errors::*;
 use dmntk_common::{DmntkError, Jsonify};
 use std::cmp::Ordering;
-use std::fmt::{Debug, Formatter};
 use std::str::FromStr;
 
 macro_rules! from_feel_number_into {
@@ -63,11 +62,8 @@ pub struct FeelNumber(DecQuad);
 
 impl FeelNumber {
   /// Creates a new [FeelNumber] from integer value and scale.
-  pub fn new(n: i128, s: u32) -> Self {
-    Self(dec_reduce(&dec_scale_b(
-      &dec_from_string(&format!("{}", n)),
-      &dec_from_string(&format!("{}", -(s as i64))),
-    )))
+  pub fn new(n: i128, s: i32) -> Self {
+    Self(dec_scale_b(&dec_from_string(&format!("{}", n)), &dec_from_string(&format!("{}", -s))))
   }
   /// Creates a new [FeelNumber] from [isize].
   pub fn from_isize(n: isize) -> Self {
@@ -111,7 +107,7 @@ impl FeelNumber {
   }
   ///
   pub fn even(&self) -> bool {
-    dec_is_integer(&self.0) && dec_is_zero(&dec_remainder(&self.0, &DEC_TWO))
+    dec_is_zero(&dec_remainder(&self.0, &DEC_TWO))
   }
   ///
   pub fn exp(&self) -> Self {
@@ -131,7 +127,7 @@ impl FeelNumber {
   }
   ///
   pub fn is_one(&self) -> bool {
-    dec_is_zero(&dec_compare_total(&self.0, &DEC_ONE))
+    dec_is_zero(&dec_compare(&self.0, &DEC_ONE))
   }
   ///
   pub fn is_negative(&self) -> bool {
@@ -207,33 +203,38 @@ impl FeelNumber {
   }
 }
 
-impl Debug for FeelNumber {
-  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}", self)
+impl std::fmt::Debug for FeelNumber {
+  ///
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    if let Some(s) = dec_to_string(&dec_reduce(&self.0)) {
+      write!(f, "{}", s)
+    } else {
+      write!(f, "[None]")
+    }
   }
 }
 
 impl PartialEq<FeelNumber> for FeelNumber {
   fn eq(&self, rhs: &Self) -> bool {
-    dec_is_zero(&dec_compare_total(&self.0, &rhs.0))
+    dec_is_zero(&dec_compare(&self.0, &rhs.0))
   }
 }
 
 impl PartialEq<FeelNumber> for isize {
   fn eq(&self, rhs: &FeelNumber) -> bool {
-    dec_is_zero(&dec_compare_total(&FeelNumber::from_isize(*self).0, &rhs.0))
+    dec_is_zero(&dec_compare(&FeelNumber::from_isize(*self).0, &rhs.0))
   }
 }
 
 impl PartialEq<isize> for FeelNumber {
   fn eq(&self, rhs: &isize) -> bool {
-    dec_is_zero(&dec_compare_total(&self.0, &FeelNumber::from_isize(*rhs).0))
+    dec_is_zero(&dec_compare(&self.0, &FeelNumber::from_isize(*rhs).0))
   }
 }
 
 impl PartialOrd<FeelNumber> for FeelNumber {
   fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
-    let flag = dec_compare_total(&self.0, &rhs.0);
+    let flag = dec_compare(&self.0, &rhs.0);
     if dec_is_zero(&flag) {
       return Some(Ordering::Equal);
     }
@@ -246,7 +247,7 @@ impl PartialOrd<FeelNumber> for FeelNumber {
 
 impl PartialOrd<FeelNumber> for isize {
   fn partial_cmp(&self, rhs: &FeelNumber) -> Option<Ordering> {
-    let flag = dec_compare_total(&FeelNumber::from_isize(*self).0, &rhs.0);
+    let flag = dec_compare(&FeelNumber::from_isize(*self).0, &rhs.0);
     if dec_is_zero(&flag) {
       return Some(Ordering::Equal);
     }
@@ -259,7 +260,7 @@ impl PartialOrd<FeelNumber> for isize {
 
 impl PartialOrd<isize> for FeelNumber {
   fn partial_cmp(&self, rhs: &isize) -> Option<Ordering> {
-    let flag = dec_compare_total(&self.0, &FeelNumber::from_isize(*rhs).0);
+    let flag = dec_compare(&self.0, &FeelNumber::from_isize(*rhs).0);
     if dec_is_zero(&flag) {
       return Some(Ordering::Equal);
     }
@@ -565,11 +566,12 @@ mod tests {
     assert_eq!("2", FeelNumber::new(15, 1).ceiling().to_string());
     assert_eq!("-1", FeelNumber::new(-15, 1).ceiling().to_string());
     assert_eq!("1", FeelNumber::new(3333, 4).ceiling().to_string());
-    assert_eq!("-0", FeelNumber::new(-3333, 4).ceiling().to_string());
+    assert_eq!("0", FeelNumber::new(-3333, 4).ceiling().to_string());
   }
 
   #[test]
   fn test_comparison() {
+    assert_eq!(FeelNumber::new(120000, 0), FeelNumber::from_i128(120000));
     assert!(!(FeelNumber::from_i128(0) > FeelNumber::from_i128(0)));
     assert!((FeelNumber::from_i128(0) >= FeelNumber::from_i128(0)));
     assert!((FeelNumber::new(123456, 2) > FeelNumber::new(123456, 3)));

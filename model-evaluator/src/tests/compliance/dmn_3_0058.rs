@@ -61,7 +61,7 @@ fn _0004() {
     &DEFINITIONS,
     "decision003_a",
     &ctx,
-    r#"null(number: FeelNumberError: invalid number literal `Invalid decimal: unknown character`)"#,
+    r#"null(number: FeelNumberError: invalid number literal '1,000,000.01')"#,
   );
 }
 
@@ -156,7 +156,7 @@ fn _0019() {
     &DEFINITIONS,
     "decision015",
     &ctx,
-    r#"null(number: FeelNumberError: invalid number literal `Invalid decimal: unknown character`)"#,
+    r#"null(number: FeelNumberError: invalid number literal 'foo.bar001')"#,
   );
 }
 

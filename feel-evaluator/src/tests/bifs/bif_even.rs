@@ -30,137 +30,160 @@
  * limitations under the License.
  */
 
-use super::*;
+use super::super::*;
 
 #[test]
-fn test_0001() {
+fn _0001() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**0", 1, 0);
+  te_bool(false, scope, "even(0)", true);
 }
 
 #[test]
-fn test_0002() {
+fn _0002() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1**1", 1, 0);
+  te_bool(false, scope, "even(0.0)", true);
 }
 
 #[test]
-fn test_0003() {
+fn _0003() {
   let scope = &te_scope("{}");
-  te_number(false, scope, " 1 ** 2 ", 1, 0);
+  te_bool(false, scope, "even(2)", true);
 }
 
 #[test]
-fn test_0004() {
+fn _0004() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** 2", 9, 0);
+  te_bool(false, scope, "even(1)", false);
 }
 
 #[test]
-fn test_0005() {
+fn _0005() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "-3 ** 2", 9, 0);
+  te_bool(false, scope, "even(-2)", true);
 }
 
 #[test]
-fn test_0006() {
+fn _0006() {
   let scope = &te_scope("{}");
-  te_number(false, scope, " 5 **2** 3 ", 15625, 0);
+  te_bool(false, scope, "even(-1)", false);
 }
 
 #[test]
-fn test_0007() {
+fn _0007() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "10**2**-2", 1, 4);
+  te_null(false, scope, "even()", "expected 1 parameters, actual number of parameters is 0");
 }
 
 #[test]
-fn test_0008() {
+fn _0008() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "( 1 ** 2 ) ** ( 3 ** 4 )", 1, 0);
+  te_null(false, scope, "even(4,4)", "expected 1 parameters, actual number of parameters is 2");
 }
 
 #[test]
-fn test_0009() {
+fn _0009() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "( ( ( 4 ** 3 ) ) )", 64, 0);
+  te_bool(false, scope, "even(number:4)", true);
 }
 
 #[test]
-fn test_0010() {
+fn _0010() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**(2+3)", 32, 0);
+  te_null(false, scope, "even(n:4)", r#"parameter 'number' not found"#);
 }
 
 #[test]
-fn test_0011() {
+fn _0011() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "2**2+3", 7, 0);
+  te_null(false, scope, "even(null)", "even");
 }
 
 #[test]
-fn test_0012() {
+fn _0012() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1 + 3/2*2 - 2**3", -4, 0);
+  te_null(false, scope, r#"even("4")"#, "even");
 }
 
 #[test]
-fn test_0013() {
+fn _0013() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "1+3/2*2-2**3", -4, 0);
+  te_null(false, scope, "even(true)", "even");
 }
 
 #[test]
-fn test_0014() {
+fn _0014() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** 4 ** 5", 3486784401, 0);
+  te_null(false, scope, "even(false)", "even");
 }
 
 #[test]
-fn test_0015() {
+fn _0015() {
   let scope = &te_scope("{}");
-  te_number(false, scope, "3 ** (4 ** 5)", 3733918487410200435329597541848666, -455);
-  //te_null(false, scope, "3 ** (4 ** 5)", r#"exponentiation result is not a finite number"#);
+  te_null(false, scope, r#"even(duration("P4D"))"#, "even");
 }
 
 #[test]
-fn test_0016() {
+fn _0016() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#""foo" ** 4"#, r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"even(duration("P4Y"))"#, "even");
 }
 
 #[test]
-fn test_0017() {
+fn _0017() {
   let scope = &te_scope("{}");
-  te_null(false, scope, "true ** 4", r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"even(date("2018-12-06"))"#, "even");
 }
 
 #[test]
-fn test_0018() {
+fn _0018() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"date("2018-12-10") ** 4"#, r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"even(time("00:00:00"))"#, "even");
 }
 
 #[test]
-fn test_0019() {
+fn _0019() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"time("10:30:00") ** 4"#, r#"exponentiation base is not a number"#);
+  te_null(false, scope, r#"even(date and time("2018-12-06T00:00:00"))"#, "even");
 }
 
 #[test]
-fn test_0020() {
+fn _0020() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"date and time("2018-12-10") ** 4"#, r#"exponentiation base is not a number"#);
+  te_bool(false, scope, "even(2.35)", false);
 }
 
 #[test]
-fn test_0021() {
+fn _0021() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"duration("P2Y") ** 4"#, r#"exponentiation base is not a number"#);
+  te_bool(false, scope, "even(-2.35)", false);
 }
 
 #[test]
-fn test_0022() {
+fn _0022() {
   let scope = &te_scope("{}");
-  te_null(false, scope, r#"4 ** "foo""#, r#"exponentiation exponent is not a number"#);
+  te_bool(false, scope, "even(1.78)", false);
+}
+
+#[test]
+fn _0023() {
+  let scope = &te_scope("{}");
+  te_bool(false, scope, "even(-1.78)", false);
+}
+
+#[test]
+fn _0024() {
+  let scope = &te_scope("{}");
+  te_bool(false, scope, "even(2.0000)", true);
+}
+
+#[test]
+fn _0025() {
+  let scope = &te_scope("{}");
+  te_bool(false, scope, "even(-2.0000)", true);
+}
+
+#[test]
+fn _0026() {
+  let scope = &te_scope("{}");
+  te_bool(false, scope, "even(2.4)", false);
 }

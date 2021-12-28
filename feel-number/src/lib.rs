@@ -35,7 +35,7 @@ extern crate libc;
 #[macro_use]
 extern crate thiserror;
 
-mod dec;
+pub mod dec;
 mod number;
 
 pub use number::FeelNumber;

@@ -31,7 +31,7 @@
  */
 
 use lazy_static::lazy_static;
-use libc::{c_char, c_int, c_uint};
+use libc::{c_char, c_int, c_uchar, c_uint};
 use std::ffi::{CStr, CString};
 
 const DEC_INIT_DECQUAD: i32 = 128;
@@ -91,8 +91,9 @@ extern "C" {
 
   fn decQuadAbs(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *mut DecContext) -> *mut DecQuad;
   fn decQuadAdd(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
-  fn decQuadCompareTotal(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
+  fn decQuadCompare(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
   fn decQuadDivide(arg1: *mut DecQuad, arg2: *const DecQuad, arg3: *const DecQuad, arg4: *mut DecContext) -> *mut DecQuad;
+  fn decQuadFromBCD(arg1: *mut DecQuad, arg2: c_int, arg3: *const c_uchar, arg4: c_int) -> *mut DecQuad;
   fn decQuadFromString(arg1: *mut DecQuad, arg2: *const c_char, arg3: *mut DecContext) -> *mut DecQuad;
   fn decQuadFromInt32(arg1: *mut DecQuad, arg2: c_int) -> *mut DecQuad;
   fn decQuadFromUInt32(arg1: *mut DecQuad, arg2: c_uint) -> *mut DecQuad;
@@ -127,6 +128,15 @@ pub fn dec_from_string(s: &str) -> DecQuad {
   let mut value = DecQuad::default();
   unsafe {
     decQuadFromString(&mut value, c_s.as_ptr(), &mut DEFAULT_CONTEXT.clone());
+  }
+  value
+}
+
+/// Converts a BCD into decimal.
+pub fn dec_from_bcd(bcd: &[u8]) -> DecQuad {
+  let mut value = DecQuad::default();
+  unsafe {
+    decQuadFromBCD(&mut value, 0, bcd.as_ptr(), 0);
   }
   value
 }
@@ -261,10 +271,10 @@ pub fn dec_fract(q: &DecQuad) -> DecQuad {
 }
 
 ///
-pub fn dec_compare_total(q1: &DecQuad, q2: &DecQuad) -> DecQuad {
+pub fn dec_compare(q1: &DecQuad, q2: &DecQuad) -> DecQuad {
   let mut qr = DecQuad::default();
   unsafe {
-    decQuadCompareTotal(&mut qr, q1, q2, &mut DEFAULT_CONTEXT.clone());
+    decQuadCompare(&mut qr, q1, q2, &mut DEFAULT_CONTEXT.clone());
   }
   qr
 }
@@ -464,10 +474,10 @@ mod tests {
 
   #[test]
   fn test_dec_compare() {
-    assert_eq!("0", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("-0"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_compare_total(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_compare_total(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("-0"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_compare(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
   }
 
   #[test]
@@ -519,6 +529,18 @@ mod tests {
     assert_eq!("1", dec_to_string(&value).unwrap());
     let value = dec_from_string("1234a");
     assert_eq!("NaN", dec_to_string(&value).unwrap());
+  }
+
+  #[test]
+  fn test_dec_from_bcd() {
+    let value = dec_from_bcd(&[
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3,
+    ]);
+    assert_eq!("123", dec_to_string(&value).unwrap());
+    let value = dec_from_bcd(&[
+      8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+    ]);
+    assert_eq!("8999999999999999999999999999999999", dec_to_string(&value).unwrap());
   }
 
   #[test]

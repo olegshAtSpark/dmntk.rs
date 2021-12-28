@@ -71,7 +71,7 @@ fn test_0006() {
 #[test]
 fn test_0007() {
   let scope = &te_scope(r#"{}"#);
-  te_number(false, scope, "1/3", 3333333333333333333333333333, 28);
+  te_number(false, scope, "1/3", 3333333333333333333333333333333333, 34);
 }
 
 #[test]
