@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-feel-number"
-version = "0.0.41"
+ version = "0.0.42"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | FEEL number"
 documentation = "https://docs.rs/dmntk-feel-number"
@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common  = "0.0.41"
+dmntk-common    = "0.0.42"
 libc = "0.2.112"
 lazy_static = "1.4.0"
 thiserror = "1.0.30"

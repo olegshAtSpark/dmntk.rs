@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-workspace"
-version = "0.0.41"
+ version = "0.0.42"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Workspace"
 documentation = "https://docs.rs/dmntk-workspace"
@@ -9,8 +9,8 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common  = "0.0.41"
-dmntk-evaluator  = "0.0.41"
-dmntk-feel  = "0.0.41"
-dmntk-model  = "0.0.41"
+dmntk-common    = "0.0.42"
+dmntk-evaluator    = "0.0.42"
+dmntk-feel    = "0.0.42"
+dmntk-model    = "0.0.42"
 thiserror = "1.0.30"
