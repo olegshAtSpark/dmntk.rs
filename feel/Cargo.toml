@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-feel"
- version = "0.0.42"
+version = "0.0.43"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | FEEL definitions"
 documentation = "https://docs.rs/dmntk-feel"
@@ -13,8 +13,8 @@ ascii_tree = "0.1.1"
 chrono = "0.4.19"
 chrono-tz = "0.6.0"
 derivative = "2.2.0"
-dmntk-common    = "0.0.42"
-dmntk-feel-number   = "0.0.42"
+dmntk-common = "0.0.43"
+dmntk-feel-number = "0.0.43"
 lazy_static = "1.4.0"
 regex = "1.5.4"
 thiserror = "1.0.30"
