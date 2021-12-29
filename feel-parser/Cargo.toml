@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-feel-parser"
-version = "0.0.41-dev"
+version = "0.0.43-dev"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | FEEL parser"
 documentation = "https://docs.rs/dmntk-feel-parser"
