@@ -159,14 +159,13 @@ pub fn dec_from_u32(n: u32) -> DecQuad {
   qr
 }
 
-/// Converts decimal into string.
-pub fn dec_to_string(q: &DecQuad) -> Option<String> {
-  let c_s = unsafe {
+/// Converts [DEcQuad] into [String].
+pub fn dec_to_string(q: &DecQuad) -> String {
+  unsafe {
     let mut buf = DEC_QUAD_STRING_BUFFER;
     decQuadToString(q, buf.as_mut_ptr() as *mut c_char);
-    CStr::from_ptr(buf.as_ptr() as *const c_char)
-  };
-  c_s.to_str().map_or(None, |s| Some(s.to_string()))
+    CStr::from_ptr(buf.as_ptr() as *const c_char).to_string_lossy().into_owned()
+  }
 }
 
 /// Calculates the square root.
@@ -431,33 +430,27 @@ mod tests {
 
   #[test]
   fn test_dec_abs() {
-    assert_eq!("0", dec_to_string(&dec_abs(&dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_abs(&dec_from_string("-0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_abs(&dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_abs(&dec_from_string("-1"))).unwrap());
-    assert_eq!(
-      "12.29308753409583475",
-      dec_to_string(&dec_abs(&dec_from_string("12.29308753409583475"))).unwrap()
-    );
-    assert_eq!(
-      "12.29308753409583475",
-      dec_to_string(&dec_abs(&dec_from_string("-12.29308753409583475"))).unwrap()
-    );
+    assert_eq!("0", dec_to_string(&dec_abs(&dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_abs(&dec_from_string("-0"))));
+    assert_eq!("1", dec_to_string(&dec_abs(&dec_from_string("1"))));
+    assert_eq!("1", dec_to_string(&dec_abs(&dec_from_string("-1"))));
+    assert_eq!("12.29308753409583475", dec_to_string(&dec_abs(&dec_from_string("12.29308753409583475"))));
+    assert_eq!("12.29308753409583475", dec_to_string(&dec_abs(&dec_from_string("-12.29308753409583475"))));
   }
 
   #[test]
   fn test_dec_add() {
-    assert_eq!("0", dec_to_string(&dec_add(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_add(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_add(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
-    assert_eq!("2", dec_to_string(&dec_add(&dec_from_string("1"), &dec_from_string("1"))).unwrap());
-    assert_eq!("0.3", dec_to_string(&dec_add(&dec_from_string("0.1"), &dec_from_string("0.2"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_add(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("1", dec_to_string(&dec_add(&dec_from_string("0"), &dec_from_string("1"))));
+    assert_eq!("1", dec_to_string(&dec_add(&dec_from_string("1"), &dec_from_string("0"))));
+    assert_eq!("2", dec_to_string(&dec_add(&dec_from_string("1"), &dec_from_string("1"))));
+    assert_eq!("0.3", dec_to_string(&dec_add(&dec_from_string("0.1"), &dec_from_string("0.2"))));
   }
 
   #[test]
   fn test_dec_ceiling() {
-    assert_eq!("2", dec_to_string(&dec_ceiling(&dec_from_string("1.5"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_ceiling(&dec_from_string("-1.5"))).unwrap());
+    assert_eq!("2", dec_to_string(&dec_ceiling(&dec_from_string("1.5"))));
+    assert_eq!("-1", dec_to_string(&dec_ceiling(&dec_from_string("-1.5"))));
   }
 
   #[test]
@@ -474,61 +467,61 @@ mod tests {
 
   #[test]
   fn test_dec_compare() {
-    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("-0"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_compare(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("-0"))));
+    assert_eq!("-1", dec_to_string(&dec_compare(&dec_from_string("0"), &dec_from_string("1"))));
+    assert_eq!("1", dec_to_string(&dec_compare(&dec_from_string("1"), &dec_from_string("0"))));
   }
 
   #[test]
   fn test_dec_divide() {
-    assert_eq!("NaN", dec_to_string(&dec_divide(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("3", dec_to_string(&dec_divide(&dec_from_string("6"), &dec_from_string("2"))).unwrap());
+    assert_eq!("NaN", dec_to_string(&dec_divide(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("3", dec_to_string(&dec_divide(&dec_from_string("6"), &dec_from_string("2"))));
     assert_eq!(
       "0.3333333333333333333333333333333333",
-      dec_to_string(&dec_divide(&dec_from_string("1"), &dec_from_string("3"))).unwrap()
+      dec_to_string(&dec_divide(&dec_from_string("1"), &dec_from_string("3")))
     );
   }
 
   #[test]
   fn test_dec_exp() {
-    assert_eq!("1", dec_to_string(&dec_exp(&dec_from_string("0"))).unwrap());
-    assert_eq!("2.718281828459045235360287471352662", dec_to_string(&dec_exp(&dec_from_string("1"))).unwrap());
-    assert_eq!("54.59815003314423907811026120286088", dec_to_string(&dec_exp(&dec_from_string("4"))).unwrap());
-    assert_eq!("148.4131591025766034211155800405523", dec_to_string(&dec_exp(&dec_from_string("5"))).unwrap());
-    assert_eq!("162754.7914190039208080052048984868", dec_to_string(&dec_exp(&dec_from_string("12"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_exp(&dec_from_string("0"))));
+    assert_eq!("2.718281828459045235360287471352662", dec_to_string(&dec_exp(&dec_from_string("1"))));
+    assert_eq!("54.59815003314423907811026120286088", dec_to_string(&dec_exp(&dec_from_string("4"))));
+    assert_eq!("148.4131591025766034211155800405523", dec_to_string(&dec_exp(&dec_from_string("5"))));
+    assert_eq!("162754.7914190039208080052048984868", dec_to_string(&dec_exp(&dec_from_string("12"))));
   }
 
   #[test]
   fn test_dec_from_i32() {
-    assert_eq!("-1", dec_to_string(&dec_from_i32(-1)).unwrap());
-    assert_eq!("0", dec_to_string(&dec_from_i32(-0)).unwrap());
-    assert_eq!("0", dec_to_string(&dec_from_i32(0)).unwrap());
-    assert_eq!("1", dec_to_string(&dec_from_i32(1)).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_from_i32(-1)));
+    assert_eq!("0", dec_to_string(&dec_from_i32(-0)));
+    assert_eq!("0", dec_to_string(&dec_from_i32(0)));
+    assert_eq!("1", dec_to_string(&dec_from_i32(1)));
   }
 
   #[test]
   fn test_dec_from_u32() {
-    assert_eq!("0", dec_to_string(&dec_from_u32(0)).unwrap());
-    assert_eq!("1", dec_to_string(&dec_from_u32(1)).unwrap());
+    assert_eq!("0", dec_to_string(&dec_from_u32(0)));
+    assert_eq!("1", dec_to_string(&dec_from_u32(1)));
   }
 
   #[test]
   fn test_dec_floor() {
-    assert_eq!("1", dec_to_string(&dec_floor(&dec_from_string("1.5"))).unwrap());
-    assert_eq!("-2", dec_to_string(&dec_floor(&dec_from_string("-1.5"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_floor(&dec_from_string("1.5"))));
+    assert_eq!("-2", dec_to_string(&dec_floor(&dec_from_string("-1.5"))));
   }
 
   #[test]
   fn test_dec_from_string() {
     let value = dec_from_string("0");
     assert_eq!([0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x08, 0x22], value.0);
-    assert_eq!("0", dec_to_string(&value).unwrap());
+    assert_eq!("0", dec_to_string(&value));
     let value = dec_from_string("1");
     assert_eq!([0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x08, 0x22], value.0);
-    assert_eq!("1", dec_to_string(&value).unwrap());
+    assert_eq!("1", dec_to_string(&value));
     let value = dec_from_string("1234a");
-    assert_eq!("NaN", dec_to_string(&value).unwrap());
+    assert_eq!("NaN", dec_to_string(&value));
   }
 
   #[test]
@@ -536,11 +529,11 @@ mod tests {
     let value = dec_from_bcd(&[
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3,
     ]);
-    assert_eq!("123", dec_to_string(&value).unwrap());
+    assert_eq!("123", dec_to_string(&value));
     let value = dec_from_bcd(&[
       8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     ]);
-    assert_eq!("8999999999999999999999999999999999", dec_to_string(&value).unwrap());
+    assert_eq!("8999999999999999999999999999999999", dec_to_string(&value));
   }
 
   #[test]
@@ -599,100 +592,82 @@ mod tests {
 
   #[test]
   fn test_dec_ln() {
-    assert_eq!("NaN", dec_to_string(&dec_ln(&dec_from_string("-1"))).unwrap());
-    assert_eq!("-Infinity", dec_to_string(&dec_ln(&dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_ln(&dec_from_string("1"))).unwrap());
-    assert_eq!("1.386294361119890618834464242916353", dec_to_string(&dec_ln(&dec_from_string("4"))).unwrap());
-    assert_eq!("2.302585092994045684017991454684364", dec_to_string(&dec_ln(&dec_from_string("10"))).unwrap());
+    assert_eq!("NaN", dec_to_string(&dec_ln(&dec_from_string("-1"))));
+    assert_eq!("-Infinity", dec_to_string(&dec_ln(&dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_ln(&dec_from_string("1"))));
+    assert_eq!("1.386294361119890618834464242916353", dec_to_string(&dec_ln(&dec_from_string("4"))));
+    assert_eq!("2.302585092994045684017991454684364", dec_to_string(&dec_ln(&dec_from_string("10"))));
   }
 
   #[test]
   fn test_dec_multiply() {
-    assert_eq!("0", dec_to_string(&dec_multiply(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_multiply(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
-    assert_eq!("2", dec_to_string(&dec_multiply(&dec_from_string("1"), &dec_from_string("2"))).unwrap());
-    assert_eq!(
-      "3.0135",
-      dec_to_string(&dec_multiply(&dec_from_string("1.23"), &dec_from_string("2.45"))).unwrap()
-    );
+    assert_eq!("0", dec_to_string(&dec_multiply(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_multiply(&dec_from_string("1"), &dec_from_string("0"))));
+    assert_eq!("2", dec_to_string(&dec_multiply(&dec_from_string("1"), &dec_from_string("2"))));
+    assert_eq!("3.0135", dec_to_string(&dec_multiply(&dec_from_string("1.23"), &dec_from_string("2.45"))));
   }
 
   #[test]
   fn test_dec_neg() {
-    assert_eq!("-1.23", dec_to_string(&dec_minus(&dec_from_string("1.23"))).unwrap());
-    assert_eq!("1.23", dec_to_string(&dec_minus(&dec_from_string("-1.23"))).unwrap());
+    assert_eq!("-1.23", dec_to_string(&dec_minus(&dec_from_string("1.23"))));
+    assert_eq!("1.23", dec_to_string(&dec_minus(&dec_from_string("-1.23"))));
   }
 
   #[test]
   fn test_dec_power() {
-    assert_eq!("NaN", dec_to_string(&dec_power(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_power(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
-    assert_eq!("8", dec_to_string(&dec_power(&dec_from_string("2"), &dec_from_string("3"))).unwrap());
+    assert_eq!("NaN", dec_to_string(&dec_power(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("1", dec_to_string(&dec_power(&dec_from_string("1"), &dec_from_string("0"))));
+    assert_eq!("8", dec_to_string(&dec_power(&dec_from_string("2"), &dec_from_string("3"))));
     assert_eq!(
       "41959.85737359436186095331070746801",
-      dec_to_string(&dec_power(&dec_from_string("12.2384283"), &dec_from_string("4.25"))).unwrap()
+      dec_to_string(&dec_power(&dec_from_string("12.2384283"), &dec_from_string("4.25")))
     );
-    assert_eq!("0.001953125", dec_to_string(&dec_power(&dec_from_string("8"), &dec_from_string("-3"))).unwrap());
+    assert_eq!("0.001953125", dec_to_string(&dec_power(&dec_from_string("8"), &dec_from_string("-3"))));
   }
 
   #[test]
   fn test_dec_reduce() {
-    assert_eq!("1.23", dec_to_string(&dec_reduce(&dec_from_string("1.23000"))).unwrap());
+    assert_eq!("1.23", dec_to_string(&dec_reduce(&dec_from_string("1.23000"))));
   }
 
   #[test]
   fn test_dec_remainder() {
-    assert_eq!("1", dec_to_string(&dec_remainder(&dec_from_string("3"), &dec_from_string("2"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_remainder(&dec_from_string("4"), &dec_from_string("2"))).unwrap());
-    assert_eq!("1.5", dec_to_string(&dec_remainder(&dec_from_string("7.5"), &dec_from_string("2"))).unwrap());
+    assert_eq!("1", dec_to_string(&dec_remainder(&dec_from_string("3"), &dec_from_string("2"))));
+    assert_eq!("0", dec_to_string(&dec_remainder(&dec_from_string("4"), &dec_from_string("2"))));
+    assert_eq!("1.5", dec_to_string(&dec_remainder(&dec_from_string("7.5"), &dec_from_string("2"))));
   }
 
   #[test]
   fn test_dec_rescale() {
-    assert_eq!(
-      "123.46",
-      dec_to_string(&dec_rescale(&dec_from_string("123.4567"), &dec_from_string("-2"))).unwrap()
-    );
-    assert_eq!(
-      "123.45",
-      dec_to_string(&dec_rescale(&dec_from_string("123.4547"), &dec_from_string("-2"))).unwrap()
-    );
-    assert_eq!(
-      "1E+2",
-      dec_to_string(&dec_rescale(&dec_from_string("123.4567"), &dec_from_string("2"))).unwrap()
-    );
-    assert_eq!(
-      "2E+2",
-      dec_to_string(&dec_rescale(&dec_from_string("163.4567"), &dec_from_string("2"))).unwrap()
-    );
+    assert_eq!("123.46", dec_to_string(&dec_rescale(&dec_from_string("123.4567"), &dec_from_string("-2"))));
+    assert_eq!("123.45", dec_to_string(&dec_rescale(&dec_from_string("123.4547"), &dec_from_string("-2"))));
+    assert_eq!("1E+2", dec_to_string(&dec_rescale(&dec_from_string("123.4567"), &dec_from_string("2"))));
+    assert_eq!("2E+2", dec_to_string(&dec_rescale(&dec_from_string("163.4567"), &dec_from_string("2"))));
   }
 
   #[test]
   fn test_dec_scale_b() {
-    assert_eq!("1.23", dec_to_string(&dec_scale_b(&dec_from_string("123"), &dec_from_string("-2"))).unwrap());
-    assert_eq!("1.23E+4", dec_to_string(&dec_scale_b(&dec_from_string("123"), &dec_from_string("2"))).unwrap());
+    assert_eq!("1.23", dec_to_string(&dec_scale_b(&dec_from_string("123"), &dec_from_string("-2"))));
+    assert_eq!("1.23E+4", dec_to_string(&dec_scale_b(&dec_from_string("123"), &dec_from_string("2"))));
   }
 
   #[test]
   fn test_dec_square_root() {
-    assert_eq!("NaN", dec_to_string(&dec_square_root(&dec_from_string("-1"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_square_root(&dec_from_string("0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_square_root(&dec_from_string("1"))).unwrap());
-    assert_eq!(
-      "1.414213562373095048801688724209698",
-      dec_to_string(&dec_square_root(&dec_from_string("2"))).unwrap()
-    );
-    assert_eq!("2", dec_to_string(&dec_square_root(&dec_from_string("4"))).unwrap());
-    assert_eq!("4", dec_to_string(&dec_square_root(&dec_from_string("16"))).unwrap());
+    assert_eq!("NaN", dec_to_string(&dec_square_root(&dec_from_string("-1"))));
+    assert_eq!("0", dec_to_string(&dec_square_root(&dec_from_string("0"))));
+    assert_eq!("1", dec_to_string(&dec_square_root(&dec_from_string("1"))));
+    assert_eq!("1.414213562373095048801688724209698", dec_to_string(&dec_square_root(&dec_from_string("2"))));
+    assert_eq!("2", dec_to_string(&dec_square_root(&dec_from_string("4"))));
+    assert_eq!("4", dec_to_string(&dec_square_root(&dec_from_string("16"))));
   }
 
   #[test]
   fn test_dec_subtract() {
-    assert_eq!("0", dec_to_string(&dec_subtract(&dec_from_string("0"), &dec_from_string("0"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_subtract(&dec_from_string("0"), &dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_subtract(&dec_from_string("1"), &dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_subtract(&dec_from_string("1"), &dec_from_string("1"))).unwrap());
-    assert_eq!("-0.1", dec_to_string(&dec_subtract(&dec_from_string("0.1"), &dec_from_string("0.2"))).unwrap());
+    assert_eq!("0", dec_to_string(&dec_subtract(&dec_from_string("0"), &dec_from_string("0"))));
+    assert_eq!("-1", dec_to_string(&dec_subtract(&dec_from_string("0"), &dec_from_string("1"))));
+    assert_eq!("1", dec_to_string(&dec_subtract(&dec_from_string("1"), &dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_subtract(&dec_from_string("1"), &dec_from_string("1"))));
+    assert_eq!("-0.1", dec_to_string(&dec_subtract(&dec_from_string("0.1"), &dec_from_string("0.2"))));
   }
 
   #[test]
@@ -710,62 +685,62 @@ mod tests {
 
   #[test]
   fn test_dec_to_string() {
-    assert_eq!("1", dec_to_string(&dec_from_string("1")).unwrap());
-    assert_eq!("0.000123", dec_to_string(&dec_from_string("0.000123")).unwrap());
-    assert_eq!("1000000000.01", dec_to_string(&dec_from_string("1000000000.01")).unwrap());
-    assert_eq!("1E-23", dec_to_string(&dec_from_string("0.00000000000000000000001")).unwrap());
-    assert_eq!("1.234567E-17", dec_to_string(&dec_from_string("0.00000000000000001234567")).unwrap());
+    assert_eq!("1", dec_to_string(&dec_from_string("1")));
+    assert_eq!("0.000123", dec_to_string(&dec_from_string("0.000123")));
+    assert_eq!("1000000000.01", dec_to_string(&dec_from_string("1000000000.01")));
+    assert_eq!("1E-23", dec_to_string(&dec_from_string("0.00000000000000000000001")));
+    assert_eq!("1.234567E-17", dec_to_string(&dec_from_string("0.00000000000000001234567")));
   }
 
   #[test]
   fn test_dec_trunc() {
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.9"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.8"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.7"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.6"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.5"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.4"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.3"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.2"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.1"))).unwrap());
-    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1"))).unwrap());
-    assert_eq!("-0", dec_to_string(&dec_trunc(&dec_from_string("-0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_trunc(&dec_from_string("0"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.1"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.2"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.3"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.4"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.5"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.6"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.7"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.8"))).unwrap());
-    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.9"))).unwrap());
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.9"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.8"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.7"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.6"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.5"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.4"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.3"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.2"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1.1"))));
+    assert_eq!("-1", dec_to_string(&dec_trunc(&dec_from_string("-1"))));
+    assert_eq!("-0", dec_to_string(&dec_trunc(&dec_from_string("-0"))));
+    assert_eq!("0", dec_to_string(&dec_trunc(&dec_from_string("0"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.1"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.2"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.3"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.4"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.5"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.6"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.7"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.8"))));
+    assert_eq!("1", dec_to_string(&dec_trunc(&dec_from_string("1.9"))));
   }
 
   #[test]
   fn test_dec_fract() {
-    assert_eq!("-0.9", dec_to_string(&dec_fract(&dec_from_string("-1.9"))).unwrap());
-    assert_eq!("-0.8", dec_to_string(&dec_fract(&dec_from_string("-1.8"))).unwrap());
-    assert_eq!("-0.7", dec_to_string(&dec_fract(&dec_from_string("-1.7"))).unwrap());
-    assert_eq!("-0.6", dec_to_string(&dec_fract(&dec_from_string("-1.6"))).unwrap());
-    assert_eq!("-0.5", dec_to_string(&dec_fract(&dec_from_string("-1.5"))).unwrap());
-    assert_eq!("-0.4", dec_to_string(&dec_fract(&dec_from_string("-1.4"))).unwrap());
-    assert_eq!("-0.3", dec_to_string(&dec_fract(&dec_from_string("-1.3"))).unwrap());
-    assert_eq!("-0.2", dec_to_string(&dec_fract(&dec_from_string("-1.2"))).unwrap());
-    assert_eq!("-0.1", dec_to_string(&dec_fract(&dec_from_string("-1.1"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-1"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("0"))).unwrap());
-    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("1"))).unwrap());
-    assert_eq!("0.1", dec_to_string(&dec_fract(&dec_from_string("1.1"))).unwrap());
-    assert_eq!("0.2", dec_to_string(&dec_fract(&dec_from_string("1.2"))).unwrap());
-    assert_eq!("0.3", dec_to_string(&dec_fract(&dec_from_string("1.3"))).unwrap());
-    assert_eq!("0.4", dec_to_string(&dec_fract(&dec_from_string("1.4"))).unwrap());
-    assert_eq!("0.5", dec_to_string(&dec_fract(&dec_from_string("1.5"))).unwrap());
-    assert_eq!("0.6", dec_to_string(&dec_fract(&dec_from_string("1.6"))).unwrap());
-    assert_eq!("0.7", dec_to_string(&dec_fract(&dec_from_string("1.7"))).unwrap());
-    assert_eq!("0.8", dec_to_string(&dec_fract(&dec_from_string("1.8"))).unwrap());
-    assert_eq!("0.9", dec_to_string(&dec_fract(&dec_from_string("1.9"))).unwrap());
+    assert_eq!("-0.9", dec_to_string(&dec_fract(&dec_from_string("-1.9"))));
+    assert_eq!("-0.8", dec_to_string(&dec_fract(&dec_from_string("-1.8"))));
+    assert_eq!("-0.7", dec_to_string(&dec_fract(&dec_from_string("-1.7"))));
+    assert_eq!("-0.6", dec_to_string(&dec_fract(&dec_from_string("-1.6"))));
+    assert_eq!("-0.5", dec_to_string(&dec_fract(&dec_from_string("-1.5"))));
+    assert_eq!("-0.4", dec_to_string(&dec_fract(&dec_from_string("-1.4"))));
+    assert_eq!("-0.3", dec_to_string(&dec_fract(&dec_from_string("-1.3"))));
+    assert_eq!("-0.2", dec_to_string(&dec_fract(&dec_from_string("-1.2"))));
+    assert_eq!("-0.1", dec_to_string(&dec_fract(&dec_from_string("-1.1"))));
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-1"))));
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("-0"))));
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("0"))));
+    assert_eq!("0", dec_to_string(&dec_fract(&dec_from_string("1"))));
+    assert_eq!("0.1", dec_to_string(&dec_fract(&dec_from_string("1.1"))));
+    assert_eq!("0.2", dec_to_string(&dec_fract(&dec_from_string("1.2"))));
+    assert_eq!("0.3", dec_to_string(&dec_fract(&dec_from_string("1.3"))));
+    assert_eq!("0.4", dec_to_string(&dec_fract(&dec_from_string("1.4"))));
+    assert_eq!("0.5", dec_to_string(&dec_fract(&dec_from_string("1.5"))));
+    assert_eq!("0.6", dec_to_string(&dec_fract(&dec_from_string("1.6"))));
+    assert_eq!("0.7", dec_to_string(&dec_fract(&dec_from_string("1.7"))));
+    assert_eq!("0.8", dec_to_string(&dec_fract(&dec_from_string("1.8"))));
+    assert_eq!("0.9", dec_to_string(&dec_fract(&dec_from_string("1.9"))));
   }
 }
