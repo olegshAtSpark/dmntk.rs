@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-examples"
-version = "0.0.43"
+version = "0.0.44"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Examples"
 documentation = "https://docs.rs/dmntk-examples"

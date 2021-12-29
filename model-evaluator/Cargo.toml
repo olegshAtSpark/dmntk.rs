@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-model-evaluator"
-version = "0.0.43"
+version = "0.0.44"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | DMN model evaluator"
 documentation = "https://docs.rs/dmntk-evaluator"
@@ -9,12 +9,12 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = "0.0.43"
-dmntk-feel = "0.0.43"
-dmntk-feel-evaluator = "0.0.43"
-dmntk-feel-parser = "0.0.43"
-dmntk-model = "0.0.43"
-dmntk-recognizer = "0.0.43"
+dmntk-common = "0.0.44"
+dmntk-feel = "0.0.44"
+dmntk-feel-evaluator = "0.0.44"
+dmntk-feel-parser = "0.0.44"
+dmntk-model = "0.0.44"
+dmntk-recognizer = "0.0.44"
 thiserror = "1.0.30"
 
 [dev-dependencies]
