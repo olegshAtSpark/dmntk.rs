@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-server"
-version = "0.0.44-dev"
+version = "0.0.45-dev"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | API server"
 documentation = "https://docs.rs/dmntk-server"
