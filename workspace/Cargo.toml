@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-workspace"
-version = "0.0.43-dev"
+version = "0.0.44-dev"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Workspace"
 documentation = "https://docs.rs/dmntk-workspace"
