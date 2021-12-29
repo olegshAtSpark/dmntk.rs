@@ -42,8 +42,6 @@ extern crate dmntk_feel_number;
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
-extern crate rust_decimal;
-extern crate rust_decimal_macros;
 #[macro_use]
 extern crate thiserror;
 
