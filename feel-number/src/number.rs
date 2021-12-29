@@ -203,17 +203,6 @@ impl FeelNumber {
   }
 }
 
-impl std::fmt::Debug for FeelNumber {
-  ///
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    if let Some(s) = dec_to_string(&dec_reduce(&self.0)) {
-      write!(f, "{}", s)
-    } else {
-      write!(f, "[None]")
-    }
-  }
-}
-
 impl PartialEq<FeelNumber> for FeelNumber {
   fn eq(&self, rhs: &Self) -> bool {
     dec_is_zero(&dec_compare(&self.0, &rhs.0))
@@ -357,25 +346,24 @@ impl std::ops::RemAssign<FeelNumber> for FeelNumber {
   }
 }
 
+impl std::fmt::Debug for FeelNumber {
+  ///
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}", dec_to_string(&dec_reduce(&self.0)))
+  }
+}
+
 impl std::fmt::Display for FeelNumber {
   /// Converts [FeelNumber] to its textual representation.
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    if let Some(s) = dec_to_string(&self.0) {
-      write!(f, "{}", scientific_to_plain(s))
-    } else {
-      write!(f, "invalid number")
-    }
+    write!(f, "{}", scientific_to_plain(dec_to_string(&self.0)))
   }
 }
 
 impl Jsonify for FeelNumber {
   /// Converts [FeelNumber] to its `JSON` representation.
   fn jsonify(&self) -> String {
-    if let Some(s) = dec_to_string(&self.0) {
-      scientific_to_plain(s)
-    } else {
-      "Null".to_string()
-    }
+    scientific_to_plain(dec_to_string(&self.0))
   }
 }
 
