@@ -3,7 +3,7 @@
  *
  * REST server.
  *
- * Copyright 2018-2021 Dariusz Depta Engos Software <dariusz.depta@engos.software>
+ * Copyright 2018-2022 Dariusz Depta Engos Software <dariusz.depta@engos.software>
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
