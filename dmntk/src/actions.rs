@@ -156,8 +156,8 @@ fn _test_decision_table_from_file(dtb_file_name: String) {
   }
 }
 
-/// Parses `FEEL` textual expression loaded from file and prints the parsed AST to standard output.
-fn parse_textual_expression_from_file(ctx_file_name: &str, feel_file_name: &str) {
+/// Parses `FEEL` expression loaded from file and prints the parsed `AST` to standard output.
+fn parse_expression(ctx_file_name: &str, feel_file_name: &str) {
   match std::fs::read_to_string(feel_file_name) {
     Ok(feel_expression) => match std::fs::read_to_string(ctx_file_name) {
       Ok(context_definition) => match dmntk_evaluator::evaluate_context(&Scope::default(), &context_definition) {
@@ -165,18 +165,18 @@ fn parse_textual_expression_from_file(ctx_file_name: &str, feel_file_name: &str)
           Ok(ast_root_node) => {
             println!("    AST:{}", ast_root_node.to_string().trim_end());
           }
-          Err(reason) => println!("parsing textual expression failed with reason: {}", reason),
+          Err(reason) => println!("parsing expression failed with reason: {}", reason),
         },
         Err(reason) => println!("evaluating context failed with reason: {}", reason),
       },
       Err(reason) => println!("loading context file `{}` failed with reason: {:?}", ctx_file_name, reason),
     },
-    Err(reason) => println!("loading textual expression file `{}` failed with reason: {:?}", feel_file_name, reason),
+    Err(reason) => println!("loading expression file `{}` failed with reason: {:?}", feel_file_name, reason),
   }
 }
 
-/// Evaluates `FEEL` textual expression loaded from file and prints the result to standard output.
-fn evaluate_textual_expression_from_file(ctx_file_name: &str, feel_file_name: &str) {
+/// Evaluates `FEEL` expression loaded from file and prints the result to standard output.
+fn evaluate_expression(ctx_file_name: &str, feel_file_name: &str) {
   match std::fs::read_to_string(feel_file_name) {
     Ok(textual_expression) => match std::fs::read_to_string(ctx_file_name) {
       Ok(context_definition) => match dmntk_evaluator::evaluate_context(&Scope::default(), &context_definition) {
@@ -185,15 +185,15 @@ fn evaluate_textual_expression_from_file(ctx_file_name: &str, feel_file_name: &s
             Ok(result) => {
               println!("{}", result);
             }
-            Err(reason) => println!("evaluating textual expression failed with reason: {}", reason),
+            Err(reason) => println!("evaluating expression failed with reason: {}", reason),
           },
-          Err(reason) => println!("parsing textual expression failed with reason: {}", reason),
+          Err(reason) => println!("parsing expression failed with reason: {}", reason),
         },
         Err(reason) => println!("evaluating context failed with reason: {}", reason),
       },
       Err(reason) => println!("loading context file `{}` failed with reason: {:?}", ctx_file_name, reason),
     },
-    Err(reason) => println!("loading textual expression file `{}` failed with reason: {:?}", feel_file_name, reason),
+    Err(reason) => println!("loading expression file `{}` failed with reason: {:?}", feel_file_name, reason),
   }
 }
 
@@ -216,11 +216,11 @@ pub async fn do_action() -> std::io::Result<()> {
     //   Ok(())
     // }
     Action::ParseFeelExpression(ctx_file_name, feel_file_name) => {
-      parse_textual_expression_from_file(&ctx_file_name, &feel_file_name);
+      parse_expression(&ctx_file_name, &feel_file_name);
       Ok(())
     }
     Action::EvaluateFeelExpression(ctx_file_name, feel_file_name) => {
-      evaluate_textual_expression_from_file(&ctx_file_name, &feel_file_name);
+      evaluate_expression(&ctx_file_name, &feel_file_name);
       Ok(())
     }
     Action::StartServer(opt_host, opt_port) => dmntk_server::start_server(opt_host, opt_port).await,
