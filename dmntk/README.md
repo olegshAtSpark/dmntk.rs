@@ -44,28 +44,28 @@ Check available commands:
 $ dmntk --help
 ```
 
-## Quick example
+## Example
 
-Create a file named **ex1.ctx**. Copy text shown below and save.
+Copy the text shown below and save in a file named **e1.ctx**.
 
-This is the evaluation context (empty context).
+This is the evaluation context (empty context in this case).
 
 ```text
 {}
 ```
 
-Create a file named **ex1.feel**. Copy text shown below and save.
+Copy text shown below and save in a file named **e1.feel**.
 
-This is the evaluated `FEEL` expression (addition).
+This is the evaluated `FEEL` expression (addition in this case).
 
 ```text
 1 + 2
 ```
 
-Evaluate the expression:
+Evaluate the `FEEL` expression using **dmntk**:
 
 ```shell
-# dmntk efl ex1.ctx ex1.feel
+# dmntk efl e1.ctx e1.feel
 ```
 
 The expected result is:
