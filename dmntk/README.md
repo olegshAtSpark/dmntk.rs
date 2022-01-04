@@ -47,16 +47,14 @@ $ dmntk --help
 ## Example
 
 Copy the text shown below and save in a file named **e1.ctx**.
-
-This is the evaluation context (empty context in this case).
+This is the evaluation context (**empty context** in this case).
 
 ```text
 {}
 ```
 
 Copy text shown below and save in a file named **e1.feel**.
-
-This is the evaluated `FEEL` expression (addition in this case).
+This is the evaluated `FEEL` expression (**addition** in this case).
 
 ```text
 1 + 2
