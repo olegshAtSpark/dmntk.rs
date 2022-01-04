@@ -22,7 +22,7 @@ subcommands:
             help: File containing FEEL expression to be evaluated
             required: true
             index: 2
-  - run:
+  - srv:
       about: Runs DMNTK as a service
       args:
         - host:
@@ -31,7 +31,7 @@ subcommands:
             help: Host name
             takes_value: true
         - port:
-            short: p
+            short: P
             long: port
             help: Port number
             takes_value: true

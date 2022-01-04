@@ -221,7 +221,7 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
     workspace: Mutex::new(workspace),
   });
   let address = get_server_address(opt_host, opt_port);
-  println!("dmntk server {}", address);
+  println!("dmntk {}", address);
   HttpServer::new(move || {
     App::new()
       .app_data(application_data.clone())

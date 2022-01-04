@@ -76,7 +76,7 @@ fn get_cli_action() -> Action {
     return Action::EvaluateFeelExpression(context_file_name.to_string(), expression_file_name.to_string());
   }
   // start server subcommand
-  if let Some(matches) = matches.subcommand_matches("run") {
+  if let Some(matches) = matches.subcommand_matches("srv") {
     let host = matches.value_of("host");
     let port = matches.value_of("port");
     return Action::StartServer(host.map(|h| h.to_string()), port.map(|p| p.to_string()));
