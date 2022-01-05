@@ -787,8 +787,8 @@ impl NamedElement for InputData {
 }
 
 /// `Import` class is used when referencing external elements,
-/// either DMN DRGElement or ItemDefinition instances contained
-/// in other `Definitions` elements, or non-DMN elements,
+/// either DMN [DRGElement] or [ItemDefinition] instances contained
+/// in other [Definitions] elements, or non-DMN elements,
 /// such as an XML Schema or a PMML file.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Import {
