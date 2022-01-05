@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Item definition evaluator.
+//! Builder for item definition evaluators.
 
 use crate::errors::{err_empty_feel_name, err_unsupported_feel_type};
 use dmntk_common::Result;

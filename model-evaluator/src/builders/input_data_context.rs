@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Input data context evaluator.
+//! Builder for input data context evaluators.
 
 use crate::builders::{type_ref_to_feel_type, ItemDefinitionContextEvaluator};
 use crate::errors::{err_empty_feel_name, err_empty_identifier, err_input_data_without_type_reference, err_unsupported_feel_type};

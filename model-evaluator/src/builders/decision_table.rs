@@ -30,6 +30,8 @@
  * limitations under the License.
  */
 
+//! Builder for decision table evaluators.
+
 use dmntk_common::Result;
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::{Value, Values};

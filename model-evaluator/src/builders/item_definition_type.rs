@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Builder for item definition type evaluator.
+//! Builder for item definition type evaluators.
 
 use crate::errors::*;
 use dmntk_common::Result;

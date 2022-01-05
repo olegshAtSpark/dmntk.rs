@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! ???
+//! Builder for decision evaluators.
 
 use crate::builders::Variable;
 use crate::errors::*;

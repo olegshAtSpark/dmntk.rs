@@ -30,15 +30,7 @@
  * limitations under the License.
  */
 
-//! Item definition context evaluator.
-//!
-//! This evaluator generates a context that contains all values defined by an item definition.
-//! Generated contexts are used to properly parse expressions.
-//! `FEEL` grammar heavily depends on the context in which the expressions are parsed.
-//!
-//! # Example
-//!
-//! tbd
+//! Builder for item definition context evaluators.
 
 use crate::errors::*;
 use dmntk_common::Result;

@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Business knowledge model evaluator.
+//! Builder for business knowledge model evaluators.
 
 use crate::builders::information_item_type;
 use crate::errors::*;

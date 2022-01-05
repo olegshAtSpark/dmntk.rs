@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Input data evaluator.
+//! Builder for input data evaluators.
 
 use crate::builders::item_definition::ItemDefinitionEvaluator;
 use crate::builders::{build_variable_evaluator, Variable, VariableEvaluatorFn};
