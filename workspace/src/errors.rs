@@ -41,6 +41,8 @@ enum WorkspaceError {
   ArtifactNotFound(String, String),
   #[error("'{0}' is not a valid name of invoked artifact")]
   InvalidInvokedArtifactName(String),
+  #[error("definitions with namespace '{0}' already exist in workspace")]
+  DefinitionsWithNamespaceAlreadyExist(String),
   #[error("definitions with name '{0}' already exist in workspace")]
   DefinitionsWithNameAlreadyExist(String),
   #[error("definitions with identifier '{0}' already exist in workspace")]
@@ -64,8 +66,12 @@ pub fn err_invalid_invoked_artifact_name(name: String) -> DmntkError {
   WorkspaceError::InvalidInvokedArtifactName(name).into()
 }
 
-pub fn err_definitions_with_name_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithNameAlreadyExist(name).into()
+pub fn err_definitions_with_name_already_exists(s: &str) -> DmntkError {
+  WorkspaceError::DefinitionsWithNameAlreadyExist(s.to_string()).into()
+}
+
+pub fn err_definitions_with_namespace_already_exists(s: &str) -> DmntkError {
+  WorkspaceError::DefinitionsWithNamespaceAlreadyExist(s.to_string()).into()
 }
 
 pub fn err_definitions_with_id_already_exists(name: String) -> DmntkError {

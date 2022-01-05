@@ -30,6 +30,16 @@
  * limitations under the License.
  */
 
+//! Container for deployed DMN™ models.
+//!
+//! ### Remarks
+//!
+//! Importing rules require, that the `namespace` attribute in [Definitions] is globally unique.
+//! We assume, that attributes `Definitions.namespace` and `Definitions.name` are both
+//! unique inside [Workspace]. In consequence, the same [Definitions] can be accessed using
+//! its either a `namespace` or `name` attribute, so there will be an error reported,
+//! when two definitions deployed in a single workspace have the same `namespace` or `name`.
+
 use crate::errors::*;
 use dmntk_common::Result;
 use dmntk_feel::context::FeelContext;
@@ -40,24 +50,31 @@ use std::sync::Arc;
 
 #[derive(Default)]
 pub struct Workspace {
-  /// Collection of definitions deployed in workspace.
+  /// Collection of all [Definitions](Definition) deployed in this [Workspace].
   definitions: Vec<Arc<Definitions>>,
-  /// Mapping of definitions by definition's identifier.
-  definitions_by_id: HashMap<String, Arc<Definitions>>,
-  /// Mapping of definitions by definition's name.
+  /// Map of [Definitions](Definition) indexed by `Definitions.namespace` attribute.
+  definitions_by_namespace: HashMap<String, Arc<Definitions>>,
+  /// Map of [Definitions](Definition) indexed by `Definition.name` attribute.
   definitions_by_name: HashMap<String, Arc<Definitions>>,
+  //TODO remove
   /// Mapping of definitions by definition's tag.
-  definitions_by_tag: HashMap<String, Arc<Definitions>>,
+  definitions_by_tag: HashMap<String, Arc<Definitions>>, //TODO remove
+  /// Mapping of definitions by definition's identifier.
+  definitions_by_id: HashMap<String, Arc<Definitions>>, //TODO remove
 }
 
 impl Workspace {
   ///
   pub fn append_definitions(&mut self, tag: &str, definitions: Definitions) -> Result<(String, Option<String>, String)> {
+    let definitions_namespace = definitions.namespace().to_string();
+    if self.definitions_by_namespace.contains_key(&definitions_namespace) {
+      return Err(err_definitions_with_namespace_already_exists(&definitions_namespace));
+    }
     let definitions_name = definitions.name().to_string();
     let definitions_id = definitions.id().clone();
     let definitions_arc = Arc::new(definitions);
     if self.definitions_by_name.contains_key(&definitions_name) {
-      return Err(err_definitions_with_name_already_exists(definitions_name));
+      return Err(err_definitions_with_name_already_exists(&definitions_name));
     }
     self.definitions_by_name.insert(definitions_name.to_string(), Arc::clone(&definitions_arc));
     if let Some(id) = &definitions_id {

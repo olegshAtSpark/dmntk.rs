@@ -30,8 +30,8 @@
  * limitations under the License.
  */
 
-//! Model for **Decision Requirements Graph** (`DRG`)
-//! depicted in one or more **Decision Requirements Diagrams** (`DRD`s).
+//! Model for Decision Requirements Graph (DRG)
+//! depicted in one or more Decision Requirements Diagrams (DRD).
 
 pub(crate) mod parser;
 
