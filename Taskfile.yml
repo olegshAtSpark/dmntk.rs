@@ -42,6 +42,16 @@ tasks:
     cmds:
       - cmd: cargo doc --no-deps
 
+  doc-open-priv:
+    desc: Generates documentation and opens it in browser
+    cmds:
+      - cmd: cargo doc --document-private-items --no-deps --open
+
+  doc-riv:
+    desc: Generates documentation
+    cmds:
+      - cmd: cargo doc --document-private-items --no-deps
+
   release:
     desc: Builds in release mode
     cmds:

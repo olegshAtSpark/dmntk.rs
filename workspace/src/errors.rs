@@ -30,13 +30,13 @@
  * limitations under the License.
  */
 
-//! Errors reported by the workspace.
+//! Errors associated with the workspace.
 
 use dmntk_common::DmntkError;
 
 /// Errors related with operating on workspaces.
 #[derive(Error, Debug)]
-pub enum WorkspaceError {
+enum WorkspaceError {
   #[error("artifact '{0}' with name '{1}' was not found")]
   ArtifactNotFound(String, String),
   #[error("'{0}' is not a valid name of invoked artifact")]
@@ -50,6 +50,7 @@ pub enum WorkspaceError {
 }
 
 impl From<WorkspaceError> for DmntkError {
+  /// Converts this workspace error into [DmntkError].
   fn from(e: WorkspaceError) -> Self {
     DmntkError::new("WorkspaceError", &e.to_string())
   }
