@@ -503,7 +503,7 @@ impl ModelParser {
       return Ok(Some(ExpressionInstance::Invocation(Box::new(invocation))));
     }
     if let Some(literal_expression) = self.parse_optional_literal_expression(node) {
-      return Ok(Some(ExpressionInstance::LiteralExpression(literal_expression)));
+      return Ok(Some(ExpressionInstance::LiteralExpression(Box::new(literal_expression))));
     }
     if let Some(relation) = self.parse_optional_relation(node)? {
       return Ok(Some(ExpressionInstance::Relation(relation)));
@@ -702,7 +702,7 @@ impl ModelParser {
         for ref expression_instance_node in row_node.children() {
           if expression_instance_node.tag_name().name() == NODE_LITERAL_EXPRESSION {
             let literal_expression = self.parse_literal_expression(expression_instance_node);
-            elements.push(ExpressionInstance::LiteralExpression(literal_expression));
+            elements.push(ExpressionInstance::LiteralExpression(Box::new(literal_expression)));
           }
         }
         if elements.len() != columns.len() {

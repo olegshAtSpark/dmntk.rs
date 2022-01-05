@@ -862,7 +862,7 @@ pub enum ExpressionInstance {
   DecisionTable(DecisionTable),
   FunctionDefinition(Box<FunctionDefinition>),
   Invocation(Box<Invocation>),
-  LiteralExpression(LiteralExpression),
+  LiteralExpression(Box<LiteralExpression>),
   Relation(Relation),
 }
 
