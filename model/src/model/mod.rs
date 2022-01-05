@@ -360,17 +360,17 @@ impl DrgElement {
 /// for all contained elements.
 #[derive(Debug, Clone)]
 pub struct Definitions {
-  /// Optional identifier for this [Definitions].
+  /// Optional identifier for this [Definitions] derived from [DMNElement].
   id: Option<String>,
-  /// Optional description of this [Definitions].
+  /// Optional description of this [Definitions] derived from [DMNElement].
   description: Option<String>,
-  /// Optional alternative short description of this [Definitions].
+  /// Optional alternative short description of this [Definitions] derived from [DMNElement].
   label: Option<String>,
-  /// Container to attach additional elements to any [Definitions].
+  /// Container to attach additional elements to any [Definitions] derived from [DMNElement].
   extension_elements: Option<ExtensionElement>,
-  /// Container to attach named extended attributes and model associations to any [Definitions].
+  /// Container to attach named extended attributes and model associations to any [Definitions] derived from [DMNElement].
   extension_attributes: Vec<ExtensionAttribute>,
-  /// Name of this [Definitions].
+  /// Name of this [Definitions] derived from [NamedElement].
   name: String,
   /// Optional `FEEL` name of this [ItemDefinition].
   feel_name: Option<Name>,
@@ -403,7 +403,7 @@ pub struct Definitions {
   /// This attribute is not a part of specification,
   /// but is handy when importing definitions from other sources.
   source: String,
-  /// Optional DMNDI container.
+  /// Optional Diagram Interchange information contained within this [Definitions].
   dmndi: Option<Dmndi>,
 }
 
