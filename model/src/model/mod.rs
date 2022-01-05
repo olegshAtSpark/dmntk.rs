@@ -399,6 +399,9 @@ pub struct Definitions {
   drg_elements: Vec<DrgElement>,
   /// Container for the instances of [BusinessContextElement] that are contained in this [Definitions].
   business_context_elements: Vec<BusinessContextElementInstance>,
+  /// Container used to import externally defined elements and make them available
+  /// for use by elements in this [Definitions].
+  imports: Vec<Import>,
   /// Optional Diagram Interchange information contained within this [Definitions].
   dmndi: Option<Dmndi>,
 }
@@ -590,6 +593,10 @@ impl Definitions {
   /// Returns reference to the container of instances of [BusinessContextElement] contained in this [Definitions].
   pub fn business_context_elements(&self) -> &Vec<BusinessContextElementInstance> {
     &self.business_context_elements
+  }
+  /// Returns reference to the container of instances of [Import] contained in this [Definitions].
+  pub fn imports(&self) -> &Vec<Import> {
+    &self.imports
   }
   /// Returns reference to optional [Dmndi] container.
   pub fn dmndi(&self) -> &Option<Dmndi> {
@@ -784,12 +791,62 @@ impl NamedElement for InputData {
 /// such as an XML Schema or a PMML file.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Import {
-  /// Specifies the style of import associated with this `Import`.
+  /// Optional identifier of this this [Import].
+  id: Option<String>,
+  /// Optional description of this [Import].
+  description: Option<String>,
+  /// An optional alternative short description of this [Import].
+  label: Option<String>,
+  /// Container to attach additional elements to any [Import].
+  extension_elements: Option<ExtensionElement>,
+  /// Container to attach named extended attributes and model associations to any [Import].
+  extension_attributes: Vec<ExtensionAttribute>,
+  /// Name of this [Import]. Serves as a prefix in namespace-qualified names,
+  /// such as typeRefs specifying imported [ItemDefinitions](ItemDefinition)
+  /// and expressions referencing imported [InformationItems](InformationItem).
+  name: String,
+  /// Optional `FEEL` name of this [Import].
+  feel_name: Option<Name>,
+  /// Specifies the style of import associated with this [Import].
   pub import_type: String,
   /// Identifies the location of the imported element.
   pub location_uri: Option<String>,
   /// Identifies the namespace of the imported element.
   pub namespace: String,
+}
+
+impl DmnElement for Import {
+  /// Returns reference to optional identifier for this [InputData].
+  fn id(&self) -> &Option<String> {
+    &self.id
+  }
+  /// Returns reference to optional description of this [InputData].
+  fn description(&self) -> &Option<String> {
+    &self.description
+  }
+  /// Returns reference to optional alternative short description of this [InputData].
+  fn label(&self) -> &Option<String> {
+    &self.label
+  }
+  /// Returns reference to attached additional elements to any [InputData].
+  fn extension_elements(&self) -> &Option<ExtensionElement> {
+    &self.extension_elements
+  }
+  /// Returns reference to attached named extended attributes and model associations to any [InputData].
+  fn extension_attributes(&self) -> &Vec<ExtensionAttribute> {
+    &self.extension_attributes
+  }
+}
+
+impl NamedElement for Import {
+  /// Returns reference to the name of this [Import].
+  fn name(&self) -> &str {
+    &self.name
+  }
+  /// Returns a reference to optional `FEEL` name of this [Import].
+  fn feel_name(&self) -> &Option<Name> {
+    &self.feel_name
+  }
 }
 
 /// Enumeration of concrete instances of abstract [Expression], which are:

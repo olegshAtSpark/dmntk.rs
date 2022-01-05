@@ -173,6 +173,7 @@ impl ModelParser {
       item_definitions: self.parse_item_definitions(node, NODE_ITEM_DEFINITION)?,
       drg_elements: self.parse_drg_elements(node)?,
       business_context_elements: self.parse_business_context_elements(node)?,
+      imports: self.parse_imports(node)?,
       dmndi: None, // DMNDI (if present) is parsed in next step below //FIXME maybe this could be done here?
     };
     self.parse_dmndi(node, &mut definitions)?;
@@ -394,12 +395,17 @@ impl ModelParser {
       Ok(FunctionKind::Feel)
     }
   }
-
+  ///
   #[allow(clippy::unnecessary_wraps)]
   fn parse_business_context_elements(&self, _node: &Node) -> Result<Vec<BusinessContextElementInstance>> {
     Ok(vec![])
   }
-
+  /// Parses a collection of [Import].
+  #[allow(clippy::unnecessary_wraps)]
+  fn parse_imports(&self, _node: &Node) -> Result<Vec<Import>> {
+    Ok(vec![])
+  }
+  ///
   fn parse_information_item_child(&self, node: &Node, child_name: &str) -> Result<InformationItem> {
     if let Some(child_node) = node.children().find(|n| n.tag_name().name() == child_name) {
       self.parse_information_item(&child_node)
