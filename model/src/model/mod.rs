@@ -61,9 +61,10 @@ pub trait DmnElement {
   fn extension_attributes(&self) -> &Vec<ExtensionAttribute>;
 }
 
-/// [NamedElement] adds the required attribute `name` to [DmnElement].
+/// [NamedElement] adds attribute `name` to [DmnElement].
+/// `name` attribute is required for [NamedElement].
 pub trait NamedElement: DmnElement {
-  /// Returns the name of this element.
+  /// Returns the name of this [NamedElement].
   fn name(&self) -> &str;
   /// Returns the optional `FEEL` name for this element.
   fn feel_name(&self) -> &Option<Name>;
