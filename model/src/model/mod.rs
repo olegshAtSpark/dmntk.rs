@@ -44,6 +44,10 @@ use dmntk_feel::{FeelType, Name};
 use std::convert::TryFrom;
 use std::fmt::Display;
 
+pub const URI_FEEL: &str = "https://www.omg.org/spec/DMN/20191 111/FEEL/";
+pub const URI_UNINTERPRETED: &str = "http://www.omg.org/spec/DMN/uninterpreted/20140801";
+pub const URI_XML_SCHEMA: &str = "http://www.w3.org/2001/XMLSchema";
+
 /// [DmnElement] is the abstract superclass for the Decision Model elements.
 /// It provides the optional attributes `id`, `description` and `label`,
 /// which other elements will inherit.
