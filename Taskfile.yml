@@ -47,7 +47,7 @@ tasks:
     cmds:
       - cmd: cargo doc --no-deps --open --document-private-items
 
-  doc-riv:
+  doc-priv:
     desc: Generates documentation
     cmds:
       - cmd: cargo doc --no-deps --document-private-items
