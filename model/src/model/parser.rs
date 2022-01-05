@@ -142,28 +142,21 @@ const ATTR_Y: &str = "y";
 pub struct ModelParser {}
 
 impl ModelParser {
-  /// Parses the XML document containing definitions.
-  pub fn parse(&mut self, xml: &str, source: &str) -> Result<Definitions> {
+  /// Parses the XML document containing [Definitions] serialized to interchange format.
+  pub fn parse(&mut self, xml: &str) -> Result<Definitions> {
     match roxmltree::Document::parse(xml) {
       Ok(document) => {
         let definitions_node = document.root_element();
         if definitions_node.tag_name().name() != NODE_DEFINITIONS {
           return Err(xml_unexpected_node(NODE_DEFINITIONS, definitions_node.tag_name().name()));
         }
-        self.parse_definitions(&definitions_node, source)
+        self.parse_definitions(&definitions_node)
       }
       Err(reason) => Err(xml_parsing_model_failed(&reason.to_string())),
     }
   }
-
-  /// Parses model definitions.
-  ///
-  /// # Arguments
-  ///
-  /// - mode   - definitions node.
-  /// - source - name of the model source file.
-  ///
-  fn parse_definitions(&mut self, node: &Node, source: &str) -> Result<Definitions> {
+  /// Parses [Definitions].
+  fn parse_definitions(&mut self, node: &Node) -> Result<Definitions> {
     let mut definitions = Definitions {
       name: required_name(node)?,
       feel_name: optional_feel_name(node)?,
@@ -180,13 +173,12 @@ impl ModelParser {
       item_definitions: self.parse_item_definitions(node, NODE_ITEM_DEFINITION)?,
       drg_elements: self.parse_drg_elements(node)?,
       business_context_elements: self.parse_business_context_elements(node)?,
-      source: source.to_owned(),
       dmndi: None, // DMNDI (if present) is parsed in next step below //FIXME maybe this could be done here?
     };
     self.parse_dmndi(node, &mut definitions)?;
     Ok(definitions)
   }
-
+  /// Parser a collection of [ItemDefinition].
   fn parse_item_definitions(&mut self, node: &Node, child_name: &str) -> Result<Vec<ItemDefinition>> {
     let mut items = vec![];
     for ref child_node in node.children().filter(|n| n.tag_name().name() == child_name) {

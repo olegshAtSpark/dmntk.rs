@@ -473,15 +473,15 @@ mod tests {
   use dmntk_feel::{value_null, value_number, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime, FeelYearsAndMonthsDuration, Name};
 
   /// Utility function for building item definition evaluator from definitions.
-  fn build_evaluator(xml: &str, source: &str) -> ItemDefinitionEvaluator {
+  fn build_evaluator(xml: &str) -> ItemDefinitionEvaluator {
     let mut evaluator = ItemDefinitionEvaluator::default();
-    evaluator.build(&dmntk_model::parse(xml, source).unwrap()).unwrap();
+    evaluator.build(&dmntk_model::parse(xml).unwrap()).unwrap();
     evaluator
   }
 
   #[test]
   fn test_evaluate_input_data_0101_1() {
-    let evaluator = build_evaluator(DMN_0101, "file:///0101.dmn");
+    let evaluator = build_evaluator(DMN_0101);
     let context_str = r#"{ Customer Name : "Whistler" }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
@@ -493,7 +493,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0101_2() {
-    let evaluator = build_evaluator(DMN_0101, "file:///0101.dmn");
+    let evaluator = build_evaluator(DMN_0101);
     let context_str = r#"{ Customer Name : 12000 }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
@@ -505,7 +505,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0102_1() {
-    let evaluator = build_evaluator(DMN_0102, "file:///0102.dmn");
+    let evaluator = build_evaluator(DMN_0102);
     let context_str = r#"{ Monthly Salary : 12000.00 }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
@@ -514,7 +514,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0102_2() {
-    let evaluator = build_evaluator(DMN_0102, "file:///0102.dmn");
+    let evaluator = build_evaluator(DMN_0102);
     let context_str = r#"{ Monthly Salary : true }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
@@ -526,7 +526,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0103_1() {
-    let evaluator = build_evaluator(DMN_0103, "file:///0103.dmn");
+    let evaluator = build_evaluator(DMN_0103);
     let context_str = r#"{ Is Affordable : true }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Is", "Affordable"])).unwrap();
@@ -539,7 +539,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0103_2() {
-    let evaluator = build_evaluator(DMN_0103, "file:///0103.dmn");
+    let evaluator = build_evaluator(DMN_0103);
     let context_str = r#"{ Is Affordable : "Yes" }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Is", "Affordable"])).unwrap();
@@ -551,7 +551,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0104_1() {
-    let evaluator = build_evaluator(DMN_0104, "file:///0104.dmn");
+    let evaluator = build_evaluator(DMN_0104);
     let context_str = r#"{ Birthday : date("1982-04-12") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Birthday"])).unwrap();
@@ -563,7 +563,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0105_1() {
-    let evaluator = build_evaluator(DMN_0105, "file:///0105.dmn");
+    let evaluator = build_evaluator(DMN_0105);
     let context_str = r#"{ Delivery Time : time("18:35:23") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Delivery", "Time"])).unwrap();
@@ -575,7 +575,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0106_1() {
-    let evaluator = build_evaluator(DMN_0106, "file:///0106.dmn");
+    let evaluator = build_evaluator(DMN_0106);
     let context_str = r#"{ Appointment : date and time("2021-10-12T18:35:23") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Appointment"])).unwrap();
@@ -587,7 +587,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0107_1() {
-    let evaluator = build_evaluator(DMN_0107, "file:///0107.dmn");
+    let evaluator = build_evaluator(DMN_0107);
     let context_str = r#"{ Course Duration : duration("P2DT3H") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Course", "Duration"])).unwrap();
@@ -599,7 +599,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0108_1() {
-    let evaluator = build_evaluator(DMN_0108, "file:///0108.dmn");
+    let evaluator = build_evaluator(DMN_0108);
     let context_str = r#"{ Growth Duration : duration("P2Y5M") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Growth", "Duration"])).unwrap();
@@ -611,7 +611,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0201_1() {
-    let evaluator = build_evaluator(DMN_0201, "file:///0201.dmn");
+    let evaluator = build_evaluator(DMN_0201);
     let context_str = r#"{ Customer Name : "Bloomberg" }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
@@ -623,7 +623,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0202_1() {
-    let evaluator = build_evaluator(DMN_0202, "file:///0202.dmn");
+    let evaluator = build_evaluator(DMN_0202);
     let context_str = r#"{ Monthly Salary : 12000.00 }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
@@ -632,7 +632,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0301_1() {
-    let evaluator = build_evaluator(DMN_0301, "file:///0301.dmn");
+    let evaluator = build_evaluator(DMN_0301);
     let context_str = r#"{ Loan : { principal: 10, rate: 60, termMonths: 28 } }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Loan"])).unwrap();
@@ -646,7 +646,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0401_1() {
-    let evaluator = build_evaluator(DMN_0401, "file:///0401.dmn");
+    let evaluator = build_evaluator(DMN_0401);
     let context_str = r#"{ Items : ["Mercury", "Venus", "Earth", "Mars"] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -661,7 +661,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0402_1() {
-    let evaluator = build_evaluator(DMN_0402, "file:///0402.dmn");
+    let evaluator = build_evaluator(DMN_0402);
     let context_str = r#"{ Items : [9000.00, 10000.00, 11000.00, 12000.00, 13000.00] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -677,7 +677,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0403_1() {
-    let evaluator = build_evaluator(DMN_0403, "file:///0403.dmn");
+    let evaluator = build_evaluator(DMN_0403);
     let context_str = r#"{ Items : [true, false, false, true, true] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -693,7 +693,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0404_1() {
-    let evaluator = build_evaluator(DMN_0404, "file:///0404.dmn");
+    let evaluator = build_evaluator(DMN_0404);
     let context_str = r#"{ Items : [date("2021-10-10"), date("2021-10-11"), date("2021-10-12")] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -707,7 +707,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0405_1() {
-    let evaluator = build_evaluator(DMN_0405, "file:///0405.dmn");
+    let evaluator = build_evaluator(DMN_0405);
     let context_str = r#"{ Items : [time("12:21:35"), time("12:21:36"), time("12:21:37")] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -721,7 +721,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0406_1() {
-    let evaluator = build_evaluator(DMN_0406, "file:///0406.dmn");
+    let evaluator = build_evaluator(DMN_0406);
     let context_str = r#"{ Items : [date and time("2021-10-10T21:23:18"), date and time("2021-10-11T12:18:59")] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -734,7 +734,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0407_1() {
-    let evaluator = build_evaluator(DMN_0407, "file:///0407.dmn");
+    let evaluator = build_evaluator(DMN_0407);
     let context_str = r#"{ Items : [duration("P2DT3H")] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -746,7 +746,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0408_1() {
-    let evaluator = build_evaluator(DMN_0408, "file:///0408.dmn");
+    let evaluator = build_evaluator(DMN_0408);
     let context_str = r#"{ Items : [duration("P2Y3M"), duration("P2Y4M")] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -759,7 +759,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0501_1() {
-    let evaluator = build_evaluator(DMN_0501, "file:///0501.dmn");
+    let evaluator = build_evaluator(DMN_0501);
     let context_str = r#"{ Items : ["Mercury", "Venus", "Earth"] }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();
@@ -773,7 +773,7 @@ mod tests {
 
   #[test]
   fn test_evaluate_input_data_0601_1() {
-    let evaluator = build_evaluator(DMN_0601, "file:///0601.dmn");
+    let evaluator = build_evaluator(DMN_0601);
     let context_str = r#"{Items:[{number:1,name:"One",manager:"John"},{number:2,name:"Two",manager:"Mike"},{number:3,name:"Three",manager:"Bob"}]}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Items"])).unwrap();

@@ -399,10 +399,6 @@ pub struct Definitions {
   drg_elements: Vec<DrgElement>,
   /// Container for the instances of [BusinessContextElement] that are contained in this [Definitions].
   business_context_elements: Vec<BusinessContextElementInstance>,
-  /// Reference to the source containing this [Definitions].
-  /// This attribute is not a part of specification,
-  /// but is handy when importing definitions from other sources.
-  source: String,
   /// Optional Diagram Interchange information contained within this [Definitions].
   dmndi: Option<Dmndi>,
 }
@@ -594,10 +590,6 @@ impl Definitions {
   /// Returns reference to the container of instances of [BusinessContextElement] contained in this [Definitions].
   pub fn business_context_elements(&self) -> &Vec<BusinessContextElementInstance> {
     &self.business_context_elements
-  }
-  /// Returns reference to source model.
-  pub fn source(&self) -> &String {
-    &self.source
   }
   /// Returns reference to optional [Dmndi] container.
   pub fn dmndi(&self) -> &Option<Dmndi> {

@@ -52,7 +52,7 @@ fn get_edge(elements: &[DmnDiagramElement], index: usize) -> Option<&DmnEdge> {
 
 #[test]
 fn _2_0001() {
-  let definitions = crate::parse(dmntk_examples::DMN_2_0001, "file://2_0001.dmn").unwrap();
+  let definitions = crate::parse(dmntk_examples::DMN_2_0001).unwrap();
   assert_eq!("_c910c9ba-c584-4ac9-a773-1e6de185cd85", definitions.id().as_ref().unwrap().as_str());
   let dmndi = definitions.dmndi.unwrap();
   // there are no shared styles defined
@@ -110,7 +110,7 @@ fn _2_0001() {
 
 #[test]
 fn _2_0002() {
-  let definitions = crate::parse(dmntk_examples::DMN_2_0002, "file://2_0002.dmn").unwrap();
+  let definitions = crate::parse(dmntk_examples::DMN_2_0002).unwrap();
   assert_eq!("_072005e3-2635-47c9-8dec-5aca4b869376", definitions.id().as_ref().unwrap().as_str());
   let dmndi = definitions.dmndi.unwrap();
   // there are no shared styles defined
@@ -168,7 +168,7 @@ fn _2_0002() {
 
 #[test]
 fn _3_0086() {
-  let definitions = crate::parse(dmntk_examples::DMN_3_0086, "file://3_0086.dmn").unwrap();
+  let definitions = crate::parse(dmntk_examples::DMN_3_0086).unwrap();
   assert_eq!("_f27bb64b-6fc7-4e1f-9848-11ba35e0df36", definitions.id().as_ref().unwrap().as_str());
   let dmndi = definitions.dmndi.unwrap();
   // there are no shared styles defined
@@ -309,7 +309,7 @@ fn _3_0086() {
 
 #[test]
 fn _3_0087() {
-  let definitions = crate::parse(dmntk_examples::DMN_3_0087, "file://3_0087.dmn").unwrap();
+  let definitions = crate::parse(dmntk_examples::DMN_3_0087).unwrap();
   assert_eq!("_9d01a0c4-f529-4ad8-ad8e-ec5fb5d96ad4", definitions.id().as_ref().unwrap().as_str());
   let dmndi = definitions.dmndi.unwrap();
   // there are no shared styles defined

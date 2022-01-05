@@ -33,7 +33,7 @@
 use crate::tests::{assert_decision, assert_decision_service, context};
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0085, "file: ///3_0085.dmn").unwrap();
+  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0085).unwrap();
 }
 
 #[test]

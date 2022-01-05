@@ -41,7 +41,7 @@ use dmntk_common::Result;
 
 pub mod model;
 
-/// Parses the XML document containing definitions.
-pub fn parse(xml: &str, source: &str) -> Result<Definitions> {
-  crate::model::parser::ModelParser::default().parse(xml, source)
+/// Parses the XML document containing [Definitions] serialized to interchange format.
+pub fn parse(xml: &str) -> Result<Definitions> {
+  crate::model::parser::ModelParser::default().parse(xml)
 }

@@ -39,7 +39,7 @@ const TARGET_DIR: &str = "../target/gendoc";
 
 #[test]
 fn test_2_0001_html() {
-  let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0001, "file://2_0001.dmn").expect("parsing model 2_0001.dmn failed");
+  let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0001).expect("parsing model 2_0001.dmn failed");
   let html = crate::generate(&definitions);
   assert_eq!("<!DOCTYPE html>", &html[0..15]);
   fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");
@@ -49,7 +49,7 @@ fn test_2_0001_html() {
 
 #[test]
 fn test_3_0087_html() {
-  let definitions = dmntk_model::parse(dmntk_examples::DMN_3_0087, "file://3_0087.dmn").expect("parsing model 3_0087.dmn failed");
+  let definitions = dmntk_model::parse(dmntk_examples::DMN_3_0087).expect("parsing model 3_0087.dmn failed");
   let html = crate::generate(&definitions);
   assert_eq!("<!DOCTYPE html>", &html[0..15]);
   fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");

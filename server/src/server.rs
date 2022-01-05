@@ -254,32 +254,28 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
 
 ///
 fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployParams, replace_existing: bool) -> Result<DeployResult> {
-  if let Some(source) = &params.source {
-    if let Some(content) = &params.content {
-      if let Some(tag) = &params.tag {
-        if let Ok(bytes) = base64::decode(content) {
-          if let Ok(xml) = String::from_utf8(bytes) {
-            let definitions = dmntk_model::parse(&xml, source)?;
-            let (name, id, tag) = workspace.deploy_definitions(tag, definitions, replace_existing)?;
-            Ok(DeployResult {
-              name: Some(name),
-              id,
-              tag: Some(tag),
-            })
-          } else {
-            Err(err_invalid_utf8_content())
-          }
+  if let Some(content) = &params.content {
+    if let Some(tag) = &params.tag {
+      if let Ok(bytes) = base64::decode(content) {
+        if let Ok(xml) = String::from_utf8(bytes) {
+          let definitions = dmntk_model::parse(&xml)?;
+          let (name, id, tag) = workspace.deploy_definitions(tag, definitions, replace_existing)?;
+          Ok(DeployResult {
+            name: Some(name),
+            id,
+            tag: Some(tag),
+          })
         } else {
-          Err(err_invalid_base64_encoding())
+          Err(err_invalid_utf8_content())
         }
       } else {
-        Err(err_missing_parameter("tag"))
+        Err(err_invalid_base64_encoding())
       }
     } else {
-      Err(err_missing_parameter("content"))
+      Err(err_missing_parameter("tag"))
     }
   } else {
-    Err(err_missing_parameter("source"))
+    Err(err_missing_parameter("content"))
   }
 }
 

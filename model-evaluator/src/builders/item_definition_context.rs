@@ -213,15 +213,15 @@ mod tests {
   use dmntk_feel::{FeelType, Name};
 
   /// Utility function for building item definition evaluator from definitions.
-  fn build_evaluator(xml: &str, source: &str) -> ItemDefinitionContextEvaluator {
+  fn build_evaluator(xml: &str) -> ItemDefinitionContextEvaluator {
     let mut evaluator = ItemDefinitionContextEvaluator::default();
-    evaluator.build(&dmntk_model::parse(xml, source).unwrap()).unwrap();
+    evaluator.build(&dmntk_model::parse(xml).unwrap()).unwrap();
     evaluator
   }
 
   #[test]
   fn simple_type_string() {
-    let evaluator = build_evaluator(DMN_0101, "file:///0101.dmn");
+    let evaluator = build_evaluator(DMN_0101);
     let mut ctx = FeelContext::default();
     let expected_type = FeelType::String;
     let mut expected_context = FeelContext::default();
@@ -234,7 +234,7 @@ mod tests {
 
   #[test]
   fn simple_type_number() {
-    let evaluator = build_evaluator(DMN_0102, "file:///0102.dmn");
+    let evaluator = build_evaluator(DMN_0102);
     let mut ctx = FeelContext::default();
     let expected_type = FeelType::Number;
     let mut expected_context = FeelContext::default();
@@ -247,42 +247,42 @@ mod tests {
   /*
       #[test]
       fn simple_type_boolean() {
-        let definitions = &dmntk_model::parse(DMN_0103, "file:///0103.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0103).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::Boolean), evaluators.eval("tIsAffordable"));
       }
 
       #[test]
       fn simple_type_date() {
-        let definitions = &dmntk_model::parse(DMN_0104, "file:///0104.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0104).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::Date), evaluators.eval("tBirthday"));
       }
 
       #[test]
       fn simple_type_time() {
-        let definitions = &dmntk_model::parse(DMN_0105, "file:///0105.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0105).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::Time), evaluators.eval("tDeliveryTime"));
       }
 
       #[test]
       fn simple_type_date_time() {
-        let definitions = &dmntk_model::parse(DMN_0106, "file:///0106.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0106).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::DateTime), evaluators.eval("tAppointment"));
       }
 
       #[test]
       fn simple_type_days_and_time_duration() {
-        let definitions = &dmntk_model::parse(DMN_0107, "file:///0107.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0107).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::DaysAndTimeDuration), evaluators.eval("tCourseDuration"));
       }
 
       #[test]
       fn simple_type_years_and_month_duration() {
-        let definitions = &dmntk_model::parse(DMN_0108, "file:///0108.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0108).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::YearsAndMonthsDuration), evaluators.eval("tGrowthDuration"));
       }
@@ -290,7 +290,7 @@ mod tests {
 
   #[test]
   fn referenced_type_string() {
-    let evaluator = build_evaluator(DMN_0201, "file:///0201.dmn");
+    let evaluator = build_evaluator(DMN_0201);
     let mut ctx = FeelContext::default();
     let expected_type = FeelType::String;
     let mut expected_context = FeelContext::default();
@@ -304,7 +304,7 @@ mod tests {
   /*
   #[test]
   fn referenced_type_number() {
-    let definitions = &dmntk_model::parse(DMN_0202, "file:///0202.dmn").unwrap();
+    let definitions = &dmntk_model::parse(DMN_0202).unwrap();
     let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
     assert_eq!(Some(FeelType::Number), evaluators.eval("tMonthlySalary"));
   }
@@ -312,7 +312,7 @@ mod tests {
 
   #[test]
   fn component_type() {
-    let evaluator = build_evaluator(DMN_0301, "file:///0301.dmn");
+    let evaluator = build_evaluator(DMN_0301);
     let mut ctx = FeelContext::default();
     let name_principal: Name = "principal".into();
     let name_rate: Name = "rate".into();
@@ -336,7 +336,7 @@ mod tests {
 
   #[test]
   fn collection_of_simple_type_string() {
-    let evaluator = build_evaluator(DMN_0401, "file:///0401.dmn");
+    let evaluator = build_evaluator(DMN_0401);
     let mut ctx = FeelContext::default();
     let expected_type = FeelType::List(Box::new(FeelType::String));
     let mut expected_context = FeelContext::default();
@@ -350,49 +350,49 @@ mod tests {
   /*
       #[test]
       fn collection_of_simple_type_number() {
-        let definitions = &dmntk_model::parse(DMN_0402, "file:///0402.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0402).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::Number)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_boolean() {
-        let definitions = &dmntk_model::parse(DMN_0403, "file:///0403.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0403).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::Boolean)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_date() {
-        let definitions = &dmntk_model::parse(DMN_0404, "file:///0404.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0404).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::Date)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_time() {
-        let definitions = &dmntk_model::parse(DMN_0405, "file:///0405.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0405).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::Time)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_date_time() {
-        let definitions = &dmntk_model::parse(DMN_0406, "file:///0406.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0406).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::DateTime)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_days_and_time_duration() {
-        let definitions = &dmntk_model::parse(DMN_0407, "file:///0407.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0407).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::DaysAndTimeDuration)), evaluators.eval("tItems"));
       }
 
       #[test]
       fn collection_of_simple_type_years_and_months_duration() {
-        let definitions = &dmntk_model::parse(DMN_0408, "file:///0408.dmn").unwrap();
+        let definitions = &dmntk_model::parse(DMN_0408).unwrap();
         let evaluators = ItemDefinitionTypeEvaluator::new(definitions).unwrap();
         assert_eq!(Some(FeelType::list(&FeelType::YearsAndMonthsDuration)), evaluators.eval("tItems"));
       }
@@ -400,7 +400,7 @@ mod tests {
   */
   #[test]
   fn collection_of_referenced_type_string() {
-    let evaluator = build_evaluator(DMN_0501, "file:///0501.dmn");
+    let evaluator = build_evaluator(DMN_0501);
     let mut ctx = FeelContext::default();
     let expected_type = FeelType::List(Box::new(FeelType::String));
     let mut expected_context = FeelContext::default();
@@ -413,7 +413,7 @@ mod tests {
 
   #[test]
   fn collection_of_component_type() {
-    let evaluator = build_evaluator(DMN_0601, "file:///0601.dmn");
+    let evaluator = build_evaluator(DMN_0601);
     let mut ctx = FeelContext::default();
     let name_manager: Name = "manager".into();
     let name_name: Name = "name".into();

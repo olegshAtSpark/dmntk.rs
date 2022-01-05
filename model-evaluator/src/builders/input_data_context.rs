@@ -115,8 +115,8 @@ mod tests {
 
   /// Utility function for building input data context evaluator from definitions,
   /// and item definition context evaluator from definitions.
-  fn build_evaluators(xml: &str, source: &str) -> (InputDataContextEvaluator, ItemDefinitionContextEvaluator) {
-    let definitions = &dmntk_model::parse(xml, source).unwrap();
+  fn build_evaluators(xml: &str) -> (InputDataContextEvaluator, ItemDefinitionContextEvaluator) {
+    let definitions = &dmntk_model::parse(xml).unwrap();
     let mut input_data_context_evaluator = InputDataContextEvaluator::default();
     input_data_context_evaluator.build(definitions).unwrap();
     let mut item_definition_context_evaluator = ItemDefinitionContextEvaluator::default();
@@ -126,7 +126,7 @@ mod tests {
 
   #[test]
   fn _0001_1() {
-    let (evaluator, item_definition_context_evaluator) = build_evaluators(DMN_0001, "file:///0001.dmn");
+    let (evaluator, item_definition_context_evaluator) = build_evaluators(DMN_0001);
     let expected_type = FeelType::String;
     let mut ctx = FeelContext::default();
     let actual_type = evaluator.eval("_cba86e4d-e91c-46a2-9176-e9adf88e15db", &mut ctx, &item_definition_context_evaluator);
@@ -136,7 +136,7 @@ mod tests {
   /*
     #[test]
     fn _0001_2() {
-      let definitions = &dmntk_model::parse(DMN_0001, "file:///0001.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0001).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Full Name : 50.0 }"#;
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn _0002_1() {
-      let definitions = &dmntk_model::parse(DMN_0002, "file:///0002.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0002).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Monthly Salary : 12000.00 }"#;
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn _0002_2() {
-      let definitions = &dmntk_model::parse(DMN_0002, "file:///0002.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0002).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Monthly Salary : "12000.00" }"#;
@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn _0003_1() {
-      let definitions = &dmntk_model::parse(DMN_0003, "file:///0003.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0003).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Is Affordable : true }"#;
@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     fn _0003_2() {
-      let definitions = &dmntk_model::parse(DMN_0003, "file:///0003.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0003).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Is Affordable : "no" }"#;
@@ -213,7 +213,7 @@ mod tests {
 
     #[test]
     fn _0103_1() {
-      let definitions = &dmntk_model::parse(DMN_0103, "file:///0103.dmn").unwrap();
+      let definitions = &dmntk_model::parse(DMN_0103).unwrap();
       let input_data_evaluators = InputDataEvaluator::new(definitions).unwrap();
       let item_definitions_evaluators = ItemDefinitionEvaluator::new(definitions).unwrap();
       let context_str = r#"{ Employment Status : "EMPLOYED" }"#;
