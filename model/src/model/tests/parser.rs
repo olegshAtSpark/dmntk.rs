@@ -32,17 +32,16 @@
 
 use crate::model::*;
 
-const NAMESPACE: &str = "https://dmntk.io";
+const DMNTK_NAMESPACE: &str = "https://dmntk.io";
 
 #[test]
 fn _2_0001() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0001).unwrap();
   assert_eq!("_c910c9ba-c584-4ac9-a773-1e6de185cd85", definitions.id().as_ref().unwrap().as_str());
   assert_eq!("Compliance level 2. Test 0001.", definitions.description().as_ref().unwrap().as_str());
   assert!(definitions.label().is_none());
   assert_eq!("compliance-level-2-test-0001", definitions.name());
-  assert_eq!(NAMESPACE, definitions.namespace());
+  assert_eq!(DMNTK_NAMESPACE, definitions.namespace());
   assert!(definitions.expression_language().is_none());
   assert!(definitions.type_language().is_none());
   assert!(definitions.exporter().is_none());
@@ -97,21 +96,19 @@ fn _2_0001() {
 
 #[test]
 fn _2_0002() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0002).unwrap();
   assert_eq!("_072005e3-2635-47c9-8dec-5aca4b869376", definitions.id().as_ref().unwrap().as_str());
-  assert_eq!(NAMESPACE, definitions.namespace());
+  assert_eq!(DMNTK_NAMESPACE, definitions.namespace());
 }
 
 #[test]
 fn _2_0003() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0003).unwrap();
   assert_eq!("_ce8a8d19-38c0-4289-8a46-ff72f881e71f", definitions.id().as_ref().unwrap().as_str());
   assert_eq!("Compliance level 2. Test 0003.", definitions.description().as_ref().unwrap().as_str());
   assert!(definitions.label().is_none());
   assert_eq!("compliance-level-2-test-0003", definitions.name());
-  assert_eq!(NAMESPACE, definitions.namespace());
+  assert_eq!(DMNTK_NAMESPACE, definitions.namespace());
   assert_eq!(2, definitions.drg_elements.len());
   // <definitions>.<itemDefinition>
   let item_definition = definitions.item_definition_by_name("tEmploymentStatus").unwrap();
@@ -178,7 +175,6 @@ fn _2_0003() {
 
 #[test]
 fn _2_0004() {
-  // checking node: <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0004).unwrap();
   assert_eq!("_edbd2d8e-a5a8-4660-9bb9-adaa792d900c", definitions.id().as_ref().unwrap().as_str());
   assert!(definitions.description().is_none());
@@ -214,21 +210,18 @@ fn _2_0004() {
 
 #[test]
 fn _2_0005() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0005).unwrap();
   assert_eq!("_6cb03678-38e5-4ee3-826b-d6622c738563", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _2_0006() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0006).unwrap();
   assert_eq!("_ecea0c06-d5d0-41c2-9ba9-a9153fb47e7b", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _2_0008() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0008).unwrap();
   assert_eq!("_e2d61fd1-c220-4359-9f7e-b42474c7983f", definitions.id().as_ref().unwrap().as_str());
 }
@@ -298,21 +291,18 @@ fn _2_0009() {
 
 #[test]
 fn _2_0010() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0010).unwrap();
   assert_eq!("_a4a902f2-1948-4e06-8035-da8098345536", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _2_0106() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_2_0106).unwrap();
   assert_eq!("_09efab6a-892b-452f-9182-492a89540a20", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0001() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0001).unwrap();
   assert_eq!("_8e0912d6-54f3-4276-81a5-eebc712af710", definitions.id().as_ref().unwrap().as_str());
 }
@@ -345,42 +335,36 @@ fn _3_0002() {
 
 #[test]
 fn _3_0003() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0003).unwrap();
   assert_eq!("_54863c52-2fa7-4a3d-b383-d4eb2eb88771", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0004() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0004).unwrap();
   assert_eq!("_52650d27-fc13-463e-a55a-2080e8a1c8da", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0006() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0006).unwrap();
   assert_eq!("_40a27b80-d50e-4e60-9905-178d5e3065e3", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0007() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0007).unwrap();
   assert_eq!("_0705a5f4-80df-41b5-9553-79c1ba3dff6c", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0008() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0008).unwrap();
   assert_eq!("_15af8727-45c8-4dc8-8435-ed087bfb35d9", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0014() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0014).unwrap();
   assert_eq!("_56c7d4a5-e6db-4bba-ac5f-dc082a16f719", definitions.id().as_ref().unwrap().as_str());
 }
@@ -419,35 +403,49 @@ fn _3_0016() {
 
 #[test]
 fn _3_0020() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0020).unwrap();
   assert_eq!("_819c015c-7ede-4404-876e-e96417aed322", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0030() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0030).unwrap();
   assert_eq!("_3cc4a1ee-68b8-4fc3-b686-e690f8fa7dcc", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0082() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0082).unwrap();
   assert_eq!("_6cd7f5d2-7cbb-45ea-b9bd-58ab1b6f678c", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
 fn _3_0085() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0085).unwrap();
   assert_eq!("_3e0df83c-a19e-4d31-98e0-b73db25df89c", definitions.id().as_ref().unwrap().as_str());
 }
 
 #[test]
+fn _3_0086() {
+  let definitions = crate::parse(dmntk_examples::DMN_3_0086).unwrap();
+  assert_eq!("_8bb2d2bb-b981-415c-a5c3-cdb255f2d967", definitions.id().as_ref().unwrap().as_str());
+  let imports = definitions.imports();
+  assert_eq!(1, imports.len());
+  let import = &imports[0];
+  assert_eq!(None, import.id().as_ref());
+  assert_eq!(None, import.description().as_ref());
+  assert_eq!(None, import.label().as_ref());
+  assert_eq!(None, import.extension_elements().as_ref());
+  assert_eq!(0, import.extension_attributes().len());
+  assert_eq!("myimport", import.name());
+  assert_eq!("myimport", import.feel_name().as_ref().unwrap().to_string());
+  assert_eq!(URI_MODEL, import.import_type());
+  assert_eq!(None, import.location_uri().as_ref());
+  assert_eq!("http://www.trisotech.com/definitions/_f27bb64b-6fc7-4e1f-9848-11ba35e0df36", import.namespace());
+}
+
+#[test]
 fn _3_0087() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0087).unwrap();
   assert_eq!("_9d01a0c4-f529-4ad8-ad8e-ec5fb5d96ad4", definitions.id().as_ref().unwrap().as_str());
   // <definitions>.<knowledgeSource>
@@ -463,7 +461,6 @@ fn _3_0087() {
 
 #[test]
 fn _3_0088() {
-  // <definitions>
   let definitions = crate::parse(dmntk_examples::DMN_3_0088).unwrap();
   assert_eq!("_67ff55d6-2882-4432-89a9-354faba866be", definitions.id().as_ref().unwrap().as_str());
 }

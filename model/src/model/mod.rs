@@ -45,6 +45,7 @@ use std::convert::TryFrom;
 use std::fmt::Display;
 
 pub const URI_FEEL: &str = "https://www.omg.org/spec/DMN/20191111/FEEL/";
+pub const URI_MODEL: &str = "https://www.omg.org/spec/DMN/20191111/MODEL/";
 pub const URI_UNINTERPRETED: &str = "http://www.omg.org/spec/DMN/uninterpreted/20140801";
 pub const URI_XML_SCHEMA: &str = "http://www.w3.org/2001/XMLSchema";
 
@@ -808,11 +809,11 @@ pub struct Import {
   /// Optional `FEEL` name of this [Import].
   feel_name: Option<Name>,
   /// Specifies the style of import associated with this [Import].
-  pub import_type: String,
+  import_type: String,
   /// Identifies the location of the imported element.
-  pub location_uri: Option<String>,
+  location_uri: Option<String>,
   /// Identifies the namespace of the imported element.
-  pub namespace: String,
+  namespace: String,
 }
 
 impl DmnElement for Import {
@@ -846,6 +847,21 @@ impl NamedElement for Import {
   /// Returns a reference to optional `FEEL` name of this [Import].
   fn feel_name(&self) -> &Option<Name> {
     &self.feel_name
+  }
+}
+
+impl Import {
+  /// Returns reference to the import type for this [Import].
+  pub fn import_type(&self) -> &str {
+    &self.import_type
+  }
+  /// Returns reference to the optional location URI for this [Import].
+  pub fn location_uri(&self) -> &Option<String> {
+    &self.location_uri
+  }
+  /// Returns reference to the namespace of this [Import].
+  pub fn namespace(&self) -> &str {
+    &self.namespace
   }
 }
 

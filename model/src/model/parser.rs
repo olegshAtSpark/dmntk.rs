@@ -73,6 +73,7 @@ const NODE_ENCAPSULATED_LOGIC: &str = "encapsulatedLogic";
 const NODE_FUNCTION_DEFINITION: &str = "functionDefinition";
 const NODE_FORMAL_PARAMETER: &str = "formalParameter";
 const NODE_FUNCTION_ITEM: &str = "functionItem";
+const NODE_IMPORT: &str = "import";
 const NODE_INFORMATION_REQUIREMENT: &str = "informationRequirement";
 const NODE_INPUT_DATA: &str = "inputData";
 const NODE_INPUT: &str = "input";
@@ -120,10 +121,12 @@ const ATTR_PREFERRED_ORIENTATION: &str = "preferredOrientation";
 const ATTR_HEIGHT: &str = "height";
 const ATTR_HREF: &str = "href";
 const ATTR_ID: &str = "id";
+const ATTR_IMPORT_TYPE: &str = "importType";
 const ATTR_IS_COLLAPSED: &str = "isCollapsed";
 const ATTR_IS_COLLECTION: &str = "isCollection";
 const ATTR_KIND: &str = "kind";
 const ATTR_LABEL: &str = "label";
+const ATTR_LOCATION_URI: &str = "locationURI";
 const ATTR_NAME: &str = "name";
 const ATTR_NAMESPACE: &str = "namespace";
 const ATTR_OUTPUT_LABEL: &str = "outputLabel";
@@ -333,8 +336,8 @@ impl ModelParser {
         id: optional_attribute(child_node, ATTR_ID),
         description: optional_child_optional_content(child_node, NODE_DESCRIPTION),
         label: optional_attribute(child_node, ATTR_LABEL),
-        extension_elements: None,
-        extension_attributes: vec![],
+        extension_elements: self.parse_extension_elements(child_node),
+        extension_attributes: self.parse_extension_attributes(child_node),
         name: required_name(child_node)?,
         feel_name: optional_feel_name(child_node)?,
       };
@@ -400,10 +403,25 @@ impl ModelParser {
   fn parse_business_context_elements(&self, _node: &Node) -> Result<Vec<BusinessContextElementInstance>> {
     Ok(vec![])
   }
-  /// Parses a collection of [Import].
-  #[allow(clippy::unnecessary_wraps)]
-  fn parse_imports(&self, _node: &Node) -> Result<Vec<Import>> {
-    Ok(vec![])
+  /// Parses a collection of [Imports](Import).
+  fn parse_imports(&self, node: &Node) -> Result<Vec<Import>> {
+    let mut imports = vec![];
+    for ref child_node in node.children().filter(|n| n.tag_name().name() == NODE_IMPORT) {
+      let import = Import {
+        id: optional_attribute(child_node, ATTR_ID),
+        description: optional_child_optional_content(child_node, NODE_DESCRIPTION),
+        label: optional_attribute(child_node, ATTR_LABEL),
+        extension_elements: self.parse_extension_elements(child_node),
+        extension_attributes: self.parse_extension_attributes(child_node),
+        name: required_name(child_node)?,
+        feel_name: optional_feel_name(child_node)?,
+        import_type: required_attribute(child_node, ATTR_IMPORT_TYPE)?,
+        location_uri: optional_attribute(child_node, ATTR_LOCATION_URI),
+        namespace: required_attribute(child_node, ATTR_NAMESPACE)?,
+      };
+      imports.push(import);
+    }
+    Ok(imports)
   }
   ///
   fn parse_information_item_child(&self, node: &Node, child_name: &str) -> Result<InformationItem> {
