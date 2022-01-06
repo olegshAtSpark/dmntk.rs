@@ -111,35 +111,35 @@ impl ModelEvaluator {
   }
   ///
   pub fn input_data_evaluator(&self) -> Result<RwLockReadGuard<InputDataEvaluator>> {
-    Ok(self.input_data_evaluator.read().map_err(err_read_lock_failed)?)
+    self.input_data_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn input_data_context_evaluator(&self) -> Result<RwLockReadGuard<InputDataContextEvaluator>> {
-    Ok(self.input_data_context_evaluator.read().map_err(err_read_lock_failed)?)
+    self.input_data_context_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn item_definition_context_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionContextEvaluator>> {
-    Ok(self.item_definition_context_evaluator.read().map_err(err_read_lock_failed)?)
+    self.item_definition_context_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn item_definition_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionEvaluator>> {
-    Ok(self.item_definition_evaluator.read().map_err(err_read_lock_failed)?)
+    self.item_definition_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn item_definition_type_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionTypeEvaluator>> {
-    Ok(self.item_definition_type_evaluator.read().map_err(err_read_lock_failed)?)
+    self.item_definition_type_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn business_knowledge_model_evaluator(&self) -> Result<RwLockReadGuard<BusinessKnowledgeModelEvaluator>> {
-    Ok(self.business_knowledge_model_evaluator.read().map_err(err_read_lock_failed)?)
+    self.business_knowledge_model_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn decision_service_evaluator(&self) -> Result<RwLockReadGuard<DecisionServiceEvaluator>> {
-    Ok(self.decision_service_evaluator.read().map_err(err_read_lock_failed)?)
+    self.decision_service_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
   pub fn decision_evaluator(&self) -> Result<RwLockReadGuard<DecisionEvaluator>> {
-    Ok(self.decision_evaluator.read().map_err(err_read_lock_failed)?)
+    self.decision_evaluator.read().map_err(err_read_lock_failed)
   }
   /// Evaluates an invocable with specified name.
   pub fn evaluate_invocable(&self, _invocable_name: &str, _input_data: &FeelContext) -> Value {
