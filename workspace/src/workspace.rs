@@ -67,7 +67,7 @@ pub struct Workspace {
 
 impl Workspace {
   /// Creates an empty [Workspace].
-  pub fn new() -> Self {
+  pub fn new(_workspace_dir: Option<&str>) -> Self {
     Self {
       definitions: vec![],
       definitions_by_namespace: HashMap::new(),

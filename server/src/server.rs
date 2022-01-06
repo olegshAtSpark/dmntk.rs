@@ -201,7 +201,7 @@ async fn not_found() -> std::io::Result<Json<ResultDto<()>>> {
 /// Starts the server.
 pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) -> std::io::Result<()> {
   // create workspace and load all definitions
-  let workspace = Workspace::new();
+  let workspace = Workspace::new(None);
   let application_data = web::Data::new(ApplicationData {
     workspace: RwLock::new(workspace),
   });
