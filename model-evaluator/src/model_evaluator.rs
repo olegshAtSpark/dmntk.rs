@@ -40,7 +40,15 @@ use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value;
 use dmntk_feel::{value_null, Name};
 use dmntk_model::model::Definitions;
+use std::collections::HashMap;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
+
+///
+pub enum InvocableType {
+  Decision(String),
+  BusinessKnowledgeModel(String, Name),
+  DecisionService(String),
+}
 
 ///
 #[derive(Default)]
@@ -61,6 +69,8 @@ pub struct ModelEvaluator {
   decision_evaluator: RwLock<DecisionEvaluator>,
   /// Decision service evaluator.
   decision_service_evaluator: RwLock<DecisionServiceEvaluator>,
+  /// Map of [InvocableType] indexed by invocable (decision, business knowledge model or decision service) name.
+  invocable_by_name: RwLock<HashMap<String, InvocableType>>,
 }
 
 impl ModelEvaluator {
@@ -142,8 +152,44 @@ impl ModelEvaluator {
     self.decision_evaluator.read().map_err(err_read_lock_failed)
   }
   /// Evaluates an invocable with specified name.
-  pub fn evaluate_invocable(&self, _invocable_name: &str, _input_data: &FeelContext) -> Value {
-    value_null!()
+  pub fn evaluate_invocable(&self, invocable_name: &str, input_data: &FeelContext) -> Value {
+    if let Ok(invocable_by_name) = self.invocable_by_name.write() {
+      match invocable_by_name.get(invocable_name) {
+        Some(InvocableType::Decision(id)) => {
+          // evaluate decision
+          self.evaluate_decision(id, input_data)
+        }
+        Some(InvocableType::BusinessKnowledgeModel(id, output_variable_name)) => {
+          // evaluate business knowledge model
+          self.evaluate_business_knowledge_model(id, input_data, output_variable_name)
+        }
+        Some(InvocableType::DecisionService(id)) => {
+          // evaluate decision service
+          self.evaluate_decision_service(id, input_data)
+        }
+        None => value_null!("invocable with name '{}' not found", invocable_name),
+      }
+    } else {
+      value_null!("write lock failed when acquiring invocable_by_name map")
+    }
+  }
+  ///
+  pub fn add_invocable_decision(&self, name: &str, id: &str) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::Decision(id.to_string()));
+    }
+  }
+  ///
+  pub fn add_invocable_business_knowledge_model(&self, name: &str, id: &str, output_variable_name: Name) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::BusinessKnowledgeModel(id.to_string(), output_variable_name));
+    }
+  }
+  ///
+  pub fn add_invocable_decision_service(&self, name: &str, id: &str) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::DecisionService(id.to_string()));
+    }
   }
   /// Evaluates a business knowledge model.
   pub fn evaluate_business_knowledge_model(&self, id: &str, input_data: &FeelContext, output_variable_name: &Name) -> Value {
