@@ -43,6 +43,7 @@ use dmntk_model::model::{DecisionService, Definitions, DmnElement, RequiredVaria
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::sync::Arc;
 
 /// Type of closure that evaluates a decision service.
 ///
@@ -61,10 +62,10 @@ pub struct DecisionServiceEvaluator {
 
 impl DecisionServiceEvaluator {
   /// Creates a new decision evaluator.
-  pub fn build(&mut self, definitions: &Definitions, model_evaluator: Rc<ModelEvaluator>) -> Result<()> {
+  pub fn build(&mut self, definitions: &Definitions, model_evaluator: Arc<ModelEvaluator>) -> Result<()> {
     for decision_service in definitions.decision_services() {
       let decision_service_id = decision_service.id().as_ref().ok_or_else(err_empty_identifier)?;
-      let evaluator = build_decision_service_evaluator(decision_service, decision_service_id.clone(), Rc::clone(&model_evaluator))?;
+      let evaluator = build_decision_service_evaluator(decision_service, decision_service_id.clone(), Arc::clone(&model_evaluator))?;
       self.evaluators.insert(decision_service_id.to_owned(), evaluator);
     }
     Ok(())
@@ -88,7 +89,7 @@ impl DecisionServiceEvaluator {
 fn build_decision_service_evaluator(
   decision_service: &DecisionService,
   decision_service_id: String,
-  model_evaluator: Rc<ModelEvaluator>,
+  model_evaluator: Arc<ModelEvaluator>,
 ) -> Result<DecisionServiceEvaluatorEntry> {
   let output_variable = Variable::try_from(decision_service.variable())?;
   // prepare output variable name for this decision

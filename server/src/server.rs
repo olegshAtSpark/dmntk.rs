@@ -39,7 +39,7 @@ use dmntk_feel::context::FeelContext;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use std::sync::Mutex;
+use std::sync::RwLock;
 
 const DMNTK_NAME: &str = env!("CARGO_PKG_NAME");
 const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -47,7 +47,7 @@ const DMNTK_COPYRIGHT: &str = env!("CARGO_PKG_AUTHORS");
 
 /// Shared workspace with decision model definitions.
 struct ApplicationData {
-  workspace: Mutex<Workspace>,
+  workspace: RwLock<Workspace>,
 }
 
 /// Data transfer object for an error.
@@ -172,7 +172,7 @@ async fn system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
 /// Handler for deploying DMN™ definitions.
 #[post("/deploy-definitions")]
 async fn deploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
+  if let Ok(mut workspace) = data.workspace.write() {
     match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), false) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
@@ -185,7 +185,7 @@ async fn deploy_definitions(params: Json<DeployParams>, data: web::Data<Applicat
 /// Handler for redeploying DMN™ definitions.
 #[post("/redeploy-definitions")]
 async fn redeploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
+  if let Ok(mut workspace) = data.workspace.write() {
     match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), true) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
@@ -198,8 +198,8 @@ async fn redeploy_definitions(params: Json<DeployParams>, data: web::Data<Applic
 /// Handler for evaluating artifacts.
 #[post("/evl")]
 async fn evaluate_artifact(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
-    match evaluate_artifact_in_workspace(&mut workspace, &params.into_inner()) {
+  if let Ok(workspace) = data.workspace.read() {
+    match evaluate_artifact_in_workspace(&workspace, &params.into_inner()) {
       Ok(response) => Ok(Json(ResultDto::data(response))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
@@ -216,9 +216,9 @@ async fn not_found() -> std::io::Result<Json<ResultDto<()>>> {
 /// Starts the server.
 pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) -> std::io::Result<()> {
   // create workspace and load all definitions
-  let workspace = Workspace::default();
+  let workspace = Workspace::new();
   let application_data = web::Data::new(ApplicationData {
-    workspace: Mutex::new(workspace),
+    workspace: RwLock::new(workspace),
   });
   let address = get_server_address(opt_host, opt_port);
   println!("dmntk {}", address);
@@ -253,17 +253,17 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
 }
 
 ///
-fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployParams, replace_existing: bool) -> Result<DeployResult> {
+fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployParams, _replace_existing: bool) -> Result<DeployResult> {
   if let Some(content) = &params.content {
     if let Some(tag) = &params.tag {
       if let Ok(bytes) = base64::decode(content) {
         if let Ok(xml) = String::from_utf8(bytes) {
           let definitions = dmntk_model::parse(&xml)?;
-          let (name, id, tag) = workspace.deploy_definitions(tag, definitions, replace_existing)?;
+          workspace.add(definitions)?;
           Ok(DeployResult {
-            name: Some(name),
-            id,
-            tag: Some(tag),
+            name: Some("".to_string()),
+            id: Some("".to_string()),
+            tag: Some("".to_string()),
           })
         } else {
           Err(err_invalid_utf8_content())
@@ -280,23 +280,19 @@ fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployPar
 }
 
 /// Evaluates the artifact specified in parameters and returns the result.
-fn evaluate_artifact_in_workspace(workspace: &mut Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
-  if let Some(model_tag) = &params.model_tag {
-    if let Some(artifact_type) = &params.artifact_type {
-      if let Some(artifact_name) = &params.artifact_name {
-        if let Some(input_values) = &params.input_values {
-          // convert input data into context
-          let ctx = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;
-          // evaluate artifact with specified name
-          workspace.evaluate_artifact(&ctx, model_tag, artifact_type, artifact_name)?.try_into()
-        } else {
-          Err(err_missing_parameter("input"))
-        }
+fn evaluate_artifact_in_workspace(workspace: &Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
+  if let Some(model_name) = &params.model_tag {
+    if let Some(invocable_name) = &params.artifact_name {
+      if let Some(input_values) = &params.input_values {
+        // convert input values data into input data as a context
+        let input_data = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;
+        // evaluate artifact with specified name
+        workspace.evaluate_invocable(model_name, invocable_name, &input_data)?.try_into()
       } else {
-        Err(err_missing_parameter("name"))
+        Err(err_missing_parameter("input"))
       }
     } else {
-      Err(err_missing_parameter("artifact"))
+      Err(err_missing_parameter("name"))
     }
   } else {
     Err(err_missing_parameter("tag"))

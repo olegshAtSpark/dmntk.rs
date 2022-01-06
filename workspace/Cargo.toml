@@ -13,4 +13,5 @@ dmntk-common = { path = "../common" }
 dmntk-evaluator = { path = "../evaluator" }
 dmntk-feel = { path = "../feel" }
 dmntk-model = { path = "../model" }
+dmntk-model-evaluator = { path = "../model-evaluator" }
 thiserror = "1.0.30"

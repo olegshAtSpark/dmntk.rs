@@ -34,6 +34,7 @@ extern crate dmntk_common;
 extern crate dmntk_evaluator;
 extern crate dmntk_feel;
 extern crate dmntk_model;
+extern crate dmntk_model_evaluator;
 #[macro_use]
 extern crate thiserror;
 

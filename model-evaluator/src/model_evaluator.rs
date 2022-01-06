@@ -40,18 +40,7 @@ use dmntk_feel::values::Value;
 use dmntk_feel::{value_null, Name};
 use dmntk_model::model::Definitions;
 use std::cell::{Ref, RefCell};
-use std::rc::Rc;
-
-/*
-   # let input_data_evaluator = InputDataEvaluator::new(definitions)?;
-   # let input_data_context_evaluator = InputDataContextEvaluator::new(definitions)?;
-   # let item_definition_evaluator = ItemDefinitionEvaluator::new(definitions)?;
-   let item_definition_context_evaluator = ItemDefinitionContextEvaluator::new(definitions)?;
-   let item_definition_type_evaluator = ItemDefinitionTypeEvaluator::new(definitions)?;
-   let business_knowledge_model_evaluator = BusinessKnowledgeModelEvaluator::new(definitions, &item_definition_type_evaluator)?;
-   let decision_evaluator = DecisionEvaluator::new(      definitions,      &input_data_context_evaluator,      &item_definition_context_evaluator,      &item_definition_type_evaluator,    )?;
-   let decision_service_evaluator = DecisionServiceEvaluator::new(definitions, &item_definition_type_evaluator, &input_data_evaluator, &decision_evaluator)?;
-*/
+use std::sync::Arc;
 
 ///
 #[derive(Default)]
@@ -76,8 +65,8 @@ pub struct ModelEvaluator {
 
 impl ModelEvaluator {
   /// Creates an instance of [ModelEvaluator].
-  pub fn new(definitions: &Definitions) -> Result<Rc<Self>> {
-    let model_evaluator = Rc::new(ModelEvaluator::default());
+  pub fn new(definitions: &Definitions) -> Result<Arc<Self>> {
+    let model_evaluator = Arc::new(ModelEvaluator::default());
     model_evaluator.input_data_evaluator.borrow_mut().build(definitions)?;
     model_evaluator.input_data_context_evaluator.borrow_mut().build(definitions)?;
     model_evaluator.item_definition_evaluator.borrow_mut().build(definitions)?;
@@ -91,7 +80,7 @@ impl ModelEvaluator {
     model_evaluator
       .decision_service_evaluator
       .borrow_mut()
-      .build(definitions, Rc::clone(&model_evaluator))?;
+      .build(definitions, Arc::clone(&model_evaluator))?;
     Ok(model_evaluator)
   }
   ///
@@ -125,6 +114,10 @@ impl ModelEvaluator {
   ///
   pub fn decision_evaluator(&self) -> Ref<DecisionEvaluator> {
     self.decision_evaluator.borrow()
+  }
+  /// Evaluates an invocable with specified name.
+  pub fn evaluate_invocable(&self, _invocable_name: &str, _input_data: &FeelContext) -> Value {
+    value_null!()
   }
   /// Evaluates a business knowledge model.
   pub fn evaluate_business_knowledge_model(&self, id: &str, input_data: &FeelContext, output_variable_name: &Name) -> Value {

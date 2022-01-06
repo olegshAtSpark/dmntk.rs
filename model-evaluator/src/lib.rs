@@ -57,6 +57,7 @@ use dmntk_feel::Scope;
 pub use eval_bkm::evaluate_business_knowledge_model_by_name;
 pub use eval_dec::evaluate_decision_by_name;
 pub use eval_dec_service::eval_decision_service_by_name;
+pub use model_evaluator::ModelEvaluator;
 
 /// Evaluates the decision table.
 pub fn evaluate_decision_table_from_text(_scope: &Scope, _input: &str) -> Result<Value> {

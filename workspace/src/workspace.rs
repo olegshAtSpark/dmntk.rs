@@ -30,106 +30,118 @@
  * limitations under the License.
  */
 
-//! Container for deployed DMN™ models.
+//! Container for DMN™ models.
+//!
+//! Workspace has two *virtual* states:
+//! - `STASHING`: all model evaluators are deleted but model definitions can be freely modified,
+//! - `DEPLOYED`: model evaluators are deployed, model definitions remain unmodified.
 //!
 //! ### Remarks
 //!
-//! Importing rules require, that the `namespace` attribute in [Definitions] is globally unique.
-//! We assume, that attributes `Definitions.namespace` and `Definitions.name` are both
+//! **Importing rules** require, that the `namespace` attribute in [Definitions] is globally unique.
+//! It is assumed, that attributes `Definitions.namespace` and `Definitions.name` are both
 //! unique inside [Workspace]. In consequence, the same [Definitions] can be accessed using
-//! its either a `namespace` or `name` attribute, so there will be an error reported,
-//! when two definitions deployed in a single workspace have the same `namespace` or `name`.
+//! either a `namespace` or `name` attribute, so there will be an error reported, when two definitions
+//! deployed in a single workspace have the same `namespace` or `name` attributes.
 
 use crate::errors::*;
 use dmntk_common::Result;
 use dmntk_feel::context::FeelContext;
+use dmntk_feel::value_null;
 use dmntk_feel::values::Value;
-use dmntk_model::model::{Definitions, DmnElement, NamedElement};
+use dmntk_model::model::{Definitions, NamedElement};
+use dmntk_model_evaluator::ModelEvaluator;
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
-#[derive(Default)]
+pub struct A {
+  field: RwLock<i32>,
+}
+
+/// Structure representing the container for DMN™ models.
 pub struct Workspace {
-  /// Collection of all [Definitions](Definition) deployed in this [Workspace].
+  /// Collection of [Definitions] stashed in [Workspace].
   definitions: Vec<Arc<Definitions>>,
-  /// Map of [Definitions](Definition) indexed by `Definitions.namespace` attribute.
+  /// Map of [Definitions] indexed by [Definitions].**namespace** attribute.
   definitions_by_namespace: HashMap<String, Arc<Definitions>>,
-  /// Map of [Definitions](Definition) indexed by `Definition.name` attribute.
+  /// Map of [Definitions] indexed by [Definitions].**name** attribute.
   definitions_by_name: HashMap<String, Arc<Definitions>>,
-  //TODO remove
-  /// Mapping of definitions by definition's tag.
-  definitions_by_tag: HashMap<String, Arc<Definitions>>, //TODO remove
-  /// Mapping of definitions by definition's identifier.
-  definitions_by_id: HashMap<String, Arc<Definitions>>, //TODO remove
+  // /// Map of [ModelEvaluator] indexed by [Definitions].**name** attribute.
+  model_evaluators_by_name: HashMap<String, A>,
 }
 
 impl Workspace {
-  ///
-  pub fn append_definitions(&mut self, tag: &str, definitions: Definitions) -> Result<(String, Option<String>, String)> {
-    let definitions_namespace = definitions.namespace().to_string();
-    if self.definitions_by_namespace.contains_key(&definitions_namespace) {
-      return Err(err_definitions_with_namespace_already_exists(&definitions_namespace));
+  /// Creates an empty [Workspace].
+  pub fn new() -> Self {
+    Self {
+      definitions: vec![],
+      definitions_by_namespace: HashMap::new(),
+      definitions_by_name: HashMap::new(),
+      model_evaluators_by_name: HashMap::new(),
     }
-    let definitions_name = definitions.name().to_string();
-    let definitions_id = definitions.id().clone();
+  }
+  /// Deletes all definitions and model evaluators.
+  pub fn clear(&mut self) {
+    self.clear_definitions();
+    self.clear_model_evaluators();
+  }
+  ///
+  pub fn add(&mut self, definitions: Definitions) -> Result<()> {
+    let namespace = definitions.namespace().to_string();
+    if self.definitions_by_namespace.contains_key(&namespace) {
+      return Err(err_definitions_with_namespace_already_exists(&namespace));
+    }
+    let name = definitions.name().to_string();
+    if self.definitions_by_name.contains_key(&name) {
+      return Err(err_definitions_with_name_already_exists(&name));
+    }
     let definitions_arc = Arc::new(definitions);
-    if self.definitions_by_name.contains_key(&definitions_name) {
-      return Err(err_definitions_with_name_already_exists(&definitions_name));
-    }
-    self.definitions_by_name.insert(definitions_name.to_string(), Arc::clone(&definitions_arc));
-    if let Some(id) = &definitions_id {
-      if self.definitions_by_id.contains_key(id) {
-        return Err(err_definitions_with_id_already_exists(id.clone()));
-      }
-      self.definitions_by_id.insert(id.clone(), Arc::clone(&definitions_arc));
-    }
-    if self.definitions_by_tag.contains_key(tag) {
-      return Err(err_definitions_with_tag_already_exists(tag.to_string()));
-    }
-    self.definitions_by_tag.insert(tag.to_string(), Arc::clone(&definitions_arc));
+    self.definitions_by_namespace.insert(namespace, Arc::clone(&definitions_arc));
+    self.definitions_by_name.insert(name, Arc::clone(&definitions_arc));
     self.definitions.push(definitions_arc);
-    Ok((definitions_name, definitions_id, tag.to_string()))
+    self.clear_model_evaluators();
+    Ok(())
   }
   ///
-  pub fn replace_definitions(&mut self, tag: &str, definitions: Definitions) -> Result<(String, Option<String>, String)> {
-    if let Some(index) = self.definitions.iter().position(|d| d.name() == definitions.name()) {
-      let removed = self.definitions.remove(index);
-      self.definitions_by_name.remove(&removed.name().to_string());
-      if let Some(id) = removed.id() {
-        self.definitions_by_id.remove(id);
-      }
-      self.definitions_by_tag.remove(&tag.to_string());
-    }
-    self.append_definitions(tag, definitions)
+  pub fn remove(&mut self, namespace: &str, name: &str) {
+    self.definitions_by_namespace.remove(namespace);
+    self.definitions_by_name.remove(name);
+    self.definitions.retain(|d| d.namespace() != namespace && d.name() != name);
+    self.clear_model_evaluators();
   }
   ///
-  pub fn get_by_tag(&self, tag: &str) -> Option<&Definitions> {
-    if let Some(definitions) = self.definitions_by_tag.get(tag) {
-      Some(definitions)
-    } else {
-      None
-    }
+  pub fn replace(&mut self, definitions: Definitions) -> Result<()> {
+    self.remove(definitions.namespace(), definitions.name());
+    self.add(definitions)
   }
-  /// Deploys the definitions in workspace.
-  /// After successful deployment, the following tuple is returned `(name, id, tag)`.
-  pub fn deploy_definitions(&mut self, tag: &str, definitions: Definitions, replace_existing: bool) -> Result<(String, Option<String>, String)> {
-    if replace_existing {
-      self.replace_definitions(tag, definitions)
-    } else {
-      self.append_definitions(tag, definitions)
-    }
+  ///
+  pub fn deploy(&mut self) -> Result<()> {
+    self.clear_model_evaluators();
+    // for definitions in &self.definitions {
+    //   let model_evaluator = ModelEvaluator::new(definitions)?;
+    //   let name = definitions.name().to_string();
+    //   self.model_evaluators_by_name.insert(name, model_evaluator);
+    // }
+    Ok(())
   }
-  /// Evaluates an artifact.
-  pub fn evaluate_artifact(&self, ctx: &FeelContext, model_tag: &str, artifact_type: &str, artifact_name: &str) -> Result<Value> {
-    if let Some(definitions) = self.get_by_tag(model_tag) {
-      match artifact_type {
-        "decision" => dmntk_evaluator::evaluate_decision_by_name(definitions, artifact_name, ctx),
-        "bkm" => dmntk_evaluator::evaluate_business_knowledge_model_by_name(definitions, artifact_name, ctx),
-        "decisionService" => dmntk_evaluator::eval_decision_service_by_name(definitions, artifact_name, ctx),
-        _ => Err(err_invalid_invoked_artifact_name(artifact_type.to_string())),
-      }
-    } else {
-      Err(err_artifact_not_found(artifact_type.to_owned(), artifact_name.to_owned()))
-    }
+  /// Evaluates invocable (decision, business knowledge model or decision service) deployed in [Workspace].
+  pub fn evaluate_invocable(&self, model_name: &str, invocable_name: &str, input_data: &FeelContext) -> Result<Value> {
+    // if let Some(model_evaluator) = self.model_evaluators_by_name.get(model_name) {
+    //   Ok(model_evaluator.evaluate_invocable(invocable_name, input_data))
+    // } else {
+    //   Err(err_model_evaluator_not_deployed(model_name))
+    // }
+    Ok(value_null!())
+  }
+  /// Deletes all definitions stashed in workspace.
+  fn clear_definitions(&mut self) {
+    self.definitions_by_name.clear();
+    self.definitions_by_namespace.clear();
+    self.definitions.clear();
+  }
+  /// Deletes all model evaluators deployed in workspace.
+  fn clear_model_evaluators(&mut self) {
+    //self.model_evaluators_by_name.clear();
   }
 }
