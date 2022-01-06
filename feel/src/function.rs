@@ -34,10 +34,10 @@
 
 use crate::values::Value;
 use crate::{Evaluator, Scope};
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// Type alias of the closure that evaluates `FEEL` or `DMN` function body into [Value].
-pub type FunctionBodyEvaluator = Rc<Evaluator>;
+pub type FunctionBodyEvaluator = Arc<Evaluator>;
 
 /// Function body may be defined in `FEEL` or `DMN` in many ways.
 /// This enum is the representation of all of these cases.
@@ -73,40 +73,40 @@ impl FunctionBody {
 mod tests {
   use crate::values::Value;
   use crate::{value_number, FeelNumber, FunctionBody, Scope};
-  use std::rc::Rc;
+  use std::sync::Arc;
 
   #[test]
   fn _0001() {
     let scope = &Scope::default();
-    let fun_body = FunctionBody::Context(Rc::new(Box::new(|_: &Scope| value_number!(1))));
+    let fun_body = FunctionBody::Context(Arc::new(Box::new(|_: &Scope| value_number!(1))));
     assert_eq!(value_number!(1), fun_body.evaluate(scope));
   }
 
   #[test]
   fn _0002() {
     let scope = &Scope::default();
-    let fun_body = FunctionBody::LiteralExpression(Rc::new(Box::new(|_: &Scope| value_number!(2))));
+    let fun_body = FunctionBody::LiteralExpression(Arc::new(Box::new(|_: &Scope| value_number!(2))));
     assert_eq!(value_number!(2), fun_body.evaluate(scope));
   }
 
   #[test]
   fn _0003() {
     let scope = &Scope::default();
-    let fun_body = FunctionBody::DecisionTable(Rc::new(Box::new(|_: &Scope| value_number!(3))));
+    let fun_body = FunctionBody::DecisionTable(Arc::new(Box::new(|_: &Scope| value_number!(3))));
     assert_eq!(value_number!(3), fun_body.evaluate(scope));
   }
 
   #[test]
   fn _0004() {
     let scope = &Scope::default();
-    let fun_body = FunctionBody::DecisionService(Rc::new(Box::new(|_: &Scope| value_number!(4))));
+    let fun_body = FunctionBody::DecisionService(Arc::new(Box::new(|_: &Scope| value_number!(4))));
     assert_eq!(value_number!(4), fun_body.evaluate(scope));
   }
 
   #[test]
   fn _0005() {
     let scope = &Scope::default();
-    let fun_body = FunctionBody::External(Rc::new(Box::new(|_: &Scope| value_number!(5))));
+    let fun_body = FunctionBody::External(Arc::new(Box::new(|_: &Scope| value_number!(5))));
     assert_eq!(value_number!(5), fun_body.evaluate(scope));
   }
 }

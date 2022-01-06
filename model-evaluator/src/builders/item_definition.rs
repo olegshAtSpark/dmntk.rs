@@ -41,7 +41,7 @@ use dmntk_model::model::{Definitions, ItemDefinition, ItemDefinitionType, NamedE
 use std::collections::HashMap;
 
 /// Type of closure that evaluates input data conformant with item definition.
-type ItemDefinitionEvaluatorFn = Box<dyn Fn(&Value, &ItemDefinitionEvaluator) -> Value>;
+type ItemDefinitionEvaluatorFn = Box<dyn Fn(&Value, &ItemDefinitionEvaluator) -> Value + Send + Sync>;
 
 /// Item definition evaluator.
 #[derive(Default)]

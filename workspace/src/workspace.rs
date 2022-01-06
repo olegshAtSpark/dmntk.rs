@@ -47,17 +47,11 @@
 use crate::errors::*;
 use dmntk_common::Result;
 use dmntk_feel::context::FeelContext;
-use dmntk_feel::value_null;
 use dmntk_feel::values::Value;
 use dmntk_model::model::{Definitions, NamedElement};
 use dmntk_model_evaluator::ModelEvaluator;
-use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
-
-pub struct A {
-  field: RwLock<i32>,
-}
+use std::sync::Arc;
 
 /// Structure representing the container for DMN™ models.
 pub struct Workspace {
@@ -67,8 +61,8 @@ pub struct Workspace {
   definitions_by_namespace: HashMap<String, Arc<Definitions>>,
   /// Map of [Definitions] indexed by [Definitions].**name** attribute.
   definitions_by_name: HashMap<String, Arc<Definitions>>,
-  // /// Map of [ModelEvaluator] indexed by [Definitions].**name** attribute.
-  model_evaluators_by_name: HashMap<String, A>,
+  /// Map of [ModelEvaluator] indexed by [Definitions].**name** attribute.
+  model_evaluators_by_name: HashMap<String, Arc<ModelEvaluator>>,
 }
 
 impl Workspace {
@@ -118,21 +112,20 @@ impl Workspace {
   ///
   pub fn deploy(&mut self) -> Result<()> {
     self.clear_model_evaluators();
-    // for definitions in &self.definitions {
-    //   let model_evaluator = ModelEvaluator::new(definitions)?;
-    //   let name = definitions.name().to_string();
-    //   self.model_evaluators_by_name.insert(name, model_evaluator);
-    // }
+    for definitions in &self.definitions {
+      let model_evaluator = ModelEvaluator::new(definitions)?;
+      let name = definitions.name().to_string();
+      self.model_evaluators_by_name.insert(name, model_evaluator);
+    }
     Ok(())
   }
   /// Evaluates invocable (decision, business knowledge model or decision service) deployed in [Workspace].
   pub fn evaluate_invocable(&self, model_name: &str, invocable_name: &str, input_data: &FeelContext) -> Result<Value> {
-    // if let Some(model_evaluator) = self.model_evaluators_by_name.get(model_name) {
-    //   Ok(model_evaluator.evaluate_invocable(invocable_name, input_data))
-    // } else {
-    //   Err(err_model_evaluator_not_deployed(model_name))
-    // }
-    Ok(value_null!())
+    if let Some(model_evaluator) = self.model_evaluators_by_name.get(model_name) {
+      Ok(model_evaluator.evaluate_invocable(invocable_name, input_data))
+    } else {
+      Err(err_model_evaluator_not_deployed(model_name))
+    }
   }
   /// Deletes all definitions stashed in workspace.
   fn clear_definitions(&mut self) {
@@ -142,6 +135,6 @@ impl Workspace {
   }
   /// Deletes all model evaluators deployed in workspace.
   fn clear_model_evaluators(&mut self) {
-    //self.model_evaluators_by_name.clear();
+    self.model_evaluators_by_name.clear();
   }
 }

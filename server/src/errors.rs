@@ -46,8 +46,10 @@ pub enum WorkspaceError {
   InvalidBase64Encoding,
   #[error("invalid UTF-8 content")]
   InvalidUtf8Content,
-  #[error("can not lock workspace")]
-  CanNotLockWorkspace,
+  #[error("workspace read lock failed")]
+  WorkspaceReadLockFailed,
+  #[error("workspace write lock failed")]
+  WorkspaceWriteLockFailed,
 }
 
 impl From<WorkspaceError> for DmntkError {
@@ -72,6 +74,10 @@ pub fn err_invalid_utf8_content() -> DmntkError {
   WorkspaceError::InvalidUtf8Content.into()
 }
 
-pub fn err_can_not_lock_workspace() -> DmntkError {
-  WorkspaceError::CanNotLockWorkspace.into()
+pub fn err_workspace_read_lock_failed() -> DmntkError {
+  WorkspaceError::WorkspaceReadLockFailed.into()
+}
+
+pub fn err_workspace_write_lock_failed() -> DmntkError {
+  WorkspaceError::WorkspaceWriteLockFailed.into()
 }

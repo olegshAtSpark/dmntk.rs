@@ -590,7 +590,7 @@ mod tests {
   use crate::function::FunctionBody;
   use crate::values::Value;
   use crate::{FeelNumber, Scope, ToFeelString};
-  use std::rc::Rc;
+  use std::sync::Arc;
 
   #[test]
   fn _0001() {
@@ -621,14 +621,14 @@ mod tests {
 
   #[test]
   fn _0005() {
-    let fun_body_a = FunctionBody::Context(Rc::new(Box::new(|_: &Scope| value_number!(1))));
-    let fun_body_b = FunctionBody::Context(Rc::new(Box::new(|_: &Scope| value_number!(2))));
-    let fun_body_c = FunctionBody::LiteralExpression(Rc::new(Box::new(|_: &Scope| value_number!(3))));
-    let fun_body_d = FunctionBody::LiteralExpression(Rc::new(Box::new(|_: &Scope| value_number!(4))));
-    let fun_body_e = FunctionBody::DecisionTable(Rc::new(Box::new(|_: &Scope| value_number!(4))));
-    let fun_body_f = FunctionBody::DecisionTable(Rc::new(Box::new(|_: &Scope| value_number!(5))));
-    let fun_body_g = FunctionBody::External(Rc::new(Box::new(|_: &Scope| value_number!(6))));
-    let fun_body_h = FunctionBody::External(Rc::new(Box::new(|_: &Scope| value_number!(7))));
+    let fun_body_a = FunctionBody::Context(Arc::new(Box::new(|_: &Scope| value_number!(1))));
+    let fun_body_b = FunctionBody::Context(Arc::new(Box::new(|_: &Scope| value_number!(2))));
+    let fun_body_c = FunctionBody::LiteralExpression(Arc::new(Box::new(|_: &Scope| value_number!(3))));
+    let fun_body_d = FunctionBody::LiteralExpression(Arc::new(Box::new(|_: &Scope| value_number!(4))));
+    let fun_body_e = FunctionBody::DecisionTable(Arc::new(Box::new(|_: &Scope| value_number!(4))));
+    let fun_body_f = FunctionBody::DecisionTable(Arc::new(Box::new(|_: &Scope| value_number!(5))));
+    let fun_body_g = FunctionBody::External(Arc::new(Box::new(|_: &Scope| value_number!(6))));
+    let fun_body_h = FunctionBody::External(Arc::new(Box::new(|_: &Scope| value_number!(7))));
     assert_eq!(fun_body_a, fun_body_b);
     assert_ne!(fun_body_a, fun_body_c);
     assert_ne!(fun_body_a, fun_body_e);

@@ -118,46 +118,31 @@ impl Default for SystemInfoDto {
   }
 }
 
-/// Parameters for deploying DMN™ model definitions from *.dmn files.
+/// Parameters for adding DMN™ model definitions to workspace.
 #[derive(Deserialize)]
-pub struct DeployParams {
-  /// The URI of the deployed DMN™ model.
-  #[serde(rename = "source")]
-  pub source: Option<String>,
-  /// The content of the DMN™ model, encoded in `Base64`.
+pub struct AddDefinitionsParams {
+  /// Content of the DMN™ model, encoded in `Base64`.
   #[serde(rename = "content")]
   pub content: Option<String>,
-  /// Unique tag associated with the deployed model.
-  #[serde(rename = "tag")]
-  pub tag: Option<String>,
 }
 
-/// Output sent do caller after successful deployment.
-#[derive(Serialize, Debug)]
-pub struct DeployResult {
-  /// Unique name of the deployed model.
-  #[serde(rename = "name")]
-  pub name: Option<String>,
-  /// Unique identifier of the deployed model.
-  #[serde(rename = "id")]
-  pub id: Option<String>,
-  /// Unique tag associated with the deployed model.
-  #[serde(rename = "tag")]
-  pub tag: Option<String>,
+/// Operation status sent back to caller after request completion.
+#[derive(Debug, Serialize)]
+pub struct StatusResult {
+  /// Operation status.
+  #[serde(rename = "status")]
+  pub status: String,
 }
 
-/// Parameters for evaluating decision artefact.
+/// Parameters for evaluating invocable in DMN™ model definitions.
 #[derive(Debug, Deserialize)]
 pub struct EvaluateParams {
-  /// Tag of the model where the artifact will be searched.
-  #[serde(rename = "tag")]
-  model_tag: Option<String>,
-  /// Type of the artifact to be evaluated.
-  #[serde(rename = "artifact")]
-  artifact_type: Option<String>,
-  /// Name of the artifact to be evaluated.
-  #[serde(rename = "name")]
-  artifact_name: Option<String>,
+  /// Name of the model where the invocable will be searched.
+  #[serde(rename = "model")]
+  model_name: Option<String>,
+  /// Name of the invocable to be evaluated.
+  #[serde(rename = "invocable")]
+  invocable_name: Option<String>,
   /// Collection of input values.
   #[serde(rename = "input")]
   input_values: Option<Vec<InputNodeDto>>,
@@ -169,42 +154,42 @@ async fn system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
   Ok(Json(ResultDto::data(SystemInfoDto::default())))
 }
 
-/// Handler for deploying DMN™ definitions.
-#[post("/deploy-definitions")]
-async fn deploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
+/// Handler for adding DMN™ definitions to workspace.
+#[post("/definitions/add")]
+async fn add_definitions(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
   if let Ok(mut workspace) = data.workspace.write() {
-    match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), false) {
+    match add_definitions_to_workspace(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
   }
 }
 
-/// Handler for redeploying DMN™ definitions.
-#[post("/redeploy-definitions")]
-async fn redeploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
+/// Handler for replacing DMN™ definitions in workspace.
+#[post("/definitions/replace")]
+async fn replace_definitions(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
   if let Ok(mut workspace) = data.workspace.write() {
-    match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), true) {
+    match add_definitions_to_workspace(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
   }
 }
 
 /// Handler for evaluating artifacts.
-#[post("/evl")]
-async fn evaluate_artifact(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
+#[post("/evaluate")]
+async fn evaluate_invocable(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
   if let Ok(workspace) = data.workspace.read() {
     match evaluate_artifact_in_workspace(&workspace, &params.into_inner()) {
       Ok(response) => Ok(Json(ResultDto::data(response))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_read_lock_failed())))
   }
 }
 
@@ -227,9 +212,9 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
       .app_data(application_data.clone())
       .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024))
       .service(system_info)
-      .service(deploy_definitions)
-      .service(redeploy_definitions)
-      .service(evaluate_artifact)
+      .service(add_definitions)
+      .service(replace_definitions)
+      .service(evaluate_invocable)
       .default_service(web::route().to(not_found))
   })
   .bind(address)?
@@ -253,26 +238,18 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
 }
 
 ///
-fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployParams, _replace_existing: bool) -> Result<DeployResult> {
+fn add_definitions_to_workspace(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<StatusResult> {
   if let Some(content) = &params.content {
-    if let Some(tag) = &params.tag {
-      if let Ok(bytes) = base64::decode(content) {
-        if let Ok(xml) = String::from_utf8(bytes) {
-          let definitions = dmntk_model::parse(&xml)?;
-          workspace.add(definitions)?;
-          Ok(DeployResult {
-            name: Some("".to_string()),
-            id: Some("".to_string()),
-            tag: Some("".to_string()),
-          })
-        } else {
-          Err(err_invalid_utf8_content())
-        }
+    if let Ok(bytes) = base64::decode(content) {
+      if let Ok(xml) = String::from_utf8(bytes) {
+        let definitions = dmntk_model::parse(&xml)?;
+        workspace.add(definitions)?;
+        Ok(StatusResult { status: "added".to_string() })
       } else {
-        Err(err_invalid_base64_encoding())
+        Err(err_invalid_utf8_content())
       }
     } else {
-      Err(err_missing_parameter("tag"))
+      Err(err_invalid_base64_encoding())
     }
   } else {
     Err(err_missing_parameter("content"))
@@ -281,8 +258,8 @@ fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployPar
 
 /// Evaluates the artifact specified in parameters and returns the result.
 fn evaluate_artifact_in_workspace(workspace: &Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
-  if let Some(model_name) = &params.model_tag {
-    if let Some(invocable_name) = &params.artifact_name {
+  if let Some(model_name) = &params.model_name {
+    if let Some(invocable_name) = &params.invocable_name {
       if let Some(input_values) = &params.input_values {
         // convert input values data into input data as a context
         let input_data = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;

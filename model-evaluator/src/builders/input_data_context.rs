@@ -42,7 +42,7 @@ use dmntk_model::model::{Definitions, DmnElement, InputData, NamedElement, Requi
 use std::collections::HashMap;
 
 /// Type of closure that evaluates input data context.
-type InputDataContextEvaluatorFn = Box<dyn Fn(&mut FeelContext, &ItemDefinitionContextEvaluator) -> FeelType>;
+type InputDataContextEvaluatorFn = Box<dyn Fn(&mut FeelContext, &ItemDefinitionContextEvaluator) -> FeelType + Send + Sync>;
 
 /// Input data context evaluator.
 #[derive(Default)]

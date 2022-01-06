@@ -121,7 +121,7 @@ fn type_ref_to_feel_type(type_ref: &str) -> Option<FeelType> {
 }
 
 /// Type of closure that evaluates values from variable definition.
-type VariableEvaluatorFn = Box<dyn Fn(&Value, &ItemDefinitionEvaluator) -> (Name, Value)>;
+type VariableEvaluatorFn = Box<dyn Fn(&Value, &ItemDefinitionEvaluator) -> (Name, Value) + Send + Sync>;
 
 ///
 #[derive(Clone)]

@@ -44,13 +44,13 @@ use dmntk_model::model::{
   Relation, RequiredVariable,
 };
 use std::collections::HashMap;
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// Type of closure that evaluates business knowledge model.
 ///
 /// Fn(input data, model evaluator, output data)
 ///
-type BusinessKnowledgeModelEvaluatorFn = Box<dyn Fn(&FeelContext, &ModelEvaluator, &mut FeelContext)>;
+type BusinessKnowledgeModelEvaluatorFn = Box<dyn Fn(&FeelContext, &ModelEvaluator, &mut FeelContext) + Send + Sync>;
 
 /// Business knowledge model evaluator.
 #[derive(Default)]
@@ -88,11 +88,12 @@ fn build_business_knowledge_model_evaluator(
   function_definition: &FunctionDefinition,
   model_evaluator: &ModelEvaluator,
 ) -> Result<BusinessKnowledgeModelEvaluatorFn> {
+  let item_definition_type_evaluator = model_evaluator.item_definition_type_evaluator()?;
   let mut local_context = FeelContext::default();
   let mut formal_parameters = vec![];
   for information_item in function_definition.formal_parameters() {
     let feel_type = if let Some(type_ref) = information_item.type_ref() {
-      information_item_type(type_ref, &model_evaluator.item_definition_type_evaluator()).ok_or_else(err_empty_feel_type)?
+      information_item_type(type_ref, &item_definition_type_evaluator).ok_or_else(err_empty_feel_type)?
     } else {
       FeelType::Any
     };
@@ -109,7 +110,7 @@ fn build_business_knowledge_model_evaluator(
     .clone();
   // output variable type
   let output_variable_type = if let Some(output_variable_type_ref) = business_knowledge_model.variable().type_ref().as_ref() {
-    information_item_type(output_variable_type_ref, &model_evaluator.item_definition_type_evaluator()).unwrap_or(FeelType::Any)
+    information_item_type(output_variable_type_ref, &item_definition_type_evaluator).unwrap_or(FeelType::Any)
   } else {
     FeelType::Any
   };
@@ -204,7 +205,7 @@ fn build_context_evaluator(
   knowledge_requirements: &[String],
 ) -> Result<BusinessKnowledgeModelEvaluatorFn> {
   let evaluator = crate::builders::build_context_evaluator(scope, context)?;
-  let function = Value::FunctionDefinition(formal_parameters.to_owned(), FunctionBody::Context(Rc::new(evaluator)), output_variable_type);
+  let function = Value::FunctionDefinition(formal_parameters.to_owned(), FunctionBody::Context(Arc::new(evaluator)), output_variable_type);
   build_evaluator(output_variable_name, function, knowledge_requirements)
 }
 
@@ -220,7 +221,7 @@ fn build_decision_table_evaluator(
   let evaluator = crate::builders::build_decision_table_evaluator(scope, decision_table)?;
   let function = Value::FunctionDefinition(
     formal_parameters.to_owned(),
-    FunctionBody::DecisionTable(Rc::new(evaluator)),
+    FunctionBody::DecisionTable(Arc::new(evaluator)),
     output_variable_type,
   );
   build_evaluator(output_variable_name, function, knowledge_requirements)
@@ -238,7 +239,7 @@ fn build_function_definition_evaluator(
   let evaluator = crate::builders::build_function_definition_evaluator(scope, function_definition)?;
   let function = Value::FunctionDefinition(
     formal_parameters.to_owned(),
-    FunctionBody::DecisionTable(Rc::new(evaluator)),
+    FunctionBody::DecisionTable(Arc::new(evaluator)),
     output_variable_type,
   );
   build_evaluator(output_variable_name, function, knowledge_requirements)
@@ -256,7 +257,7 @@ fn build_invocation_evaluator(
   let evaluator = crate::builders::build_invocation_evaluator(scope, invocation)?;
   let function = Value::FunctionDefinition(
     formal_parameters.to_owned(),
-    FunctionBody::DecisionTable(Rc::new(evaluator)),
+    FunctionBody::DecisionTable(Arc::new(evaluator)),
     output_variable_type,
   );
   build_evaluator(output_variable_name, function, knowledge_requirements)
@@ -274,7 +275,7 @@ fn build_literal_expression_evaluator(
   let evaluator = crate::builders::build_literal_expression_evaluator(scope, literal_expression)?;
   let function = Value::FunctionDefinition(
     formal_parameters.to_owned(),
-    FunctionBody::LiteralExpression(Rc::new(evaluator)),
+    FunctionBody::LiteralExpression(Arc::new(evaluator)),
     output_variable_type,
   );
   build_evaluator(output_variable_name, function, knowledge_requirements)
@@ -292,7 +293,7 @@ fn build_relation_evaluator(
   let evaluator = crate::builders::build_relation_evaluator(scope, relation)?;
   let function = Value::FunctionDefinition(
     formal_parameters.to_owned(),
-    FunctionBody::LiteralExpression(Rc::new(evaluator)),
+    FunctionBody::LiteralExpression(Arc::new(evaluator)),
     output_variable_type,
   );
   build_evaluator(output_variable_name, function, knowledge_requirements)
@@ -303,16 +304,17 @@ fn build_evaluator(name: Name, function: Value, knowledge_requirements: &[String
   let requirements = knowledge_requirements.to_owned();
   Ok(Box::new(
     move |input_data: &FeelContext, model_evaluator: &ModelEvaluator, output_data: &mut FeelContext| {
-      requirements.iter().for_each(|id| {
-        //TODO refactor: call either business knowledge model or decision service, not both!
-        model_evaluator
-          .business_knowledge_model_evaluator()
-          .evaluate(id, input_data, model_evaluator, output_data);
-        model_evaluator
-          .decision_service_evaluator()
-          .evaluate(id, input_data, model_evaluator, output_data);
-      });
-      output_data.set_entry(&name, function.clone())
+      // acquire all evaluators needed
+      if let Ok(business_knowledge_model_evaluator) = model_evaluator.business_knowledge_model_evaluator() {
+        if let Ok(decision_service_evaluator) = model_evaluator.decision_service_evaluator() {
+          requirements.iter().for_each(|id| {
+            //TODO refactor: call either business knowledge model or decision service, not both!
+            business_knowledge_model_evaluator.evaluate(id, input_data, model_evaluator, output_data);
+            decision_service_evaluator.evaluate(id, input_data, model_evaluator, output_data);
+          });
+          output_data.set_entry(&name, function.clone())
+        }
+      }
     },
   ))
 }

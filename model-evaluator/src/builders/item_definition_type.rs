@@ -39,7 +39,7 @@ use dmntk_model::model::{Definitions, ItemDefinition, ItemDefinitionType, NamedE
 use std::collections::{BTreeMap, HashMap};
 
 /// Type of function that evaluates the item definition type.
-type ItemDefinitionTypeEvaluatorFn = Box<dyn Fn(&ItemDefinitionTypeEvaluator) -> Option<FeelType>>;
+type ItemDefinitionTypeEvaluatorFn = Box<dyn Fn(&ItemDefinitionTypeEvaluator) -> Option<FeelType> + Send + Sync>;
 
 /// Item definition type evaluators.
 #[derive(Default)]

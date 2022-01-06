@@ -41,7 +41,7 @@ use dmntk_model::model::{Definitions, ItemDefinition, ItemDefinitionType, NamedE
 use std::collections::{BTreeMap, HashMap};
 
 /// Type of closure that evaluates the item definition context.
-type ItemDefinitionContextEvaluatorFn = Box<dyn Fn(&Name, &mut FeelContext, &ItemDefinitionContextEvaluator) -> FeelType>;
+type ItemDefinitionContextEvaluatorFn = Box<dyn Fn(&Name, &mut FeelContext, &ItemDefinitionContextEvaluator) -> FeelType + Send + Sync>;
 
 /// Item definition type evaluators.
 #[derive(Default)]

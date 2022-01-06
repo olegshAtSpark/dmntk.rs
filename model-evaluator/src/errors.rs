@@ -68,6 +68,10 @@ pub enum ModelEvaluatorError {
   EmptyFunctionBody,
   #[error("empty value expression")]
   EmptyValueExpression,
+  #[error("read lock failed with reason '{0}'")]
+  ReadLockFailed(String),
+  #[error("write lock failed with reason '{0}'")]
+  WriteLockFailed(String),
 }
 
 impl From<ModelEvaluatorError> for DmntkError {
@@ -138,4 +142,12 @@ pub fn err_empty_function_body() -> DmntkError {
 
 pub fn err_empty_value_expression() -> DmntkError {
   ModelEvaluatorError::EmptyValueExpression.into()
+}
+
+pub fn err_read_lock_failed(reason: impl ToString) -> DmntkError {
+  ModelEvaluatorError::ReadLockFailed(reason.to_string()).into()
+}
+
+pub fn err_write_lock_failed(reason: impl ToString) -> DmntkError {
+  ModelEvaluatorError::WriteLockFailed(reason.to_string()).into()
 }
