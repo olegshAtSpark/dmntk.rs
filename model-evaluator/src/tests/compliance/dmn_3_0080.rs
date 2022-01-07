@@ -30,17 +30,19 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0080).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0080);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_001",
     &ctx,
     r#"null(expected 2 parameters, actual number of parameters is 0)"#,
@@ -51,7 +53,7 @@ fn _0001() {
 fn _0002() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_002",
     &ctx,
     r#"null(expected 2 parameters, actual number of parameters is 1)"#,
@@ -62,7 +64,7 @@ fn _0002() {
 fn _0003() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_003",
     &ctx,
     r#"null(expected 2 parameters, actual number of parameters is 3)"#,
@@ -72,53 +74,53 @@ fn _0003() {
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_004", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "decision_004", &ctx, r#""foo""#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_005", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_005", &ctx, r#"null"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_006", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_006", &ctx, r#"null"#);
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_007", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#""foo""#);
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_008", &ctx, r#"null(parameter 'key' not found)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_008", &ctx, r#"null(parameter 'key' not found)"#);
 }
 
 #[test]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_009", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_009", &ctx, r#"null"#);
 }
 
 #[test]
 fn _00010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_010", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_010", &ctx, r#"null"#);
 }
 
 #[test]
 fn _00011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_011", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_011", &ctx, r#"null"#);
 }
 
 #[test]
 fn _00012() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_012", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_012", &ctx, r#"null"#);
 }

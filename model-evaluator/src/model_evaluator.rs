@@ -44,6 +44,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
 
 ///
+#[derive(Debug)]
 pub enum InvocableType {
   Decision(String),
   BusinessKnowledgeModel(String, Name),
@@ -153,7 +154,7 @@ impl ModelEvaluator {
   }
   /// Evaluates an invocable with specified name.
   pub fn evaluate_invocable(&self, invocable_name: &str, input_data: &FeelContext) -> Value {
-    if let Ok(invocable_by_name) = self.invocable_by_name.write() {
+    if let Ok(invocable_by_name) = self.invocable_by_name.read() {
       match invocable_by_name.get(invocable_name) {
         Some(InvocableType::Decision(id)) => {
           // evaluate decision

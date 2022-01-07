@@ -30,62 +30,64 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0057).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0057);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"{a: "foo", b: "bar"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"{a: "foo", b: "bar"}"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision002", &ctx, r#"{a: "foo", b: {c: "bar", d: {e: "baz"}}}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"{a: "foo", b: {c: "bar", d: {e: "baz"}}}"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003", &ctx, r#"{a: 3, b: 6}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003", &ctx, r#"{a: 3, b: 6}"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003_a", &ctx, r#"{a: 3, b: 3, c: {d: 6}}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_a", &ctx, r#"{a: 3, b: 3, c: {d: 6}}"#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision004", &ctx, r#"{foo bar: "foo"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision004", &ctx, r#"{foo bar: "foo"}"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision005", &ctx, r#"{foo+bar: "foo"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision005", &ctx, r#"{foo+bar: "foo"}"#);
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision006", &ctx, r#"{foo+bar((!!],foo: "foo"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision006", &ctx, r#"{foo+bar((!!],foo: "foo"}"#);
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision007", &ctx, r#"{: "foo"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision007", &ctx, r#"{: "foo"}"#);
 }
 
 #[test]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision008", &ctx, r#"{foo: "baz"}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"{foo: "baz"}"#);
 }

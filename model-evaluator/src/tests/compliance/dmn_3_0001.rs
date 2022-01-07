@@ -30,10 +30,12 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0001).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0001);
 }
 
 #[test]
@@ -41,5 +43,5 @@ fn _0001() {
   let ctx = context(
     r#"{Employees: [{dept: 10, id: 7792, name: "Clark"}, {dept: 10, id: 7934, name: "Miller"}, {dept: 20, id: 7976, name: "Adams"}, {dept: 20, id: 7902, name: "Ford"}, {dept: 30, id: 7900, name: "James"}]}"#,
   );
-  assert_decision(&DEFINITIONS, "Filter0001", &ctx, r#"["Adams", "Ford"]"#);
+  assert_decision(&MODEL_EVALUATOR, "Filter0001", &ctx, r#"["Adams", "Ford"]"#);
 }

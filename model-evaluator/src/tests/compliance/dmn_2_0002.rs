@@ -30,26 +30,28 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_2_0002).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0002);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Monthly Salary: 10000}"#);
-  assert_decision(&DEFINITIONS, "Yearly Salary", &ctx, r#"120000"#);
+  assert_decision(&MODEL_EVALUATOR, "Yearly Salary", &ctx, r#"120000"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Monthly Salary: 8375.00}"#);
-  assert_decision(&DEFINITIONS, "Yearly Salary", &ctx, r#"100500"#);
+  assert_decision(&MODEL_EVALUATOR, "Yearly Salary", &ctx, r#"100500"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Monthly Salary: 8375.13}"#);
-  assert_decision(&DEFINITIONS, "Yearly Salary", &ctx, r#"100501.56"#);
+  assert_decision(&MODEL_EVALUATOR, "Yearly Salary", &ctx, r#"100501.56"#);
 }

@@ -30,20 +30,22 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0078).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0078);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_001", &ctx, r#"null([division] division by zero)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_001", &ctx, r#"null([division] division by zero)"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_002", &ctx, r#"null([division] division by zero)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_002", &ctx, r#"null([division] division by zero)"#);
 }

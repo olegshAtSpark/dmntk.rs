@@ -30,22 +30,24 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0086).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0086);
 }
 
 #[test]
 #[ignore]
 fn _0001() {
   let ctx = context(r#"{A Person: {age: 21,name: "John Doe"}}"#);
-  assert_decision(&DEFINITIONS, "A Decision Ctx with DT", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0002() {
   let ctx = context(r#"{A Person: {age: 47,name: "John Doe"}}"#);
-  assert_decision(&DEFINITIONS, "A Decision Ctx with DT", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
 }

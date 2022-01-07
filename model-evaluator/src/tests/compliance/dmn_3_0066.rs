@@ -30,44 +30,46 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0066).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0066);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision001", &ctx, r#"false"#);
+  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"false"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision002", &ctx, r#"true"#);
+  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"true"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003_a", &ctx, r#"null(not)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_a", &ctx, r#"null(not)"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003_b", &ctx, r#"null(not)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_b", &ctx, r#"null(not)"#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003_c", &ctx, r#"null(not)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_c", &ctx, r#"null(not)"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision003_d", &ctx, r#"null(not)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_d", &ctx, r#"null(not)"#);
 }

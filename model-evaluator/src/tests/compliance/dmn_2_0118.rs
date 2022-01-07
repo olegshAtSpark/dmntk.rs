@@ -30,26 +30,38 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_2_0118).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0118);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Age: 17,RiskCategory: "High",isAffordable: true}"#);
-  assert_decision(&DEFINITIONS, "Approval Status", &ctx, r#"{Approved/Declined: "Approved", Rate: "Standard"}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Approval Status",
+    &ctx,
+    r#"{Approved/Declined: "Approved", Rate: "Standard"}"#,
+  );
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Age: 19,RiskCategory: "Low",isAffordable: true}"#);
-  assert_decision(&DEFINITIONS, "Approval Status", &ctx, r#"{Approved/Declined: "Approved", Rate: "Basic"}"#);
+  assert_decision(&MODEL_EVALUATOR, "Approval Status", &ctx, r#"{Approved/Declined: "Approved", Rate: "Basic"}"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Age: 10,RiskCategory: "Low",isAffordable: true}"#);
-  assert_decision(&DEFINITIONS, "Approval Status", &ctx, r#"{Approved/Declined: "Declined", Rate: "Standard"}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Approval Status",
+    &ctx,
+    r#"{Approved/Declined: "Declined", Rate: "Standard"}"#,
+  );
 }

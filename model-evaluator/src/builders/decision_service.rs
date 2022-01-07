@@ -63,9 +63,10 @@ impl DecisionServiceEvaluator {
   pub fn build(&mut self, definitions: &Definitions, model_evaluator: Arc<ModelEvaluator>) -> Result<()> {
     for decision_service in definitions.decision_services() {
       let decision_service_id = decision_service.id().as_ref().ok_or_else(err_empty_identifier)?;
+      let decision_service_name = &decision_service.name().to_string();
       let evaluator = build_decision_service_evaluator(decision_service, decision_service_id.clone(), Arc::clone(&model_evaluator))?;
       self.evaluators.insert(decision_service_id.to_owned(), evaluator);
-      model_evaluator.add_invocable_decision_service(decision_service_id, &decision_service.name().to_string());
+      model_evaluator.add_invocable_decision_service(decision_service_name, decision_service_id);
     }
     Ok(())
   }

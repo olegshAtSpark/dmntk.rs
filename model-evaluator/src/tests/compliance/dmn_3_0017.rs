@@ -30,32 +30,34 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0017).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0017);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{structA: {name: "widget",price: 20}}"#);
-  assert_decision(&DEFINITIONS, "priceGt10", &ctx, r#"true"#);
+  assert_decision(&MODEL_EVALUATOR, "priceGt10", &ctx, r#"true"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{numB: 9,numC: 10,structA: {name: "widget",price: 20}}"#);
-  assert_decision(&DEFINITIONS, "priceInRange", &ctx, r#""Not in range""#);
+  assert_decision(&MODEL_EVALUATOR, "priceInRange", &ctx, r#""Not in range""#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{dateD: @"2016-11-01"}"#);
-  assert_decision(&DEFINITIONS, "dateCompare1", &ctx, r#"true"#);
+  assert_decision(&MODEL_EVALUATOR, "dateCompare1", &ctx, r#"true"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{dateD: @"2016-11-01",dateE: @"2016-11-02"}"#);
-  assert_decision(&DEFINITIONS, "dateCompare2", &ctx, r#"false"#);
+  assert_decision(&MODEL_EVALUATOR, "dateCompare2", &ctx, r#"false"#);
 }

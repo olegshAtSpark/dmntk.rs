@@ -30,44 +30,46 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0032).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0032);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{bool: true,num: 100}"#);
-  assert_decision(&DEFINITIONS, "simpleIf", &ctx, r#"110"#);
+  assert_decision(&MODEL_EVALUATOR, "simpleIf", &ctx, r#"110"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{bool: false,num: 100}"#);
-  assert_decision(&DEFINITIONS, "simpleIf", &ctx, r#"90"#);
+  assert_decision(&MODEL_EVALUATOR, "simpleIf", &ctx, r#"90"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{bool: null,num: 100}"#);
-  assert_decision(&DEFINITIONS, "simpleIf", &ctx, r#"90"#);
+  assert_decision(&MODEL_EVALUATOR, "simpleIf", &ctx, r#"90"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{aDate: @"2017-01-02",aString: "Hello World"}"#);
-  assert_decision(&DEFINITIONS, "conditionWithFunctions", &ctx, r#""Hello""#);
+  assert_decision(&MODEL_EVALUATOR, "conditionWithFunctions", &ctx, r#""Hello""#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{aDate: @"2017-01-01",aString: "Hello World"}"#);
-  assert_decision(&DEFINITIONS, "conditionWithFunctions", &ctx, r#""World""#);
+  assert_decision(&MODEL_EVALUATOR, "conditionWithFunctions", &ctx, r#""World""#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{aDate: null,aString: "Hello World"}"#);
-  assert_decision(&DEFINITIONS, "conditionWithFunctions", &ctx, r#""World""#);
+  assert_decision(&MODEL_EVALUATOR, "conditionWithFunctions", &ctx, r#""World""#);
 }

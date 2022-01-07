@@ -30,17 +30,19 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_N_0079).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_N_0079);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_001",
     &ctx,
     r#"null(expected 1 parameters, actual number of parameters is 0)"#,
@@ -51,7 +53,7 @@ fn _0001() {
 fn _0002() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_002",
     &ctx,
     r#"null(expected 1 parameters, actual number of parameters is 2)"#,
@@ -61,14 +63,14 @@ fn _0002() {
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_003", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "decision_003", &ctx, r#""foo""#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decision_004",
     &ctx,
     r#"null(expected 1 parameters, actual number of parameters is 2)"#,
@@ -78,199 +80,199 @@ fn _0004() {
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "null_001", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "null_001", &ctx, r#"null"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "string_001", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "string_001", &ctx, r#""foo""#);
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "number_001", &ctx, r#""123.45""#);
+  assert_decision(&MODEL_EVALUATOR, "number_001", &ctx, r#""123.45""#);
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "boolean_001", &ctx, r#""true""#);
+  assert_decision(&MODEL_EVALUATOR, "boolean_001", &ctx, r#""true""#);
 }
 
 #[test]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "boolean_002", &ctx, r#""false""#);
+  assert_decision(&MODEL_EVALUATOR, "boolean_002", &ctx, r#""false""#);
 }
 
 #[test]
 fn _0010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "date_001", &ctx, r#""2018-12-10""#);
+  assert_decision(&MODEL_EVALUATOR, "date_001", &ctx, r#""2018-12-10""#);
 }
 
 #[test]
 fn _0011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dateTime_001", &ctx, r#""2018-12-10T00:00:00""#);
+  assert_decision(&MODEL_EVALUATOR, "dateTime_001", &ctx, r#""2018-12-10T00:00:00""#);
 }
 
 #[test]
 fn _0012() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dateTime_002", &ctx, r#""2018-12-10T10:30:00.0001""#);
+  assert_decision(&MODEL_EVALUATOR, "dateTime_002", &ctx, r#""2018-12-10T10:30:00.0001""#);
 }
 
 #[test]
 #[ignore]
 fn _0013() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dateTime_003", &ctx, r#"2018-12-10T10:30:00.0001+05:00:01"#);
+  assert_decision(&MODEL_EVALUATOR, "dateTime_003", &ctx, r#"2018-12-10T10:30:00.0001+05:00:01"#);
 }
 
 #[test]
 fn _0014() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dateTime_004", &ctx, r#""2018-12-10T10:30:00@Etc/UTC""#);
+  assert_decision(&MODEL_EVALUATOR, "dateTime_004", &ctx, r#""2018-12-10T10:30:00@Etc/UTC""#);
 }
 
 #[test]
 fn _0015() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "time_001", &ctx, r#""10:30:00.0001""#);
+  assert_decision(&MODEL_EVALUATOR, "time_001", &ctx, r#""10:30:00.0001""#);
 }
 
 #[test]
 #[ignore]
 fn _0016() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "time_002", &ctx, r#"10:30:00.0001+05:00:01"#);
+  assert_decision(&MODEL_EVALUATOR, "time_002", &ctx, r#"10:30:00.0001+05:00:01"#);
 }
 
 #[test]
 fn _0017() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "time_003", &ctx, r#""10:30:00@Etc/UTC""#);
+  assert_decision(&MODEL_EVALUATOR, "time_003", &ctx, r#""10:30:00@Etc/UTC""#);
 }
 
 #[test]
 fn _0018() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dt_duration_001", &ctx, r#""P1D""#);
+  assert_decision(&MODEL_EVALUATOR, "dt_duration_001", &ctx, r#""P1D""#);
 }
 
 #[test]
 fn _0019() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dt_duration_002", &ctx, r#""-P1D""#);
+  assert_decision(&MODEL_EVALUATOR, "dt_duration_002", &ctx, r#""-P1D""#);
 }
 
 #[test]
 fn _0020() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dt_duration_003", &ctx, r#""PT0S""#);
+  assert_decision(&MODEL_EVALUATOR, "dt_duration_003", &ctx, r#""PT0S""#);
 }
 
 #[test]
 fn _0021() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dt_duration_004", &ctx, r#""P1DT2H3M4.1234S""#);
+  assert_decision(&MODEL_EVALUATOR, "dt_duration_004", &ctx, r#""P1DT2H3M4.1234S""#);
 }
 
 #[test]
 fn _0022() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "dt_duration_005", &ctx, r#""P2DT1H""#);
+  assert_decision(&MODEL_EVALUATOR, "dt_duration_005", &ctx, r#""P2DT1H""#);
 }
 
 #[test]
 fn _0023() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "ym_duration_001", &ctx, r#""P1Y""#);
+  assert_decision(&MODEL_EVALUATOR, "ym_duration_001", &ctx, r#""P1Y""#);
 }
 
 #[test]
 fn _0024() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "ym_duration_002", &ctx, r#""-P1Y""#);
+  assert_decision(&MODEL_EVALUATOR, "ym_duration_002", &ctx, r#""-P1Y""#);
 }
 
 #[test]
 fn _0025() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "ym_duration_003", &ctx, r#""P0M""#);
+  assert_decision(&MODEL_EVALUATOR, "ym_duration_003", &ctx, r#""P0M""#);
 }
 
 #[test]
 fn _0026() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "ym_duration_004", &ctx, r#""P1Y2M""#);
+  assert_decision(&MODEL_EVALUATOR, "ym_duration_004", &ctx, r#""P1Y2M""#);
 }
 
 #[test]
 fn _0027() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "ym_duration_005", &ctx, r#""P2Y1M""#);
+  assert_decision(&MODEL_EVALUATOR, "ym_duration_005", &ctx, r#""P2Y1M""#);
 }
 
 #[test]
 fn _0028() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "list_001", &ctx, r#""[1, 2, 3, "foo"]""#);
+  assert_decision(&MODEL_EVALUATOR, "list_001", &ctx, r#""[1, 2, 3, "foo"]""#);
 }
 
 #[test]
 fn _0029() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "list_002", &ctx, r#""[1, 2, 3, [4, 5, "foo"]]""#);
+  assert_decision(&MODEL_EVALUATOR, "list_002", &ctx, r#""[1, 2, 3, [4, 5, "foo"]]""#);
 }
 
 #[test]
 fn _0030() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "list_003", &ctx, r#""["\"foo\""]""#);
+  assert_decision(&MODEL_EVALUATOR, "list_003", &ctx, r#""["\"foo\""]""#);
 }
 
 #[test]
 fn _0031() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_001", &ctx, r#""{a: "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_001", &ctx, r#""{a: "foo"}""#);
 }
 
 #[test]
 fn _0032() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_002", &ctx, r#""{a: "foo", b: {bar: "baz"}}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_002", &ctx, r#""{a: "foo", b: {bar: "baz"}}""#);
 }
 
 #[test]
 fn _0033() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_003", &ctx, r#""{"{": "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_003", &ctx, r#""{"{": "foo"}""#);
 }
 
 #[test]
 fn _0034() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_004", &ctx, r#""{":": "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_004", &ctx, r#""{":": "foo"}""#);
 }
 
 #[test]
 fn _0035() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_005", &ctx, r#""{",": "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_005", &ctx, r#""{",": "foo"}""#);
 }
 
 #[test]
 fn _0036() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_006", &ctx, r#""{"}": "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_006", &ctx, r#""{"}": "foo"}""#);
 }
 
 #[test]
 fn _0037() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "context_007", &ctx, r#""{"\"": "foo"}""#);
+  assert_decision(&MODEL_EVALUATOR, "context_007", &ctx, r#""{"\"": "foo"}""#);
 }

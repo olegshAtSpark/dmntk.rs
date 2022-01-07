@@ -68,9 +68,9 @@ impl BusinessKnowledgeModelEvaluator {
         .ok_or_else(err_empty_encapsulated_logic)?;
       let evaluator = build_business_knowledge_model_evaluator(business_knowledge_model, function_definition, model_evaluator)?;
       let business_knowledge_model_id = business_knowledge_model.id().as_ref().ok_or_else(err_empty_identifier)?;
-      self.evaluators.insert(business_knowledge_model_id.to_owned(), evaluator);
-      let business_knowledge_model_name = business_knowledge_model.name().to_string();
+      let business_knowledge_model_name = &business_knowledge_model.name().to_string();
       let output_variable_name = business_knowledge_model.variable().feel_name().as_ref().ok_or_else(err_empty_feel_name)?;
+      self.evaluators.insert(business_knowledge_model_id.to_owned(), evaluator);
       model_evaluator.add_invocable_business_knowledge_model(&business_knowledge_model_name, business_knowledge_model_id, output_variable_name.to_owned());
     }
     Ok(())

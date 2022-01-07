@@ -30,17 +30,17 @@
  * limitations under the License.
  */
 
-use crate::tests::assert_decision_service;
+use super::super::*;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0088).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0088);
 }
 
 #[test]
 #[ignore]
 fn _0001() {
   assert_decision_service(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "Evaluation DS",
     r#"{Grade: "A",Student's name: "John Doe",Teacher's Evaluation: "A very motivated, hard-working student!"}"#,
     r#"null"#,

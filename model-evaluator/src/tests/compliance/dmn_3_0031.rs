@@ -30,29 +30,31 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0031).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0031);
 }
 
 #[test]
 #[ignore]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "fn invocation positional parameters", &ctx, r#""#);
+  assert_decision(&MODEL_EVALUATOR, "fn invocation positional parameters", &ctx, r#""#);
 }
 
 #[test]
 #[ignore]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "fn invocation named parameters", &ctx, r#""#);
+  assert_decision(&MODEL_EVALUATOR, "fn invocation named parameters", &ctx, r#""#);
 }
 
 #[test]
 #[ignore]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "fn invocation complex parameters", &ctx, r#""#);
+  assert_decision(&MODEL_EVALUATOR, "fn invocation complex parameters", &ctx, r#""#);
 }

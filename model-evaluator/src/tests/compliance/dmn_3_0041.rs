@@ -30,26 +30,28 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0041).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0041);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Principal: 600000,Term: 360}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2778.693549432766768088520383236299"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2778.693549432766768088520383236299"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Principal: 30000,Term: 60}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"549.117549836400293492700014885945"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"549.117549836400293492700014885945"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Principal: 600000,Term: 365}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2758.116099896591400871418893289041"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2758.116099896591400871418893289041"#);
 }

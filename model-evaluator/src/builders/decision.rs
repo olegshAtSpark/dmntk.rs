@@ -63,8 +63,9 @@ impl DecisionEvaluator {
     for decision in definitions.decisions() {
       let evaluator_entry = build_decision_evaluator(definitions, decision, model_evaluator)?;
       let decision_id = decision.id().as_ref().ok_or_else(err_empty_identifier)?;
+      let decision_name = &decision.name().to_string();
       self.evaluators.insert(decision_id.to_owned(), evaluator_entry);
-      model_evaluator.add_invocable_decision(decision_id, &decision.name().to_string());
+      model_evaluator.add_invocable_decision(decision_name, decision_id);
     }
     Ok(())
   }

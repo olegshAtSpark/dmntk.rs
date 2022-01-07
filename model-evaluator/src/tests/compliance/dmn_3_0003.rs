@@ -30,17 +30,19 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0003).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0003);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Loans: [{amount: 200000,rate: .041,term: 360},{amount: 20000,rate: .049,term: 60}]}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "MonthlyPayment",
     &ctx,
     r#"[966.3967422049753602329651244861514, 376.5090706325024247283858289020703]"#,

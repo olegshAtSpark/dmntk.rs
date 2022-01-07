@@ -30,68 +30,70 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0009).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0009);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "literalSimpleList", &ctx, r#"["a", "b", "c"]"#);
+  assert_decision(&MODEL_EVALUATOR, "literalSimpleList", &ctx, r#"["a", "b", "c"]"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "literalNestedList", &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
+  assert_decision(&MODEL_EVALUATOR, "literalNestedList", &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "append1", &ctx, r#"[["w", "x"], ["y"], ["z"], ["t"]]"#);
+  assert_decision(&MODEL_EVALUATOR, "append1", &ctx, r#"[["w", "x"], ["y"], ["z"], ["t"]]"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "append2", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  assert_decision(&MODEL_EVALUATOR, "append2", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "append3", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  assert_decision(&MODEL_EVALUATOR, "append3", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "append4", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  assert_decision(&MODEL_EVALUATOR, "append4", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "flatten1", &ctx, r#"["w", "x", "y", "z", "t"]"#);
+  assert_decision(&MODEL_EVALUATOR, "flatten1", &ctx, r#"["w", "x", "y", "z", "t"]"#);
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "flatten2", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  assert_decision(&MODEL_EVALUATOR, "flatten2", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
 }
 
 #[test]
 fn _0009() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "flatten3", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  assert_decision(&MODEL_EVALUATOR, "flatten3", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
 }
 
 #[test]
 fn _0010() {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&DEFINITIONS, "flatten4", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  assert_decision(&MODEL_EVALUATOR, "flatten4", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
 }

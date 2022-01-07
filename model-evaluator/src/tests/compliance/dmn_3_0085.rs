@@ -30,41 +30,51 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, assert_decision_service, context};
+use super::super::*;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0085).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0085);
 }
 
 #[test]
 fn _0001() {
-  assert_decision_service(&DEFINITIONS, "decisionService_001", r#"{}"#, r#""foo""#);
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_001", r#"{}"#, r#""foo""#);
 }
 
 #[test]
 fn _0002() {
-  assert_decision_service(&DEFINITIONS, "decisionService_002", r#"{decision_002_input: "baz"}"#, r#""foo baz""#);
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_002", r#"{decision_002_input: "baz"}"#, r#""foo baz""#);
 }
 
 #[test]
 fn _0002_a() {
-  assert_decision_service(&DEFINITIONS, "decisionService_002", r#"{}"#, r#"null(addition err 2)"#);
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_002", r#"{}"#, r#"null(addition err 2)"#);
 }
 
 #[test]
 fn _0002_b() {
-  assert_decision_service(&DEFINITIONS, "decisionService_002", r#"{decision_002_input: null}"#, r#"null(addition err 2)"#);
+  assert_decision_service(
+    &MODEL_EVALUATOR,
+    "decisionService_002",
+    r#"{decision_002_input: null}"#,
+    r#"null(addition err 2)"#,
+  );
 }
 
 #[test]
 fn _0002_c() {
-  assert_decision_service(&DEFINITIONS, "decisionService_002", r#"{decision_002_input: 1234}"#, r#"null(addition err 2)"#);
+  assert_decision_service(
+    &MODEL_EVALUATOR,
+    "decisionService_002",
+    r#"{decision_002_input: 1234}"#,
+    r#"null(addition err 2)"#,
+  );
 }
 
 #[test]
 fn _0003() {
   assert_decision_service(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "decisionService_003",
     r#"{decision_003_input_1: "B", decision_003_input_2: "C", inputData_003: "D"}"#,
     r#""A B C D""#,
@@ -74,11 +84,11 @@ fn _0003() {
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "decision_004_1", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "decision_004_1", &ctx, r#""foo""#);
 }
 
 #[test]
 #[ignore]
 fn _0005() {
-  assert_decision_service(&DEFINITIONS, "decisionService_005", r#"{}"#, r#"null"#);
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_005", r#"{}"#, r#"null"#);
 }

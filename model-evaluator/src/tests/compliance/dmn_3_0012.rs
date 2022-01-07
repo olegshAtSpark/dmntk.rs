@@ -30,14 +30,16 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0012).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0012);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{list1: ["a","b","c"],list2: ["x","y","z"]}"#);
-  assert_decision(&DEFINITIONS, "listContainsList", &ctx, r#"false"#);
+  assert_decision(&MODEL_EVALUATOR, "listContainsList", &ctx, r#"false"#);
 }

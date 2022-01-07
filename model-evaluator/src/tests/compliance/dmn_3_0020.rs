@@ -30,50 +30,52 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0020).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0020);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Age: 16,Years of Service: 1}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"27"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"27"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Age: 25,Years of Service: 5}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"22"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"22"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Age: 25,Years of Service: 20}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"24"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"24"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{Age: 44,Years of Service: 30}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"30"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{Age: 50,Years of Service: 20}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"24"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"24"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{Age: 50,Years of Service: 30}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"30"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{Age: 60,Years of Service: 20}"#);
-  assert_decision(&DEFINITIONS, "Total Vacation Days", &ctx, r#"30"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
 }

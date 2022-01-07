@@ -30,26 +30,28 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_2_0008).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0008);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{loan: {principal: 600000,rate: 0.0375,termMonths: 360}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2778.693549432766768088520383236299"#);
+  assert_decision(&MODEL_EVALUATOR, "payment", &ctx, r#"2778.693549432766768088520383236299"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{loan: {principal: 30000,rate: 0.0475,termMonths: 60}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"562.7073593732659271562143285576524"#);
+  assert_decision(&MODEL_EVALUATOR, "payment", &ctx, r#"562.7073593732659271562143285576524"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{loan: {principal: 600000,rate: 0.0399,termMonths: 360}}"#);
-  assert_decision(&DEFINITIONS, "payment", &ctx, r#"2861.033777003901636716262779605767"#);
+  assert_decision(&MODEL_EVALUATOR, "payment", &ctx, r#"2861.033777003901636716262779605767"#);
 }

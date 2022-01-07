@@ -30,17 +30,19 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0035).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0035);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{B Value: 83,G Value: 65,R Value: 0}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "Profile of Color",
     &ctx,
     r##"{CMYK notation: {C: 100, K: 67, M: 22, Y: 0}, Hex notation: "#004153", RGB notation: {B: 83, G: 65, R: 0}}"##,
@@ -51,7 +53,7 @@ fn _0001() {
 fn _0002() {
   let ctx = context(r#"{B Value: 0,G Value: 0,R Value: 0}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "Profile of Color",
     &ctx,
     r##"{CMYK notation: {C: 0, K: 100, M: 0, Y: 0}, Hex notation: "#000000", RGB notation: {B: 0, G: 0, R: 0}}"##,
@@ -62,7 +64,7 @@ fn _0002() {
 fn _0003() {
   let ctx = context(r#"{B Value: 0,G Value: 0,R Value: 204}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "Profile of Color",
     &ctx,
     r##"{CMYK notation: {C: 0, K: 20, M: 100, Y: 100}, Hex notation: "#CC0000", RGB notation: {B: 0, G: 0, R: 204}}"##,

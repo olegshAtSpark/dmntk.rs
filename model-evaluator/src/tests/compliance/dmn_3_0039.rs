@@ -30,17 +30,19 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0039).unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0039);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Flu Symtoms:  ["fever", "cough", "sore throat", "runny nose"], Symptom:  "cough"}"#);
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "Symptom Analysis",
     &ctx,
     r#"["cough is in the list of Cold symptoms", "cough is in the list of Flu symptoms"]"#,
@@ -50,5 +52,5 @@ fn _0001() {
 #[test]
 fn _0002() {
   let ctx = context(r#"{Flu Symtoms: ["fever","cough","sore throat","runny nose"],Symptom: "fever"}"#);
-  assert_decision(&DEFINITIONS, "Symptom Analysis", &ctx, r#"["fever is in the list of Flu symptoms"]"#);
+  assert_decision(&MODEL_EVALUATOR, "Symptom Analysis", &ctx, r#"["fever is in the list of Flu symptoms"]"#);
 }
