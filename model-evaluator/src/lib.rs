@@ -43,9 +43,6 @@ extern crate thiserror;
 
 mod builders;
 mod errors;
-mod eval_bkm;
-mod eval_dec;
-mod eval_dec_service;
 mod model_evaluator;
 
 #[cfg(test)]
@@ -54,9 +51,7 @@ mod tests;
 use dmntk_common::Result;
 use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
-pub use eval_bkm::evaluate_business_knowledge_model_by_name;
-pub use eval_dec::evaluate_decision_by_name;
-pub use eval_dec_service::eval_decision_service_by_name;
+
 pub use model_evaluator::ModelEvaluator;
 
 /// Evaluates the decision table.

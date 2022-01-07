@@ -36,14 +36,8 @@ use dmntk_feel::FeelType;
 /// Errors related to model evaluation.
 #[derive(Error, Debug)]
 pub enum ModelEvaluatorError {
-  #[error("business knowledge model with name `{0}` was not found")]
-  BusinessKnowledgeModelWithNameNotFound(String),
   #[error("business knowledge model with reference `{0}` was not found")]
   BusinessKnowledgeModelWithReferenceNotFound(String),
-  #[error("decision with name `{0}` was not found")]
-  DecisionWithNameNotFound(String),
-  #[error("decision service with name `{0}` was not found")]
-  DecisionServiceWithNameNotFound(String),
   #[error("input data with identifier `{0}` has no type reference definition")]
   InputDataWithoutTypeReference(String),
   #[error("empty FEEL name")]
@@ -80,20 +74,8 @@ impl From<ModelEvaluatorError> for DmntkError {
   }
 }
 
-pub fn err_business_knowledge_model_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::BusinessKnowledgeModelWithNameNotFound(name.to_string()).into()
-}
-
 pub fn err_business_knowledge_model_with_reference_not_found(reference: &str) -> DmntkError {
   ModelEvaluatorError::BusinessKnowledgeModelWithReferenceNotFound(reference.to_string()).into()
-}
-
-pub fn err_decision_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::DecisionWithNameNotFound(name.to_string()).into()
-}
-
-pub fn err_decision_service_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::DecisionServiceWithNameNotFound(name.to_string()).into()
 }
 
 pub fn err_input_data_without_type_reference(s: &str) -> DmntkError {
