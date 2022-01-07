@@ -71,7 +71,7 @@ impl BusinessKnowledgeModelEvaluator {
       let business_knowledge_model_name = &business_knowledge_model.name().to_string();
       let output_variable_name = business_knowledge_model.variable().feel_name().as_ref().ok_or_else(err_empty_feel_name)?;
       self.evaluators.insert(business_knowledge_model_id.to_owned(), evaluator);
-      model_evaluator.add_invocable_business_knowledge_model(&business_knowledge_model_name, business_knowledge_model_id, output_variable_name.to_owned());
+      model_evaluator.add_invocable_business_knowledge_model(business_knowledge_model_name, business_knowledge_model_id, output_variable_name.to_owned());
     }
     Ok(())
   }
