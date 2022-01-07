@@ -30,14 +30,14 @@
  * limitations under the License.
  */
 
-//! Errors reported by the workspace.
+//! Errors reported by server.
 
 use dmntk_common::DmntkError;
 use thiserror::Error;
 
-/// Errors related with operating on workspaces.
+/// Errors reported by server.
 #[derive(Error, Debug)]
-pub enum WorkspaceError {
+enum ServerError {
   #[error("endpoint not found")]
   EndpointNotFound,
   #[error("missing parameter '{0}'")]
@@ -50,34 +50,40 @@ pub enum WorkspaceError {
   WorkspaceReadLockFailed,
   #[error("workspace write lock failed")]
   WorkspaceWriteLockFailed,
+  #[error("{0}")]
+  InternalError(String),
 }
 
-impl From<WorkspaceError> for DmntkError {
-  fn from(e: WorkspaceError) -> Self {
-    DmntkError::new("WorkspaceError", &e.to_string())
+impl From<ServerError> for DmntkError {
+  fn from(e: ServerError) -> Self {
+    DmntkError::new("ServerError", &e.to_string())
   }
 }
 
 pub fn err_endpoint_not_found() -> DmntkError {
-  WorkspaceError::EndpointNotFound.into()
+  ServerError::EndpointNotFound.into()
 }
 
 pub fn err_missing_parameter(name: &str) -> DmntkError {
-  WorkspaceError::MissingParameter(name.to_string()).into()
+  ServerError::MissingParameter(name.to_string()).into()
 }
 
 pub fn err_invalid_base64_encoding() -> DmntkError {
-  WorkspaceError::InvalidBase64Encoding.into()
+  ServerError::InvalidBase64Encoding.into()
 }
 
 pub fn err_invalid_utf8_content() -> DmntkError {
-  WorkspaceError::InvalidUtf8Content.into()
+  ServerError::InvalidUtf8Content.into()
 }
 
 pub fn err_workspace_read_lock_failed() -> DmntkError {
-  WorkspaceError::WorkspaceReadLockFailed.into()
+  ServerError::WorkspaceReadLockFailed.into()
 }
 
 pub fn err_workspace_write_lock_failed() -> DmntkError {
-  WorkspaceError::WorkspaceWriteLockFailed.into()
+  ServerError::WorkspaceWriteLockFailed.into()
+}
+
+pub fn err_internal_error(message: &str) -> DmntkError {
+  ServerError::InternalError(message.to_string()).into()
 }

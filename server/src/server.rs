@@ -33,7 +33,7 @@
 use crate::dto::{InputNodeDto, OutputNodeDto, WrappedValue};
 use crate::errors::*;
 use actix_web::web::Json;
-use actix_web::{get, post, web, App, HttpServer};
+use actix_web::{error, get, post, web, App, HttpResponse, HttpServer};
 use dmntk_common::{DmntkError, Result};
 use dmntk_feel::context::FeelContext;
 use dmntk_workspace::Workspace;
@@ -76,6 +76,13 @@ impl<T> Default for ResultDto<T> {
   }
 }
 
+impl<T: serde::Serialize> ToString for ResultDto<T> {
+  /// Converts [ResultDto] to JSON string.
+  fn to_string(&self) -> String {
+    serde_json::to_string(self).unwrap_or_else(|_| "json conversion failed".to_string())
+  }
+}
+
 impl<T> ResultDto<T> {
   /// Creates [ResultDto] with some data inside.
   pub fn data(d: T) -> ResultDto<T> {
@@ -93,7 +100,7 @@ impl<T> ResultDto<T> {
   }
 }
 
-/// Data transfer object for system information.
+/// System information structure.
 #[derive(Serialize)]
 pub struct SystemInfoDto {
   /// System name.
@@ -126,6 +133,25 @@ pub struct AddDefinitionsParams {
   pub content: Option<String>,
 }
 
+/// Parameters for replacing DMN™ model definitions in workspace.
+#[derive(Deserialize)]
+pub struct ReplaceDefinitionsParams {
+  /// Content of the DMN™ model, encoded in `Base64`.
+  #[serde(rename = "content")]
+  pub content: Option<String>,
+}
+
+/// Parameters for removing DMN™ model definitions from workspace.
+#[derive(Deserialize)]
+pub struct RemoveDefinitionsParams {
+  /// Namespace of the definitions to be removed.
+  #[serde(rename = "namespace")]
+  pub namespace: Option<String>,
+  /// Name of the definitions to be removed.
+  #[serde(rename = "name")]
+  pub name: Option<String>,
+}
+
 /// Operation status sent back to caller after request completion.
 #[derive(Debug, Serialize)]
 pub struct StatusResult {
@@ -148,17 +174,30 @@ pub struct EvaluateParams {
   input_values: Option<Vec<InputNodeDto>>,
 }
 
-/// Handler for system information.
-#[get("/info")]
-async fn system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
+/// Handler for retrieving system information.
+#[get("/system/info")]
+async fn get_system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
   Ok(Json(ResultDto::data(SystemInfoDto::default())))
 }
 
-/// Handler for adding DMN™ definitions to workspace.
+/// Handler for deleting all model definitions from workspace.
+#[post("/definitions/clear")]
+async fn post_definitions_clear(data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_clear_definitions(&mut workspace) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for adding model definitions to workspace.
 #[post("/definitions/add")]
-async fn add_definitions(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+async fn post_definitions_add(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
   if let Ok(mut workspace) = data.workspace.write() {
-    match add_definitions_to_workspace(&mut workspace, &params.into_inner()) {
+    match do_add_definitions(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
@@ -167,11 +206,11 @@ async fn add_definitions(params: Json<AddDefinitionsParams>, data: web::Data<App
   }
 }
 
-/// Handler for replacing DMN™ definitions in workspace.
+/// Handler for replacing model definitions in workspace.
 #[post("/definitions/replace")]
-async fn replace_definitions(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+async fn post_definitions_replace(params: Json<ReplaceDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
   if let Ok(mut workspace) = data.workspace.write() {
-    match add_definitions_to_workspace(&mut workspace, &params.into_inner()) {
+    match do_replace_definitions(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
@@ -180,11 +219,37 @@ async fn replace_definitions(params: Json<AddDefinitionsParams>, data: web::Data
   }
 }
 
-/// Handler for evaluating artifacts.
-#[post("/evaluate")]
-async fn evaluate_invocable(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
+/// Handler for removing model definitions from workspace.
+#[post("/definitions/remove")]
+async fn post_definitions_remove(params: Json<RemoveDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_remove_definitions(&mut workspace, &params.into_inner()) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for deploying model definitions stashed in workspace.
+#[post("/definitions/deploy")]
+async fn post_definitions_deploy(data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_deploy_definitions(&mut workspace) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for evaluating models with input values in generic format.
+#[post("/g/eval")]
+async fn evaluate_generic(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
   if let Ok(workspace) = data.workspace.read() {
-    match evaluate_artifact_in_workspace(&workspace, &params.into_inner()) {
+    match do_evaluate_generic(&workspace, &params.into_inner()) {
       Ok(response) => Ok(Json(ResultDto::data(response))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
@@ -210,11 +275,23 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
   HttpServer::new(move || {
     App::new()
       .app_data(application_data.clone())
-      .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024))
-      .service(system_info)
-      .service(add_definitions)
-      .service(replace_definitions)
-      .service(evaluate_invocable)
+      .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024).error_handler(|err, _| {
+        error::InternalError::from_response(
+          "",
+          HttpResponse::BadRequest()
+            .content_type("application/json")
+            //.body(format!(r#"{{"errors":["{:?}"]}}"#, err)),
+            .body(ResultDto::<String>::error(err_internal_error(&format!("{:?}", err))).to_string()),
+        )
+        .into()
+      }))
+      .service(get_system_info)
+      .service(post_definitions_clear)
+      .service(post_definitions_add)
+      .service(post_definitions_replace)
+      .service(post_definitions_remove)
+      .service(post_definitions_deploy)
+      .service(evaluate_generic)
       .default_service(web::route().to(not_found))
   })
   .bind(address)?
@@ -238,13 +315,27 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
 }
 
 ///
-fn add_definitions_to_workspace(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<StatusResult> {
+fn do_clear_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
+  workspace.clear();
+  Ok(StatusResult {
+    status: "definitions cleared".to_string(),
+  })
+}
+
+///
+fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<StatusResult> {
   if let Some(content) = &params.content {
     if let Ok(bytes) = base64::decode(content) {
       if let Ok(xml) = String::from_utf8(bytes) {
-        let definitions = dmntk_model::parse(&xml)?;
-        workspace.add(definitions)?;
-        Ok(StatusResult { status: "added".to_string() })
+        match dmntk_model::parse(&xml) {
+          Ok(definitions) => {
+            workspace.add(definitions)?;
+            Ok(StatusResult {
+              status: "definitions added".to_string(),
+            })
+          }
+          Err(reason) => Err(reason),
+        }
       } else {
         Err(err_invalid_utf8_content())
       }
@@ -256,8 +347,59 @@ fn add_definitions_to_workspace(workspace: &mut Workspace, params: &AddDefinitio
   }
 }
 
+///
+fn do_replace_definitions(workspace: &mut Workspace, params: &ReplaceDefinitionsParams) -> Result<StatusResult> {
+  if let Some(content) = &params.content {
+    if let Ok(bytes) = base64::decode(content) {
+      if let Ok(xml) = String::from_utf8(bytes) {
+        match dmntk_model::parse(&xml) {
+          Ok(definitions) => {
+            workspace.add(definitions)?;
+            Ok(StatusResult {
+              status: "definitions replaced".to_string(),
+            })
+          }
+          Err(reason) => Err(reason),
+        }
+      } else {
+        Err(err_invalid_utf8_content())
+      }
+    } else {
+      Err(err_invalid_base64_encoding())
+    }
+  } else {
+    Err(err_missing_parameter("content"))
+  }
+}
+
+///
+fn do_remove_definitions(workspace: &mut Workspace, params: &RemoveDefinitionsParams) -> Result<StatusResult> {
+  if let Some(namespace) = &params.namespace {
+    if let Some(name) = &params.name {
+      workspace.remove(namespace, name);
+      Ok(StatusResult {
+        status: "definitions removed".to_string(),
+      })
+    } else {
+      Err(err_missing_parameter("name"))
+    }
+  } else {
+    Err(err_missing_parameter("namespace"))
+  }
+}
+
+///
+fn do_deploy_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
+  match workspace.deploy() {
+    Ok(()) => Ok(StatusResult {
+      status: "definitions deployed".to_string(),
+    }),
+    Err(reason) => Err(reason),
+  }
+}
+
 /// Evaluates the artifact specified in parameters and returns the result.
-fn evaluate_artifact_in_workspace(workspace: &Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
+fn do_evaluate_generic(workspace: &Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
   if let Some(model_name) = &params.model_name {
     if let Some(invocable_name) = &params.invocable_name {
       if let Some(input_values) = &params.input_values {
@@ -269,9 +411,22 @@ fn evaluate_artifact_in_workspace(workspace: &Workspace, params: &EvaluateParams
         Err(err_missing_parameter("input"))
       }
     } else {
-      Err(err_missing_parameter("name"))
+      Err(err_missing_parameter("invocable"))
     }
   } else {
-    Err(err_missing_parameter("tag"))
+    Err(err_missing_parameter("model"))
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test() {
+    assert_eq!(
+      r#"{"errors":[{"details":"ServerError: unknown"}]}"#,
+      ResultDto::<String>::error(err_internal_error("unknown")).to_string()
+    );
   }
 }

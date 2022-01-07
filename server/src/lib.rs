@@ -24,6 +24,7 @@ extern crate dmntk_model;
 extern crate dmntk_workspace;
 extern crate serde;
 extern crate serde_derive;
+extern crate serde_json;
 
 mod dto;
 mod errors;

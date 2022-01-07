@@ -19,4 +19,5 @@ dmntk-model = { path = "../model" }
 dmntk-workspace = { path = "../workspace" }
 serde = "1.0.130"
 serde_derive = "1.0.130"
+serde_json = "1.0.73"
 thiserror = "1.0.30"
