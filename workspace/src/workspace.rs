@@ -75,12 +75,14 @@ impl Workspace {
       model_evaluators_by_name: HashMap::new(),
     }
   }
-  /// Deletes all definitions and model evaluators.
+  /// Deletes all definitions and model evaluators,
+  /// switches a workspace to state `STASHING`.
   pub fn clear(&mut self) {
     self.clear_definitions();
     self.clear_model_evaluators();
   }
-  ///
+  /// Adds a definition to workspace, deletes all model evaluators,
+  /// switches a workspace to state `STASHING`.
   pub fn add(&mut self, definitions: Definitions) -> Result<()> {
     let namespace = definitions.namespace().to_string();
     if self.definitions_by_namespace.contains_key(&namespace) {
@@ -97,19 +99,22 @@ impl Workspace {
     self.clear_model_evaluators();
     Ok(())
   }
-  ///
+  /// Removes a definition from workspace, deletes all model evaluators,
+  /// switches a workspace to state `STASHING`.
   pub fn remove(&mut self, namespace: &str, name: &str) {
     self.definitions_by_namespace.remove(namespace);
     self.definitions_by_name.remove(name);
     self.definitions.retain(|d| d.namespace() != namespace && d.name() != name);
     self.clear_model_evaluators();
   }
-  ///
+  /// Replaces a definition in workspace, deletes all model evaluators,
+  /// switches a workspace to state `STASHING`.
   pub fn replace(&mut self, definitions: Definitions) -> Result<()> {
     self.remove(definitions.namespace(), definitions.name());
     self.add(definitions)
   }
-  ///
+  /// Creates model evaluators for all definitions in workspace,
+  /// switches a workspace to state `DEPLOYED`.
   pub fn deploy(&mut self) -> Result<()> {
     self.clear_model_evaluators();
     for definitions in &self.definitions {
@@ -119,22 +124,115 @@ impl Workspace {
     }
     Ok(())
   }
-  /// Evaluates invocable (decision, business knowledge model or decision service) deployed in [Workspace].
+  /// Evaluates invocable (decision, business knowledge model or decision service) deployed in workspace.
   pub fn evaluate_invocable(&self, model_name: &str, invocable_name: &str, input_data: &FeelContext) -> Result<Value> {
     if let Some(model_evaluator) = self.model_evaluators_by_name.get(model_name) {
       Ok(model_evaluator.evaluate_invocable(invocable_name, input_data))
     } else {
-      Err(err_model_evaluator_not_deployed(model_name))
+      Err(err_model_evaluator_is_not_deployed(model_name))
     }
   }
-  /// Deletes all definitions stashed in workspace.
+  /// Utility function that deletes all definitions in workspace.
   fn clear_definitions(&mut self) {
     self.definitions_by_name.clear();
     self.definitions_by_namespace.clear();
     self.definitions.clear();
   }
-  /// Deletes all model evaluators deployed in workspace.
+  /// Utility function that deletes all model evaluators in workspace.
   fn clear_model_evaluators(&mut self) {
     self.model_evaluators_by_name.clear();
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use dmntk_feel::Scope;
+
+  fn assert_state(workspace: &Workspace, state: (usize, usize, usize, usize)) {
+    assert_eq!(state.0, workspace.definitions.len());
+    assert_eq!(state.1, workspace.definitions_by_namespace.len());
+    assert_eq!(state.2, workspace.definitions_by_name.len());
+    assert_eq!(state.3, workspace.model_evaluators_by_name.len());
+  }
+
+  #[test]
+  fn test_states() {
+    // create empty workspace, STAGING
+    let mut workspace = Workspace::new(None);
+    assert_state(&workspace, (0, 0, 0, 0));
+
+    // add one model with definitions, STAGING
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0001).unwrap();
+    assert!(workspace.add(definitions).is_ok());
+    assert_state(&workspace, (1, 1, 1, 0));
+
+    // try to add the same model once again, STAGING
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0001).unwrap();
+    assert_eq!(
+      Err(err_definitions_with_namespace_already_exists("https://dmntk.io/2_0001")),
+      workspace.add(definitions)
+    );
+    assert_state(&workspace, (1, 1, 1, 0));
+
+    // add another model to workspace, STAGING
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0002).unwrap();
+    assert!(workspace.add(definitions).is_ok());
+    assert_state(&workspace, (2, 2, 2, 0));
+
+    // deploy these two models, DEPLOYED
+    assert!(workspace.deploy().is_ok());
+    assert_state(&workspace, (2, 2, 2, 2));
+
+    // replace existing model with a new version, STAGING
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0002).unwrap();
+    assert!(workspace.replace(definitions).is_ok());
+    assert_state(&workspace, (2, 2, 2, 0));
+
+    // deploy models, DEPLOYED
+    assert!(workspace.deploy().is_ok());
+    assert_state(&workspace, (2, 2, 2, 2));
+
+    // remove model from workspace, STAGING
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0002).unwrap();
+    workspace.remove(definitions.namespace(), definitions.name());
+    assert_state(&workspace, (1, 1, 1, 0));
+
+    // clear workspace, STAGING
+    workspace.clear();
+    assert_state(&workspace, (0, 0, 0, 0));
+  }
+
+  #[test]
+  fn test_evaluate() {
+    // create empty workspace
+    let mut workspace = Workspace::new(None);
+    assert_state(&workspace, (0, 0, 0, 0));
+
+    // add one model with definitions
+    let definitions = dmntk_model::parse(dmntk_examples::DMN_2_0001).unwrap();
+    assert!(workspace.add(definitions).is_ok());
+    assert_state(&workspace, (1, 1, 1, 0));
+
+    // deploy model
+    assert!(workspace.deploy().is_ok());
+    assert_state(&workspace, (1, 1, 1, 1));
+
+    // evaluate existing model and invocable
+    let input_data = dmntk_feel_evaluator::evaluate_context(&Scope::default(), r#"{Full Name: "John Doe"}"#).unwrap();
+    let value = workspace
+      .evaluate_invocable("compliance-level-2-test-0001", "Greeting Message", &input_data)
+      .unwrap();
+    assert_eq!(r#""Hello John Doe""#, value.to_string());
+
+    // evaluate non existing model
+    let result = workspace.evaluate_invocable("compliance-level-2-test-0002", "Greeting Message", &input_data);
+    assert_eq!(Err(err_model_evaluator_is_not_deployed("compliance-level-2-test-0002")), result);
+
+    // evaluate non existing invocable
+    let value = workspace
+      .evaluate_invocable("compliance-level-2-test-0001", "Good bye message", &input_data)
+      .unwrap();
+    assert_eq!(r#"null(invocable with name 'Good bye message' not found)"#, value.to_string());
   }
 }

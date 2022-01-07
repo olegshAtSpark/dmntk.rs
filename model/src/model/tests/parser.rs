@@ -41,7 +41,7 @@ fn _2_0001() {
   assert_eq!("Compliance level 2. Test 0001.", definitions.description().as_ref().unwrap().as_str());
   assert!(definitions.label().is_none());
   assert_eq!("compliance-level-2-test-0001", definitions.name());
-  assert_eq!(DMNTK_NAMESPACE, definitions.namespace());
+  assert_eq!("https://dmntk.io/2_0001", definitions.namespace());
   assert!(definitions.expression_language().is_none());
   assert!(definitions.type_language().is_none());
   assert!(definitions.exporter().is_none());
@@ -98,7 +98,7 @@ fn _2_0001() {
 fn _2_0002() {
   let definitions = crate::parse(dmntk_examples::DMN_2_0002).unwrap();
   assert_eq!("_072005e3-2635-47c9-8dec-5aca4b869376", definitions.id().as_ref().unwrap().as_str());
-  assert_eq!(DMNTK_NAMESPACE, definitions.namespace());
+  assert_eq!("https://dmntk.io/2_0002", definitions.namespace());
 }
 
 #[test]

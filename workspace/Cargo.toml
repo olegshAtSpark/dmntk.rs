@@ -10,8 +10,11 @@ edition = "2021"
 
 [dependencies]
 dmntk-common = { path = "../common" }
-dmntk-evaluator = { path = "../evaluator" }
 dmntk-feel = { path = "../feel" }
+dmntk-feel-evaluator = { path = "../feel-evaluator" }
 dmntk-model = { path = "../model" }
 dmntk-model-evaluator = { path = "../model-evaluator" }
 thiserror = "1.0.30"
+
+[dev-dependencies]
+dmntk-examples = { path = "../examples" }

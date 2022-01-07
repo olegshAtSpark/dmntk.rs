@@ -38,7 +38,7 @@ use dmntk_common::DmntkError;
 #[derive(Error, Debug)]
 enum WorkspaceError {
   #[error("model evaluator for definitions '{0}' is not deployed")]
-  ModelEvaluatorNotDeployed(String),
+  ModelEvaluatorIsNotDeployed(String),
   #[error("definitions with namespace '{0}' already exist in workspace")]
   DefinitionsWithNamespaceAlreadyExist(String),
   #[error("definitions with name '{0}' already exist in workspace")]
@@ -52,8 +52,8 @@ impl From<WorkspaceError> for DmntkError {
   }
 }
 
-pub fn err_model_evaluator_not_deployed(definitions_name: &str) -> DmntkError {
-  WorkspaceError::ModelEvaluatorNotDeployed(definitions_name.to_string()).into()
+pub fn err_model_evaluator_is_not_deployed(definitions_name: &str) -> DmntkError {
+  WorkspaceError::ModelEvaluatorIsNotDeployed(definitions_name.to_string()).into()
 }
 
 pub fn err_definitions_with_namespace_already_exists(definitions_namespace: &str) -> DmntkError {
