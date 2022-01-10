@@ -38,7 +38,7 @@ use dmntk_common::Jsonify;
 pub type OptName = Option<Name>;
 
 /// `FEEL` name.
-#[derive(Debug, Default, Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd, Clone)]
 pub struct Name(Vec<String>);
 
 impl From<Vec<String>> for Name {
@@ -84,6 +84,7 @@ impl From<&Name> for String {
 }
 
 impl std::fmt::Display for Name {
+  ///
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let mut result = String::new();
     let mut current;
@@ -123,44 +124,61 @@ mod tests {
   use super::Name;
   use std::collections::HashMap;
 
-  /// Tests if the default value for [Name] is an empty vector of strings.
   #[test]
-  fn default_name() {
+  fn test_default_name() {
     let name: Name = Default::default();
-    assert_eq!("", name.to_string().as_str());
+    assert_eq!("", name.to_string());
   }
 
-  /// Tests creating a [Name] from vector of strings.
   #[test]
-  fn from_string_vector() {
+  fn test_display() {
+    let name: Name = vec!["   x   ".to_string(), " y      \t".to_string(), "  \n  z  \t  ".to_string()].into();
+    assert_eq!("x y z", format!("{}", name));
+  }
+
+  #[test]
+  fn test_debug() {
+    let name: Name = vec!["   x   ".to_string(), " y      \t".to_string(), "  \n  z  \t  ".to_string()].into();
+    assert_eq!(r#"Name(["x", "y", "z"])"#, format!("{:?}", name));
+  }
+
+  #[test]
+  fn test_from_string_vector() {
     let name: Name = vec!["".to_string(), "".to_string(), "".to_string()].into();
-    assert_eq!("", name.to_string().as_str());
+    assert_eq!("", name.to_string());
     let name: Name = vec!["x".to_string(), "y".to_string()].into();
-    assert_eq!("x y", name.to_string().as_str());
+    assert_eq!("x y", name.to_string());
     let name: Name = vec!["x".to_string(), "+".to_string(), "y".to_string()].into();
-    assert_eq!("x+y", name.to_string().as_str());
+    assert_eq!("x+y", name.to_string());
+    let name: Name = vec!["x".to_string(), "    +    ".to_string(), "y".to_string()].into();
+    assert_eq!("x+y", name.to_string());
     let name: Name = vec!["a".to_string(), "b".to_string(), "c".to_string()].into();
-    assert_eq!("a b c", name.to_string().as_str());
+    assert_eq!("a b c", name.to_string());
+    let name: Name = vec!["   x   ".to_string(), " y      \t".to_string(), "  \n  z  \t  ".to_string()].into();
+    assert_eq!("x y z", name.to_string());
   }
 
-  /// Tests creating a [Name] from vector of str.
   #[test]
-  fn from_str_vector() {
+  fn test_from_str_vector() {
     let name: Name = vec!["", "", ""].into();
-    assert_eq!("", name.to_string().as_str());
+    assert_eq!("", name.to_string());
     let name: Name = vec!["x", "y"].into();
-    assert_eq!("x y", name.to_string().as_str());
+    assert_eq!("x y", name.to_string());
     let name: Name = vec!["x", "+", "y"].into();
-    assert_eq!("x+y", name.to_string().as_str());
+    assert_eq!("x+y", name.to_string());
     let name: Name = vec!["a", "b", "c"].into();
-    assert_eq!("a b c", name.to_string().as_str());
+    assert_eq!("a b c", name.to_string());
+    let name: Name = vec!["   x   ", " y      \t", "  \n  z  \t  "].into();
+    assert_eq!("x y z", name.to_string());
   }
 
   #[test]
   fn additional_symbols() {
     let name: Name = vec!["x", "y"].into();
-    assert_eq!("x y", name.to_string().as_str());
+    assert_eq!("x y", name.to_string());
     let name: Name = vec!["x", ".", "y"].into();
+    assert_eq!("x.y", name.to_string());
+    let name: Name = vec!["x", "   .    ", "y"].into();
     assert_eq!("x.y", name.to_string());
     let name: Name = vec![".", "x", "y"].into();
     assert_eq!(".x y", name.to_string());
@@ -195,5 +213,48 @@ mod tests {
     assert!(map.contains_key(&name_gamma));
     assert_eq!("GAMMA", map.get(&name_gamma).unwrap());
     assert!(!map.contains_key(&"delta".into()));
+  }
+
+  #[test]
+  fn test_equality() {
+    let name_a: Name = "a".into();
+    let name_b: Name = "b".into();
+    let name_x_y: Name = vec!["x", "y"].into();
+    let name_m_n: Name = vec!["m", "n"].into();
+    let name_xy: Name = vec!["x y"].into();
+    let name_mn: Name = vec!["m n"].into();
+    // check the conversion to string
+    assert_eq!("a", name_a.to_string());
+    assert_eq!("b", name_b.to_string());
+    assert_eq!("x y", name_x_y.to_string());
+    assert_eq!("m n", name_m_n.to_string());
+    assert_eq!("x y", name_xy.to_string());
+    assert_eq!("m n", name_m_n.to_string());
+
+    assert!((name_a == name_a));
+    assert!(!(name_a != name_a));
+    assert!((name_x_y == name_x_y));
+    assert!(!(name_x_y != name_x_y));
+    //assert!((name_x_y == name_xy));
+    //assert!(!(name_x_y != name_xy));
+    assert!((name_m_n == name_m_n));
+    assert!(!(name_m_n != name_m_n));
+    //assert!((name_m_n == name_mn));
+    //assert!(!(name_m_n != name_mn));
+
+    assert!(!(name_a == name_b));
+    assert!((name_a != name_b));
+    assert!(!(name_x_y == name_m_n));
+    assert!((name_x_y != name_m_n));
+    assert!(!(name_xy == name_mn));
+    assert!((name_xy != name_mn));
+    assert!(!(name_x_y == name_a));
+    assert!((name_x_y != name_a));
+    assert!(!(name_xy == name_a));
+    assert!((name_xy != name_a));
+    assert!(!(name_m_n == name_b));
+    assert!((name_m_n != name_b));
+    assert!(!(name_mn == name_b));
+    assert!((name_mn != name_b));
   }
 }
