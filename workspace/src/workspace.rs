@@ -118,9 +118,15 @@ impl Workspace {
   pub fn deploy(&mut self) -> Result<()> {
     self.clear_model_evaluators();
     for definitions in &self.definitions {
-      let model_evaluator = ModelEvaluator::new(definitions)?;
-      let name = definitions.name().to_string();
-      self.model_evaluators_by_name.insert(name, model_evaluator);
+      match ModelEvaluator::new(definitions) {
+        Ok(model_evaluator) => {
+          let name = definitions.name().to_string();
+          self.model_evaluators_by_name.insert(name, model_evaluator);
+        }
+        Err(_reason) => {
+          //TODO prepare status report
+        }
+      }
     }
     Ok(())
   }
