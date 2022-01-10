@@ -34,8 +34,10 @@ use crate::dto::{InputNodeDto, OutputNodeDto, WrappedValue};
 use crate::errors::*;
 use actix_web::web::Json;
 use actix_web::{error, get, post, web, App, HttpResponse, HttpServer};
-use dmntk_common::{DmntkError, Result};
+use dmntk_common::{DmntkError, Jsonify, Result};
 use dmntk_feel::context::FeelContext;
+use dmntk_feel::values::Value;
+use dmntk_feel::Scope;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -161,8 +163,10 @@ pub struct StatusResult {
 }
 
 /// Parameters for evaluating invocable in DMN™ model definitions.
+/// The format of input data is compatible with test cases
+/// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
 #[derive(Debug, Deserialize)]
-pub struct EvaluateParams {
+pub struct TckEvaluateParams {
   /// Name of the model where the invocable will be searched.
   #[serde(rename = "model")]
   model_name: Option<String>,
@@ -172,6 +176,17 @@ pub struct EvaluateParams {
   /// Collection of input values.
   #[serde(rename = "input")]
   input_values: Option<Vec<InputNodeDto>>,
+}
+
+/// Parameters for evaluating invocable in DMN™ model definitions.
+#[derive(Debug, Deserialize)]
+struct EvaluateParams {
+  /// Name of the model.
+  #[serde(rename = "model")]
+  model_name: Option<String>,
+  /// Name of the invocable in model.
+  #[serde(rename = "invocable")]
+  invocable_name: Option<String>,
 }
 
 /// Handler for retrieving system information.
@@ -245,12 +260,29 @@ async fn post_definitions_deploy(data: web::Data<ApplicationData>) -> std::io::R
   }
 }
 
-/// Handler for evaluating models with input values in generic format.
-#[post("/g/eval")]
-async fn evaluate_generic(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
+/// Handler for evaluating models with input values in format compatible with test cases
+/// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[post("/tck/eval")]
+async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
   if let Ok(workspace) = data.workspace.read() {
-    match do_evaluate_generic(&workspace, &params.into_inner()) {
+    match do_evaluate_tck(&workspace, &params.into_inner()) {
       Ok(response) => Ok(Json(ResultDto::data(response))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_read_lock_failed())))
+  }
+}
+
+/// Handler for evaluating invocable in model.
+///
+/// Input values may be defined in `JSON` or `FEEL` context format.
+/// Result is always in JSON format.
+#[post("/eval/{model}/{invocable}")]
+async fn post_evaluate(params: web::Path<EvaluateParams>, request_body: String, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<String>>> {
+  if let Ok(workspace) = data.workspace.read() {
+    match do_evaluate(&workspace, &params.into_inner(), &request_body) {
+      Ok(response) => Ok(Json(ResultDto::data(response.jsonify()))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
@@ -291,7 +323,8 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
       .service(post_definitions_replace)
       .service(post_definitions_remove)
       .service(post_definitions_deploy)
-      .service(evaluate_generic)
+      .service(post_tck_evaluate)
+      .service(post_evaluate)
       .default_service(web::route().to(not_found))
   })
   .bind(address)?
@@ -315,6 +348,7 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
 }
 
 ///
+#[inline(always)]
 fn do_clear_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
   workspace.clear();
   Ok(StatusResult {
@@ -323,6 +357,7 @@ fn do_clear_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
 }
 
 ///
+#[inline(always)]
 fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<StatusResult> {
   if let Some(content) = &params.content {
     if let Ok(bytes) = base64::decode(content) {
@@ -348,6 +383,7 @@ fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) 
 }
 
 ///
+#[inline(always)]
 fn do_replace_definitions(workspace: &mut Workspace, params: &ReplaceDefinitionsParams) -> Result<StatusResult> {
   if let Some(content) = &params.content {
     if let Ok(bytes) = base64::decode(content) {
@@ -373,6 +409,7 @@ fn do_replace_definitions(workspace: &mut Workspace, params: &ReplaceDefinitions
 }
 
 ///
+#[inline(always)]
 fn do_remove_definitions(workspace: &mut Workspace, params: &RemoveDefinitionsParams) -> Result<StatusResult> {
   if let Some(namespace) = &params.namespace {
     if let Some(name) = &params.name {
@@ -389,6 +426,7 @@ fn do_remove_definitions(workspace: &mut Workspace, params: &RemoveDefinitionsPa
 }
 
 ///
+#[inline(always)]
 fn do_deploy_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
   match workspace.deploy() {
     Ok(()) => Ok(StatusResult {
@@ -398,18 +436,37 @@ fn do_deploy_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
   }
 }
 
-/// Evaluates the artifact specified in parameters and returns the result.
-fn do_evaluate_generic(workspace: &Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
+/// Evaluates the invocable in model and returns the result.
+/// Input and output data format is compatible with
+/// [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[inline(always)]
+fn do_evaluate_tck(workspace: &Workspace, params: &TckEvaluateParams) -> Result<OutputNodeDto, DmntkError> {
   if let Some(model_name) = &params.model_name {
     if let Some(invocable_name) = &params.invocable_name {
       if let Some(input_values) = &params.input_values {
-        // convert input values data into input data as a context
+        // convert input values into FEEL context
         let input_data = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;
         // evaluate artifact with specified name
         workspace.evaluate_invocable(model_name, invocable_name, &input_data)?.try_into()
       } else {
         Err(err_missing_parameter("input"))
       }
+    } else {
+      Err(err_missing_parameter("invocable"))
+    }
+  } else {
+    Err(err_missing_parameter("model"))
+  }
+}
+
+/// Evaluates the artifact specified in parameters and returns the result.
+#[inline(always)]
+fn do_evaluate(workspace: &Workspace, params: &EvaluateParams, input: &str) -> Result<Value, DmntkError> {
+  if let Some(model_name) = &params.model_name {
+    if let Some(invocable_name) = &params.invocable_name {
+      let input_data = dmntk_evaluator::evaluate_context(&Scope::default(), input)?;
+      let value = workspace.evaluate_invocable(model_name, invocable_name, &input_data)?;
+      Ok(value)
     } else {
       Err(err_missing_parameter("invocable"))
     }
