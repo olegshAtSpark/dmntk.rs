@@ -45,7 +45,7 @@ fn _0001() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn _0002() {
   let ctx = context(r#"{"Full Name": "George Gershwin"}"#);
   assert_decision(&MODEL_EVALUATOR, "Greeting Message", &ctx, r#""Hello George Gershwin""#);

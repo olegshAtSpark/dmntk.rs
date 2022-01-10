@@ -39,83 +39,90 @@ pub type OptName = Option<Name>;
 
 /// `FEEL` name.
 #[derive(Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd, Clone)]
-pub struct Name(Vec<String>);
+pub struct Name(String);
 
 impl From<Vec<String>> for Name {
   /// Converts a vector of strings into [Name].
   fn from(value: Vec<String>) -> Self {
-    Self(value.iter().map(|v| v.trim().to_string()).collect::<Vec<String>>())
+    let a = value.iter().map(|s| s.as_str()).collect::<Vec<&str>>();
+    Self(Self::from_parts(&a))
   }
 }
 
 impl From<Vec<&str>> for Name {
   /// Converts a vector of strings into [Name].
   fn from(value: Vec<&str>) -> Self {
-    Self(value.iter().map(|v| v.trim().to_string()).collect::<Vec<String>>())
+    Self(Self::from_parts(&value))
   }
 }
 
 impl From<String> for Name {
   /// Converts a [String] into [Name].
   fn from(value: String) -> Self {
-    Self(vec![value])
+    Self(value.trim().to_string())
   }
 }
 
 impl From<&str> for Name {
   /// Converts a reference to [str] into [Name].
   fn from(value: &str) -> Self {
-    Self::from(value.to_string())
+    Self(value.trim().to_string())
   }
 }
 
 impl From<Name> for String {
   /// Converts [Name] to its [String] representation.
   fn from(value: Name) -> Self {
-    value.to_string()
+    value.0
   }
 }
 
 impl From<&Name> for String {
   /// Converts a reference to [Name] to its [String] representation.
   fn from(value: &Name) -> Self {
-    value.to_string()
+    value.0.clone()
   }
 }
 
 impl std::fmt::Display for Name {
   ///
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let mut result = String::new();
-    let mut current;
-    let mut prev = false;
-    for (index, part) in self.0.iter().enumerate() {
-      current = matches!(part.as_str(), "." | "/" | "-" | "'" | "+" | "*");
-      if index > 0 && !prev && !current && !part.is_empty() {
-        result.push(' ');
-      }
-      result.push_str(part);
-      prev = current;
-    }
-    write!(f, "{}", result)
+    write!(f, "{}", self.0)
   }
 }
 
 impl Jsonify for Name {
   /// Converts [Name] to its `JSON` representation.
   fn jsonify(&self) -> String {
-    format!("[{}]", self.0.iter().map(|s| format!(r#""{}""#, s)).collect::<Vec<String>>().join(","))
+    self.0.clone()
   }
 }
 
 impl Name {
   /// Creates a [Name] from name parts.
   pub fn new(parts: &[&str]) -> Self {
-    Self(parts.iter().map(|&v| v.trim().to_string()).collect::<Vec<String>>())
+    Self(Self::from_parts(parts))
   }
   /// Returns `true` when the specified character is an additional name symbol.
   pub fn is_additional_name_symbol(ch: char) -> bool {
     matches!(ch, '.' | '/' | '-' | '\'' | '+' | '*')
+  }
+  ///
+  fn from_parts(parts: &[&str]) -> String {
+    let mut result = String::with_capacity(200);
+    let mut current;
+    let mut prev = false;
+    let mut index = 0_usize;
+    for part in parts.iter().map(|s| s.trim()) {
+      current = matches!(part, "." | "/" | "-" | "'" | "+" | "*");
+      if index > 0 && !prev && !current && !part.is_empty() {
+        result.push(' ');
+      }
+      result.push_str(part);
+      prev = current;
+      index += 1;
+    }
+    result
   }
 }
 
@@ -139,7 +146,7 @@ mod tests {
   #[test]
   fn test_debug() {
     let name: Name = vec!["   x   ".to_string(), " y      \t".to_string(), "  \n  z  \t  ".to_string()].into();
-    assert_eq!(r#"Name(["x", "y", "z"])"#, format!("{:?}", name));
+    assert_eq!(r#"Name("x y z")"#, format!("{:?}", name));
   }
 
   #[test]

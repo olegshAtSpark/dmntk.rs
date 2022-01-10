@@ -453,10 +453,7 @@ fn _3_0087() {
   assert_eq!("_989d137f-86ff-4249-813f-af67c08a2762", knowledge_source.id().as_ref().unwrap().as_str());
   assert_eq!("Credit officer", knowledge_source.name());
   assert_eq!("Credit officer", knowledge_source.feel_name().as_ref().unwrap().to_string());
-  assert_eq!(
-    r#"Name(["Credit", "officer"])"#,
-    format!("{:?}", knowledge_source.feel_name().as_ref().unwrap())
-  );
+  assert_eq!(r#"Name("Credit officer")"#, format!("{:?}", knowledge_source.feel_name().as_ref().unwrap()));
 }
 
 #[test]
