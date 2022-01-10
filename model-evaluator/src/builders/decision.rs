@@ -164,7 +164,7 @@ fn build_decision_evaluator(definitions: &Definitions, decision: &Decision, mode
                   decision_evaluator.evaluate(decision_identifier, input_data_ctx, model_evaluator, &mut required_knowledge_ctx);
                 });
                 // values from required knowledge may be overridden by input data
-                required_knowledge_ctx.overrwrite(input_data_ctx);
+                required_knowledge_ctx.overwrite(input_data_ctx);
                 // prepare context containing values from required input data
                 let mut required_input_ctx: FeelContext = Default::default();
                 let input_data = Value::Context(input_data_ctx.clone());

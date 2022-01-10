@@ -33,7 +33,8 @@
 //! `FEEL` context.
 
 use self::errors::*;
-use crate::names::{Name, QualifiedName};
+use crate::names::Name;
+use crate::qualified_names::QualifiedName;
 use crate::strings::ToFeelString;
 use crate::types::FeelType;
 use crate::value_null;
@@ -174,7 +175,7 @@ impl FeelContext {
     }
   }
   ///
-  pub fn overrwrite(&mut self, other: &FeelContext) {
+  pub fn overwrite(&mut self, other: &FeelContext) {
     for (name, value) in &other.0 {
       if self.0.contains_key(name) {
         self.0.insert(name.clone(), value.clone());
@@ -321,7 +322,8 @@ pub mod errors {
 #[cfg(test)]
 mod tests {
   use crate::context::FeelContext;
-  use crate::names::{Name, QualifiedName};
+  use crate::names::Name;
+  use crate::qualified_names::QualifiedName;
   use crate::values::Value;
   use crate::{value_number, FeelNumber, ToFeelString};
   use dmntk_common::Jsonify;

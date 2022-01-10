@@ -155,6 +155,7 @@ impl Variable {
 fn build_variable_evaluator(variable: &Variable) -> Result<VariableEvaluatorFn> {
   // prepare the variable name
   let variable_name = variable.name.clone();
+  println!("AAA: variableName={:?}", variable_name);
   // if there is no type reference defined, the value is just returned as is
   if variable.type_ref.is_none() {
     return Ok(Box::new(move |value: &Value, _: &ItemDefinitionEvaluator| {
@@ -173,6 +174,7 @@ fn build_variable_evaluator(variable: &Variable) -> Result<VariableEvaluatorFn> 
   Ok(match type_ref.as_str() {
     "string" => Box::new(move |value: &Value, _: &ItemDefinitionEvaluator| {
       if let Value::Context(ctx) = value {
+        println!("BBB: context={:?}", ctx);
         if let Some(v) = ctx.get_entry(&variable_name) {
           if let Value::String(_) = v {
             return (variable_name.clone(), v.clone());

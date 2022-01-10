@@ -33,7 +33,6 @@
 //! `FEEL` name.
 
 use dmntk_common::Jsonify;
-use std::ops::Deref;
 
 /// Common type definition for optional name.
 pub type OptName = Option<Name>;
@@ -119,41 +118,9 @@ impl Name {
   }
 }
 
-/// FEEL `QualifiedName`.
-#[derive(Debug, Clone, PartialEq)]
-pub struct QualifiedName(Vec<Name>);
-
-impl QualifiedName {
-  /// Creates a [QualifiedName] from [Names](Name).
-  pub fn new(names: &[&Name]) -> Self {
-    Self(names.iter().map(|&v| v.clone()).collect::<Vec<Name>>())
-  }
-}
-
-impl ToString for QualifiedName {
-  /// Converts [QualifiedName] to [String].
-  fn to_string(&self) -> String {
-    self.0.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(".")
-  }
-}
-
-impl Deref for QualifiedName {
-  type Target = Vec<Name>;
-  fn deref(&self) -> &Self::Target {
-    &self.0
-  }
-}
-
-impl QualifiedName {
-  /// Appends this [QualifiedName] with a given [Name].
-  pub fn push(&mut self, name: Name) {
-    self.0.push(name);
-  }
-}
-
 #[cfg(test)]
 mod tests {
-  use super::{Name, QualifiedName};
+  use super::Name;
   use std::collections::HashMap;
 
   /// Tests if the default value for [Name] is an empty vector of strings.
@@ -209,31 +176,6 @@ mod tests {
     assert_eq!("x+y", name.to_string());
     let name: Name = vec!["x", "*", "y"].into();
     assert_eq!("x*y", name.to_string());
-  }
-
-  /// Tests whether the constructor creates a new [QualifiedName] properly.
-  #[test]
-  fn qualified_name() {
-    let name_a = Name::new(&["a", "+", "b"]);
-    let name_b = Name::new(&["b", "-", "c"]);
-    let name_c = Name::new(&["c", "/", "d"]);
-    let name_d = Name::new(&["d", "*", "e"]);
-    let name_e = Name::new(&["e", ".", "f"]);
-    let name_f = Name::new(&["f", "'", "g"]);
-    let qname = QualifiedName::new(&[]);
-    assert_eq!("", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a]);
-    assert_eq!("a+b", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a, &name_b]);
-    assert_eq!("a+b.b-c", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a, &name_b, &name_c]);
-    assert_eq!("a+b.b-c.c/d", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a, &name_b, &name_c, &name_d]);
-    assert_eq!("a+b.b-c.c/d.d*e", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a, &name_b, &name_c, &name_d, &name_e]);
-    assert_eq!("a+b.b-c.c/d.d*e.e.f", qname.to_string().as_str());
-    let qname = QualifiedName::new(&[&name_a, &name_b, &name_c, &name_d, &name_e, &name_f]);
-    assert_eq!("a+b.b-c.c/d.d*e.e.f.f'g", qname.to_string().as_str());
   }
 
   #[test]
