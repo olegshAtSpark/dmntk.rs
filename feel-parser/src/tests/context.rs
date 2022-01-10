@@ -466,3 +466,79 @@ fn _00013() {
     false,
   );
 }
+
+#[test]
+fn _0014() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{Full Name: "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0015() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{Full           Name: "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0016() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{"Full Name": "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0017() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{"Full           Name": "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full           Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
