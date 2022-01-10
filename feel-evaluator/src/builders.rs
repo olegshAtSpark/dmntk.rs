@@ -137,14 +137,14 @@ fn build_add(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
       Value::Number(lh) => match rhv {
         Value::Number(rh) => Value::Number(lh + rh),
         value @ Value::Null(_) => value,
-        _ => value_null!("addition error (number): {} + {}", lh, rhv.to_string()),
+        _ => value_null!("addition err 1"),
       },
       Value::String(mut lh) => {
         if let Value::String(rh) = rhv {
           lh.push_str(&rh);
           Value::String(lh)
         } else {
-          value_null!("addition error (string): '{}' + {}", lh, rhv.to_string())
+          value_null!("addition err 2")
         }
       }
       Value::DaysAndTimeDuration(lh) => {

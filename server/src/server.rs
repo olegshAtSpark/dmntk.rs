@@ -38,6 +38,7 @@ use dmntk_common::{DmntkError, Jsonify, Result};
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
+use dmntk_model::model::NamedElement;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -135,6 +136,17 @@ pub struct AddDefinitionsParams {
   pub content: Option<String>,
 }
 
+/// Result data sent back to caller after adding definitions.
+#[derive(Debug, Serialize)]
+pub struct AddDefinitionsResult {
+  /// Namespace of added definitions.
+  #[serde(rename = "namespace")]
+  pub namespace: String,
+  /// Name of added definitions.
+  #[serde(rename = "name")]
+  pub name: String,
+}
+
 /// Parameters for replacing DMN™ model definitions in workspace.
 #[derive(Deserialize)]
 pub struct ReplaceDefinitionsParams {
@@ -210,7 +222,7 @@ async fn post_definitions_clear(data: web::Data<ApplicationData>) -> std::io::Re
 
 /// Handler for adding model definitions to workspace.
 #[post("/definitions/add")]
-async fn post_definitions_add(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+async fn post_definitions_add(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<AddDefinitionsResult>>> {
   if let Ok(mut workspace) = data.workspace.write() {
     match do_add_definitions(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
@@ -262,7 +274,7 @@ async fn post_definitions_deploy(data: web::Data<ApplicationData>) -> std::io::R
 
 /// Handler for evaluating models with input values in format compatible with test cases
 /// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
-#[post("/tck/eval")]
+#[post("/tck/evaluate")]
 async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
   if let Ok(workspace) = data.workspace.read() {
     match do_evaluate_tck(&workspace, &params.into_inner()) {
@@ -278,7 +290,7 @@ async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<Appl
 ///
 /// Input values may be defined in `JSON` or `FEEL` context format.
 /// Result is always in JSON format.
-#[post("/eval/{model}/{invocable}")]
+#[post("/evaluate/{model}/{invocable}")]
 async fn post_evaluate(params: web::Path<EvaluateParams>, request_body: String, data: web::Data<ApplicationData>) -> HttpResponse {
   if let Ok(workspace) = data.workspace.read() {
     match do_evaluate(&workspace, &params.into_inner(), &request_body) {
@@ -363,16 +375,16 @@ fn do_clear_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
 
 ///
 #[inline(always)]
-fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<StatusResult> {
+fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<AddDefinitionsResult> {
   if let Some(content) = &params.content {
     if let Ok(bytes) = base64::decode(content) {
       if let Ok(xml) = String::from_utf8(bytes) {
         match dmntk_model::parse(&xml) {
           Ok(definitions) => {
+            let namespace = definitions.namespace().to_string();
+            let name = definitions.name().to_string();
             workspace.add(definitions)?;
-            Ok(StatusResult {
-              status: "definitions added".to_string(),
-            })
+            Ok(AddDefinitionsResult { namespace, name })
           }
           Err(reason) => Err(reason),
         }
