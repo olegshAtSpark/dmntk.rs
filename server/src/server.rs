@@ -279,14 +279,20 @@ async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<Appl
 /// Input values may be defined in `JSON` or `FEEL` context format.
 /// Result is always in JSON format.
 #[post("/eval/{model}/{invocable}")]
-async fn post_evaluate(params: web::Path<EvaluateParams>, request_body: String, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<String>>> {
+async fn post_evaluate(params: web::Path<EvaluateParams>, request_body: String, data: web::Data<ApplicationData>) -> HttpResponse {
   if let Ok(workspace) = data.workspace.read() {
     match do_evaluate(&workspace, &params.into_inner(), &request_body) {
-      Ok(response) => Ok(Json(ResultDto::data(response.jsonify()))),
-      Err(reason) => Ok(Json(ResultDto::error(reason))),
+      Ok(value) => HttpResponse::Ok()
+        .content_type("application/json")
+        .body(format!("{{\"data\":{}}}", value.jsonify())),
+      Err(reason) => HttpResponse::Ok()
+        .content_type("application/json")
+        .body(ResultDto::<String>::error(reason).to_string()),
     }
   } else {
-    Ok(Json(ResultDto::error(err_workspace_read_lock_failed())))
+    HttpResponse::Ok()
+      .content_type("application/json")
+      .body(ResultDto::<String>::error(err_workspace_read_lock_failed()).to_string())
   }
 }
 
@@ -312,7 +318,6 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
           "",
           HttpResponse::BadRequest()
             .content_type("application/json")
-            //.body(format!(r#"{{"errors":["{:?}"]}}"#, err)),
             .body(ResultDto::<String>::error(err_internal_error(&format!("{:?}", err))).to_string()),
         )
         .into()
