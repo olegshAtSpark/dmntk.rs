@@ -112,15 +112,13 @@ impl Name {
     let mut result = String::with_capacity(200);
     let mut current;
     let mut prev = false;
-    let mut index = 0_usize;
-    for part in parts.iter().map(|s| s.trim()) {
+    for (index, part) in parts.iter().map(|s| s.trim()).enumerate() {
       current = matches!(part, "." | "/" | "-" | "'" | "+" | "*");
       if index > 0 && !prev && !current && !part.is_empty() {
         result.push(' ');
       }
       result.push_str(part);
       prev = current;
-      index += 1;
     }
     result
   }
