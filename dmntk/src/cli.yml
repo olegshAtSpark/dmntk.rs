@@ -1,29 +1,150 @@
 name: dmntk
 subcommands:
-  - pfl:
-      about: Parses FEEL expression
+  - pfe:
+      about: Parse FEEL Expression
+      display_order: 7
       args:
         - CONTEXT_FILE:
-            help: File containing FEEL context as input data for parsed FEEL expression
+            help: File containing context for parsed FEEL expression
             required: true
             index: 1
-        - EXPRESSION_FILE:
+        - FEEL_FILE:
             help: File containing FEEL expression to be parsed
             required: true
             index: 2
-  - efl:
-      about: Evaluates FEEL expression
+  - efe:
+      about: Evaluate FEEL Expression
+      display_order: 4
       args:
-        - CONTEXT_FILE:
-            help: File containing FEEL context as input data for evaluated FEEL expression
+        - INPUT_FILE:
+            help: File containing input data for evaluated FEEL expression
             required: true
             index: 1
-        - EXPRESSION_FILE:
+        - FEEL_FILE:
             help: File containing FEEL expression to be evaluated
             required: true
             index: 2
+  - tfe:
+      about: Test FEEL Expression
+      display_order: 10
+      args:
+        - TEST_FILE:
+            help: File containing test cases for tested FEEL expression
+            required: true
+            index: 1
+        - FEEL_FILE:
+            help: File containing FEEL expression to be tested
+            required: true
+            index: 2
+  - xfe:
+      about: eXport FEEL Expression
+      display_order: 13
+      args:
+        - FEEL_FILE:
+            help: File containing FEEL expression to be exported to HTML
+            required: true
+            index: 1
+        - HTML_FILE:
+            help: Output HTML file
+            required: true
+            index: 2
+  - pdm:
+      about: Parse DMN Model
+      display_order: 5
+      args:
+        - DMN_FILE:
+            help: File containing DMN model to be parsed
+            required: true
+            index: 1
+  - edm:
+      about: Evaluate DMN Model
+      display_order: 2
+      args:
+        - invocable:
+            short: i
+            long: invocable
+            help: Name of the invocable (decision, bkm, decision service) to be evaluated
+            required: true
+            takes_value: true
+        - INPUT_FILE:
+            help: File containing input data for evaluated DMN model
+            required: true
+            index: 1
+        - DMN_FILE:
+            help: File containing DMN model to be evaluated
+            required: true
+            index: 2
+  - tdm:
+      about: Test DMN Model
+      display_order: 8
+      args:
+        - TEST_FILE:
+            help: File containing test cases for tested DMN model
+            required: true
+            index: 1
+        - DMN_FILE:
+            help: File containing DMN model to be tested
+            required: true
+            index: 2
+  - xdm:
+      about: eXport DMN Model
+      display_order: 11
+      args:
+        - DMN_FILE:
+            help: File containing DMN model to be exported to HTML
+            required: true
+            index: 1
+        - HTML_FILE:
+            help: Output HTML file
+            required: true
+            index: 2
+  - pdt:
+      about: Parse Decision Table
+      display_order: 6
+      args:
+        - DECTAB_FILE:
+            help: File containing decision table to be parsed
+            required: true
+            index: 1
+  - edt:
+      about: Evaluate Decision Table
+      display_order: 3
+      args:
+        - INPUT_FILE:
+            help: File containing input data for evaluated decision table
+            required: true
+            index: 1
+        - DECTAB_FILE:
+            help: File containing decision table to be evaluated
+            required: true
+            index: 2
+  - tdt:
+      about: Test Decision Table
+      display_order: 9
+      args:
+        - TEST_FILE:
+            help: File containing test cases for tested decision table
+            required: true
+            index: 1
+        - FEEL_FILE:
+            help: File containing FEEL expression to be tested
+            required: true
+            index: 2
+  - xdt:
+      about: eXport Decision Table
+      display_order: 12
+      args:
+        - DECTAB_FILE:
+            help: File containing decision table to be exported to HTML
+            required: true
+            index: 1
+        - HTML_FILE:
+            help: Output HTML file
+            required: true
+            index: 2
   - srv:
-      about: Runs DMNTK as a service
+      about: Run DMNTK as a service
+      display_order: 1
       args:
         - host:
             short: H
