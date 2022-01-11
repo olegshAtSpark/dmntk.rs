@@ -41,6 +41,7 @@ use dmntk_feel::Scope;
 use dmntk_model::model::NamedElement;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::str::FromStr;
 use std::sync::RwLock;
 
@@ -351,13 +352,42 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
   .await
 }
 
+/// Returns the host address and the port number, the server will start to listen on.
+///
+/// The default host and port are defined by `DMNTK_DEFAULT_HOST` and `DMNTK_DEFAULT_PORT` constants.
+/// When other values are given as parameters to this function, these will be the actual host and port.
+/// Host and port may be also controlled using environment variables:
+/// - `HOST` or `DMNTK_HOST` for the host name,
+/// - `PORT` or `DMNTK_PORT` for the port name.
+///
+/// Priorities (from highest to lowest):
+/// - `opt_host` an `opt_port` parameters,
+/// - `DMNTK_HOST` and `DMNTK_PORT` environment variables
+/// - `HOST` and `PORT` environment variables
+/// - `DMNTK_DEFAULT_HOST` and `DMNTK_DEFAULT_PORT` constants.
 ///
 fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> String {
   let mut host: String = DMNTK_DEFAULT_HOST.to_string();
+  if let Ok(h) = env::var("HOST") {
+    host = h;
+  }
+  if let Ok(h) = env::var("DMNTK_HOST") {
+    host = h;
+  }
   if let Some(h) = opt_host {
     host = h;
   }
   let mut port: u16 = DMNTK_DEFAULT_PORT;
+  if let Ok(p_str) = env::var("PORT") {
+    if let Ok(p) = u16::from_str(&p_str) {
+      port = p;
+    }
+  }
+  if let Ok(p_str) = env::var("DMNTK_PORT") {
+    if let Ok(p) = u16::from_str(&p_str) {
+      port = p;
+    }
+  }
   if let Some(p_str) = opt_port {
     if let Ok(p) = u16::from_str(&p_str) {
       port = p;
