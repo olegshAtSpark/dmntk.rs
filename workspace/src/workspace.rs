@@ -77,9 +77,10 @@ impl Workspace {
       definitions_by_name: HashMap::new(),
       model_evaluators_by_name: HashMap::new(),
     };
+    // load and deploy all DMN models from specified directory
     if let Some(dir) = opt_dir {
-      // load and deploy all DMN models from specified directory
-      workspace.load_and_deploy_models(&dir);
+      let count = workspace.load_and_deploy_models(&dir);
+      println!("Loaded {} file(s) from directory: {}", count, dir.to_string_lossy());
     }
     // workspace is ready to use
     workspace
@@ -158,7 +159,7 @@ impl Workspace {
     self.model_evaluators_by_name.clear();
   }
   /// Utility function that loads and deploys DMN models from specified directory.
-  fn load_and_deploy_models(&mut self, dir: &Path) {
+  fn load_and_deploy_models(&mut self, dir: &Path) -> usize {
     for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
       if entry.file_type().is_file() {
         let file_name = entry.file_name().to_string_lossy();
@@ -194,6 +195,7 @@ impl Workspace {
         eprintln!("{}", reason);
       }
     }
+    self.model_evaluators_by_name.len()
   }
 }
 
