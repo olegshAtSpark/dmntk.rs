@@ -51,7 +51,9 @@ use dmntk_feel::values::Value;
 use dmntk_model::model::{Definitions, NamedElement};
 use dmntk_model_evaluator::ModelEvaluator;
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use walkdir::WalkDir;
 
 /// Structure representing the container for DMN™ models.
 pub struct Workspace {
@@ -66,14 +68,21 @@ pub struct Workspace {
 }
 
 impl Workspace {
-  /// Creates an empty [Workspace].
-  pub fn new(_workspace_dir: Option<&str>) -> Self {
-    Self {
+  /// Creates a [Workspace] and loads DMN models.
+  pub fn new(opt_dir: Option<PathBuf>) -> Self {
+    // create empty workspace
+    let mut workspace = Self {
       definitions: vec![],
       definitions_by_namespace: HashMap::new(),
       definitions_by_name: HashMap::new(),
       model_evaluators_by_name: HashMap::new(),
+    };
+    if let Some(dir) = opt_dir {
+      // load and deploy all DMN models from specified directory
+      workspace.load_and_deploy_models(&dir);
     }
+    // workspace is ready to use
+    workspace
   }
   /// Deletes all definitions and model evaluators,
   /// switches a workspace to state `STASHING`.
@@ -147,6 +156,44 @@ impl Workspace {
   /// Utility function that deletes all model evaluators in workspace.
   fn clear_model_evaluators(&mut self) {
     self.model_evaluators_by_name.clear();
+  }
+  /// Utility function that loads and deploys DMN models from specified directory.
+  fn load_and_deploy_models(&mut self, dir: &Path) {
+    for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+      if entry.file_type().is_file() {
+        let file_name = entry.file_name().to_string_lossy();
+        if file_name.ends_with(".dmn") {
+          if let Ok(xml) = std::fs::read_to_string(entry.path()) {
+            match dmntk_model::parse(&xml) {
+              Ok(definitions) => {
+                match self.add(definitions) {
+                  Ok(()) => {
+                    // TODO update status report
+                  }
+                  Err(reason) => {
+                    // TODO update status report
+                    eprintln!("{}", reason);
+                  }
+                }
+              }
+              Err(reason) => {
+                // TODO update status report
+                eprintln!("{}", reason);
+              }
+            }
+          }
+        }
+      }
+    }
+    match self.deploy() {
+      Ok(()) => {
+        // TODO update status report
+      }
+      Err(reason) => {
+        // TODO update status report
+        eprintln!("{}", reason);
+      }
+    }
   }
 }
 

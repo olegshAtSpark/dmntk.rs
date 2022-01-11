@@ -61,7 +61,7 @@ enum Action {
   /// Export `DMN` model`.
   ExportDmnModel(String, String),
   /// Start **dmntk** as a service.
-  StartService(Option<String>, Option<String>),
+  StartService(Option<String>, Option<String>, Option<String>),
   /// Do nothing, no action was specified.
   DoNothing,
 }
@@ -117,7 +117,7 @@ pub async fn do_action() -> std::io::Result<()> {
       export_dmn_model(&dectab_file_name, &html_file_name);
       Ok(())
     }
-    Action::StartService(opt_host, opt_port) => dmntk_server::start_server(opt_host, opt_port).await,
+    Action::StartService(opt_host, opt_port, opt_dir) => dmntk_server::start_server(opt_host, opt_port, opt_dir).await,
     Action::DoNothing => Ok(()),
   }
 }
@@ -214,6 +214,7 @@ fn get_cli_action() -> Action {
     return Action::StartService(
       matches.value_of("host").map(|host| host.to_string()),
       matches.value_of("port").map(|port| port.to_string()),
+      matches.value_of("dir").map(|dir| dir.to_string()),
     );
   }
   Action::DoNothing

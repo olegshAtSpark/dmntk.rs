@@ -156,3 +156,8 @@ subcommands:
             long: port
             help: Port number
             takes_value: true
+        - dir:
+            short: D
+            long: dir
+            help: Directory name where DMN files are searched
+            takes_value: true

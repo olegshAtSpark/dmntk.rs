@@ -42,6 +42,7 @@ use dmntk_model::model::NamedElement;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::sync::RwLock;
 
@@ -317,9 +318,8 @@ async fn not_found() -> std::io::Result<Json<ResultDto<()>>> {
 }
 
 /// Starts the server.
-pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) -> std::io::Result<()> {
-  // create workspace and load all definitions
-  let workspace = Workspace::new(None);
+pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>, opt_dir: Option<String>) -> std::io::Result<()> {
+  let workspace = Workspace::new(get_workspace_dir(opt_dir));
   let application_data = web::Data::new(ApplicationData {
     workspace: RwLock::new(workspace),
   });
@@ -367,7 +367,7 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
 /// - `DMNTK_DEFAULT_HOST` and `DMNTK_DEFAULT_PORT` constants.
 ///
 fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> String {
-  let mut host: String = DMNTK_DEFAULT_HOST.to_string();
+  let mut host = DMNTK_DEFAULT_HOST.to_string();
   if let Ok(h) = env::var("HOST") {
     host = h;
   }
@@ -394,6 +394,30 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
     }
   }
   format!("{}:{}", host, port)
+}
+
+/// Returns root directory for workspace.
+fn get_workspace_dir(opt_dir: Option<String>) -> Option<PathBuf> {
+  let mut dir: Option<String> = None;
+  if let Ok(d) = env::var("DMNTK_DIR") {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  if let Ok(d) = env::var("DIR") {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  if let Some(d) = opt_dir {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  dir.map(|d| PathBuf::from(&d))
 }
 
 ///
