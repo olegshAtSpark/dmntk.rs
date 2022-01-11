@@ -30,12 +30,9 @@
  * limitations under the License.
  */
 
-//! `FEEL` name.
+//! `FEEL` name implementation.
 
 use dmntk_common::Jsonify;
-
-/// Common type definition for optional name.
-pub type OptName = Option<Name>;
 
 /// `FEEL` name.
 #[derive(Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd, Clone)]
@@ -45,14 +42,14 @@ impl From<Vec<String>> for Name {
   /// Converts a vector of strings into [Name].
   fn from(value: Vec<String>) -> Self {
     let a = value.iter().map(|s| s.as_str()).collect::<Vec<&str>>();
-    Self(Self::from_parts(&a))
+    Self::new(&a)
   }
 }
 
 impl From<Vec<&str>> for Name {
-  /// Converts a vector of strings into [Name].
+  /// Converts a vector of string references into [Name].
   fn from(value: Vec<&str>) -> Self {
-    Self(Self::from_parts(&value))
+    Self::new(&value)
   }
 }
 
@@ -85,7 +82,7 @@ impl From<&Name> for String {
 }
 
 impl std::fmt::Display for Name {
-  ///
+  /// Implements [Display] for [Name].
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}", self.0)
   }
@@ -99,17 +96,9 @@ impl Jsonify for Name {
 }
 
 impl Name {
-  /// Creates a [Name] from name parts.
+  /// Creates a [Name] from string parts.
   pub fn new(parts: &[&str]) -> Self {
-    Self(Self::from_parts(parts))
-  }
-  /// Returns `true` when the specified character is an additional name symbol.
-  pub fn is_additional_name_symbol(ch: char) -> bool {
-    matches!(ch, '.' | '/' | '-' | '\'' | '+' | '*')
-  }
-  ///
-  fn from_parts(parts: &[&str]) -> String {
-    let mut result = String::with_capacity(200);
+    let mut result = String::with_capacity(80);
     let mut current;
     let mut prev = false;
     for (index, part) in parts.iter().map(|s| s.trim()).enumerate() {
@@ -120,7 +109,7 @@ impl Name {
       result.push_str(part);
       prev = current;
     }
-    result
+    Self(result)
   }
 }
 
@@ -228,38 +217,35 @@ mod tests {
     let name_m_n: Name = vec!["m", "n"].into();
     let name_xy: Name = vec!["x y"].into();
     let name_mn: Name = vec!["m n"].into();
-    // check the conversion to string
     assert_eq!("a", name_a.to_string());
     assert_eq!("b", name_b.to_string());
     assert_eq!("x y", name_x_y.to_string());
     assert_eq!("m n", name_m_n.to_string());
     assert_eq!("x y", name_xy.to_string());
     assert_eq!("m n", name_m_n.to_string());
-
     assert!((name_a == name_a));
-    assert!(!(name_a != name_a));
     assert!((name_x_y == name_x_y));
-    assert!(!(name_x_y != name_x_y));
-    //assert!((name_x_y == name_xy));
-    //assert!(!(name_x_y != name_xy));
+    assert!((name_x_y == name_xy));
     assert!((name_m_n == name_m_n));
-    assert!(!(name_m_n != name_m_n));
-    //assert!((name_m_n == name_mn));
-    //assert!(!(name_m_n != name_mn));
-
-    assert!(!(name_a == name_b));
+    assert!((name_m_n == name_mn));
     assert!((name_a != name_b));
-    assert!(!(name_x_y == name_m_n));
     assert!((name_x_y != name_m_n));
-    assert!(!(name_xy == name_mn));
     assert!((name_xy != name_mn));
-    assert!(!(name_x_y == name_a));
-    assert!((name_x_y != name_a));
-    assert!(!(name_xy == name_a));
     assert!((name_xy != name_a));
+    assert!((name_x_y != name_a));
+    assert!((name_mn != name_b));
+    assert!(!(name_a != name_a));
+    assert!(!(name_x_y != name_x_y));
+    assert!(!(name_x_y != name_xy));
+    assert!(!(name_m_n != name_m_n));
+    assert!(!(name_m_n != name_mn));
+    assert!(!(name_a == name_b));
+    assert!(!(name_x_y == name_m_n));
+    assert!(!(name_xy == name_mn));
+    assert!(!(name_x_y == name_a));
+    assert!(!(name_xy == name_a));
     assert!(!(name_m_n == name_b));
     assert!((name_m_n != name_b));
     assert!(!(name_mn == name_b));
-    assert!((name_mn != name_b));
   }
 }

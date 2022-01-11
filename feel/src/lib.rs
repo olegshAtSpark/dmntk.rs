@@ -49,7 +49,7 @@ pub use ast::{AstNode, OptAstNode};
 pub use dmntk_feel_number::FeelNumber;
 pub use evaluator::Evaluator;
 pub use function::FunctionBody;
-pub use names::{Name, OptName};
+pub use names::Name;
 pub use qualified_names::QualifiedName;
 pub use scope::Scope;
 pub use strings::ToFeelString;
