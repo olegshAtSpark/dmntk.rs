@@ -47,6 +47,8 @@ use std::sync::RwLock;
 const DMNTK_NAME: &str = env!("CARGO_PKG_NAME");
 const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
 const DMNTK_COPYRIGHT: &str = env!("CARGO_PKG_AUTHORS");
+const DMNTK_DEFAULT_PORT: u16 = 22022;
+const DMNTK_DEFAULT_HOST: &str = "0.0.0.0";
 
 /// Shared workspace with decision model definitions.
 struct ApplicationData {
@@ -351,11 +353,11 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
 
 ///
 fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> String {
-  let mut host: String = "127.0.0.1".to_string();
+  let mut host: String = DMNTK_DEFAULT_HOST.to_string();
   if let Some(h) = opt_host {
     host = h;
   }
-  let mut port: u16 = 22022;
+  let mut port: u16 = DMNTK_DEFAULT_PORT;
   if let Some(p_str) = opt_port {
     if let Ok(p) = u16::from_str(&p_str) {
       port = p;
