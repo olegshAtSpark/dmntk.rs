@@ -510,7 +510,7 @@ pub mod errors {
     InvalidXsdTime(String),
     /// Used when parsed text is not acceptable xsd:duration representation.
     InvalidXsdDuration(String),
-    /// Used when converting a [Value] to [Context].
+    /// Used when converting a [Value] to [FeelContext](crate::context::FeelContext).
     ValueIsNotAContext(String),
   }
 

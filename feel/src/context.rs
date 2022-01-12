@@ -136,7 +136,7 @@ impl FeelContext {
   pub fn contains_entry(&self, name: &Name) -> bool {
     self.0.contains_key(name)
   }
-  /// Checks if this [FeelContext] contains an entry pointed by [QualifiedName](crate::names::QualifiedName).
+  /// Checks if this [FeelContext] contains an entry pointed by [QualifiedName].
   pub fn contains_entries(&self, qname: &QualifiedName) -> bool {
     self.contains_deep(qname.as_slice())
   }
@@ -182,7 +182,7 @@ impl FeelContext {
       }
     }
   }
-  /// Creates an entry with a value for specified [QualifiedName](crate::names::QualifiedName).
+  /// Creates an entry with a value for specified [QualifiedName].
   /// All non existing intermediary contexts will be created.
   pub fn create_entry(&mut self, qname: &QualifiedName, value: Value) {
     self.create_deep(qname.as_slice(), value);
@@ -294,7 +294,7 @@ pub mod errors {
   /// Context errors.
   #[derive(Debug, PartialEq)]
   enum ContextError {
-    /// Used when converting a [Value] to [Context].
+    /// Used when converting a [Value] to [FeelContext](super::FeelContext).
     ValueIsNotAContext(String),
   }
 

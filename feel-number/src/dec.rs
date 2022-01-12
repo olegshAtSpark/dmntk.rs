@@ -159,7 +159,7 @@ pub fn dec_from_u32(n: u32) -> DecQuad {
   qr
 }
 
-/// Converts [DEcQuad] into [String].
+/// Converts [DecQuad] into [String].
 pub fn dec_to_string(q: &DecQuad) -> String {
   unsafe {
     let mut buf = DEC_QUAD_STRING_BUFFER;

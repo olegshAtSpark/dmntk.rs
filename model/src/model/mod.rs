@@ -361,15 +361,15 @@ impl DrgElement {
 /// for all contained elements.
 #[derive(Debug, Clone)]
 pub struct Definitions {
-  /// Optional identifier for this [Definitions] derived from [DMNElement].
+  /// Optional identifier for this [Definitions] derived from [DMNElement](DmnElement).
   id: Option<String>,
-  /// Optional description of this [Definitions] derived from [DMNElement].
+  /// Optional description of this [Definitions] derived from [DMNElement](DmnElement).
   description: Option<String>,
-  /// Optional alternative short description of this [Definitions] derived from [DMNElement].
+  /// Optional alternative short description of this [Definitions] derived from [DMNElement](DmnElement).
   label: Option<String>,
-  /// Container to attach additional elements to any [Definitions] derived from [DMNElement].
+  /// Container to attach additional elements to any [Definitions] derived from [DMNElement](DmnElement).
   extension_elements: Option<ExtensionElement>,
-  /// Container to attach named extended attributes and model associations to any [Definitions] derived from [DMNElement].
+  /// Container to attach named extended attributes and model associations to any [Definitions] derived from [DMNElement](DmnElement).
   extension_attributes: Vec<ExtensionAttribute>,
   /// Name of this [Definitions] derived from [NamedElement].
   name: String,
@@ -787,7 +787,7 @@ impl NamedElement for InputData {
 }
 
 /// `Import` class is used when referencing external elements,
-/// either DMN [DRGElement] or [ItemDefinition] instances contained
+/// either DMN [DRGElement](DrgElement) or [ItemDefinition] instances contained
 /// in other [Definitions] elements, or non-DMN elements,
 /// such as an XML Schema or a PMML file.
 #[derive(Debug, Clone, PartialEq)]

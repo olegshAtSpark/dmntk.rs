@@ -894,8 +894,9 @@ pub fn split(input_string_value: &Value, delimiter_string_value: &Value) -> Valu
   value_null!("split")
 }
 
-/// Returns the square root of the given **value** specified as a parameter.
-/// If the given number is negative it returns [VALUE_NULL].
+/// Returns the square root of the given [Value].
+///
+/// When the given number is negative, this function returns [Value::Null].
 pub fn sqrt(value: &Value) -> Value {
   if let Value::Number(v) = value {
     if *v >= FeelNumber::zero() {

@@ -50,7 +50,7 @@ impl<'a> From<&'a HRef> for &'a str {
 }
 
 impl<'a> From<&'a HRef> for String {
-  /// Converts a reference to [HRef] into string.
+  /// Converts a reference to [HRef] into string
   fn from(value: &'a HRef) -> Self {
     value.0.clone()
   }
@@ -83,14 +83,14 @@ mod errors {
   }
 
   impl From<HRefError> for DmntkError {
-    /// Converts [HRefError] into [DmntkError].
+    /// Converts `HRefError` into [DmntkError].
     fn from(e: HRefError) -> Self {
       DmntkError::new("HRefError", &e.to_string())
     }
   }
 
   impl std::fmt::Display for HRefError {
-    /// Implements [Display] trait for [HRefErrors](HRefError).
+    /// Implements [Display](std::fmt::Display) trait for [HRefErrors](HRefError).
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
       match self {
         HRefError::InvalidReference(s) => write!(f, "invalid reference): `{}`", s),
