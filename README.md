@@ -4,6 +4,7 @@
 [![Apache 2.0 licensed][apache-badge]][apache-url]
 ![build][build-badge]
 ![tests][tests-badge]
+[![Contributor Covenant][coc-badge]](CODE_OF_CONDUCT.md)
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
 [mit-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-MIT
@@ -11,6 +12,7 @@
 [apache-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE
 [build-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/build.yml/badge.svg
 [tests-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/tests.yml/badge.svg
+[coc-badge]: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
 
 ## Project status
 
