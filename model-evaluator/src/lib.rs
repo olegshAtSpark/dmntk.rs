@@ -34,6 +34,7 @@ extern crate dmntk_common;
 extern crate dmntk_feel;
 extern crate dmntk_feel_parser;
 extern crate dmntk_model;
+#[cfg(test)]
 extern crate dmntk_recognizer;
 #[cfg(test)]
 #[macro_use]
@@ -48,23 +49,4 @@ mod model_evaluator;
 #[cfg(test)]
 mod tests;
 
-use dmntk_common::Result;
-use dmntk_feel::values::Value;
-use dmntk_feel::Scope;
-
 pub use model_evaluator::ModelEvaluator;
-
-/// Evaluates the decision table.
-pub fn evaluate_decision_table_from_text(_scope: &Scope, _input: &str) -> Result<Value> {
-  unimplemented!()
-}
-
-/// Evaluates a decision table against specified context.
-pub fn evaluate_decision_table_and_context(_decision_table_input: &str, _context_input: &str) -> Result<Value> {
-  unimplemented!()
-}
-
-/// Evaluates all tests associated with decision table.
-pub fn evaluate_decision_table_and_test(_input: &str, _sep: &str) -> Result<(bool, Value, Value)> {
-  unimplemented!()
-}

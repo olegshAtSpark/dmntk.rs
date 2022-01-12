@@ -14,9 +14,9 @@ dmntk-feel = { path = "../feel" }
 dmntk-feel-evaluator = { path = "../feel-evaluator" }
 dmntk-feel-parser = { path = "../feel-parser" }
 dmntk-model = { path = "../model" }
-dmntk-recognizer = { path = "../recognizer" }
 thiserror = "1.0.30"
 
 [dev-dependencies]
 dmntk-examples = { path = "../examples" }
+dmntk-recognizer = { path = "../recognizer" }
 lazy_static = "1.4.0"

@@ -305,15 +305,10 @@ fn parse_decision_table(dectab_file_name: &str) {
 fn evaluate_decision_table(dtb_file_name: &str, ctx_file_name: &str) {
   // read the context input from file
   match std::fs::read_to_string(ctx_file_name) {
-    Ok(ref context_input) => {
+    Ok(_context_input) => {
       // read decision table input from file
       match std::fs::read_to_string(dtb_file_name) {
-        Ok(ref decision_table_input) => match dmntk_evaluator::evaluate_decision_table_and_context(decision_table_input, context_input) {
-          Ok(value) => {
-            println!("{}", value)
-          }
-          Err(reason) => println!("{}", reason),
-        },
+        Ok(_decision_table_input) => unimplemented!(),
         Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dtb_file_name, reason),
       }
     }
@@ -324,18 +319,7 @@ fn evaluate_decision_table(dtb_file_name: &str, ctx_file_name: &str) {
 /// Tests decision table loaded from file.
 fn test_decision_table(_test_file_name: &str, dtb_file_name: &str) {
   match std::fs::read_to_string(dtb_file_name) {
-    Ok(dtb_input) => match dmntk_evaluator::evaluate_decision_table_and_test(&dtb_input, "%") {
-      Ok((result, expected, actual)) => {
-        if !result {
-          println!("FAILURE");
-          println!("Expected: {}", expected);
-          println!("  Actual: {}", actual);
-        } else {
-          println!("SUCCESS!");
-        }
-      }
-      Err(reason) => println!("{:?}", reason),
-    },
+    Ok(_dtb_input) => unimplemented!(),
     Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dtb_file_name, reason),
   }
 }
