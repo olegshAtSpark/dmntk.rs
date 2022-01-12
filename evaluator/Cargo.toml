@@ -9,5 +9,8 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
+dmntk-common = { path = "../common" }
+dmntk-feel = { path = "../feel" }
 dmntk-feel-evaluator = { path = "../feel-evaluator" }
+dmntk-feel-parser = { path = "../feel-parser" }
 dmntk-model-evaluator = { path = "../model-evaluator" }
