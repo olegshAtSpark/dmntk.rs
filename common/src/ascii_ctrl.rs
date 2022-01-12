@@ -30,22 +30,14 @@
  * limitations under the License.
  */
 
-//! Common definitions for components of Decision Model and Notation Toolkit.
+//! ASCII control sequences.
 
-extern crate serde;
-extern crate serde_derive;
-extern crate serde_yaml;
-extern crate uriparse;
-
-mod ascii_ctrl;
-mod errors;
-mod examples;
-mod href;
-mod jsonify;
-mod macros;
-
-pub use ascii_ctrl::*;
-pub use errors::{DmntkError, Result};
-pub use examples::{EXAMPLE_0001_CTX, EXAMPLE_0001_DTB, EXAMPLE_0002_CTX, EXAMPLE_0002_DTB};
-pub use href::{HRef, OptHRef};
-pub use jsonify::Jsonify;
+pub const ASCII_BLACK: &str = "\u{001b}[30m";
+pub const ASCII_RED: &str = "\u{001b}[31m";
+pub const ASCII_GREEN: &str = "\u{001b}[32m";
+pub const ASCII_YELLOW: &str = "\u{001b}[33m";
+pub const ASCII_BLUE: &str = "\u{001b}[34m";
+pub const ASCII_MAGENTA: &str = "\u{001b}[35m";
+pub const ASCII_CYAN: &str = "\u{001b}[36m";
+pub const ASCII_WHITE: &str = "\u{001b}[37m";
+pub const ASCII_RESET: &str = "\u{001b}[0m";

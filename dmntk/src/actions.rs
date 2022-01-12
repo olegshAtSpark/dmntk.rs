@@ -32,6 +32,7 @@
 
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
 use clap::{load_yaml, App, AppSettings};
+use dmntk_common::{ASCII_GREEN, ASCII_RED, ASCII_RESET};
 use dmntk_feel::Scope;
 
 /// Available command-line actions.
@@ -272,8 +273,45 @@ fn evaluate_feel_expression(ctx_file_name: &str, feel_file_name: &str) {
 }
 
 /// Tests `FEEL` expression loaded from file and prints the test result to standard output.
-fn test_feel_expression(_test_file_name: &str, _feel_file_name: &str) {
-  println!("tfe command is not implemented yet")
+fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
+  match std::fs::read_to_string(feel_file_name) {
+    Ok(feel_file_content) => match std::fs::read_to_string(test_file_name) {
+      Ok(test_file_content) => match dmntk_evaluator::evaluate_test_cases(&test_file_content) {
+        Ok(test_cases) => {
+          let mut passed = 0_usize;
+          let mut failed = 0_usize;
+          for (i, (input_data, expected_value)) in test_cases.iter().enumerate() {
+            let scope = input_data.clone().into();
+            match dmntk_feel_parser::parse_expression(&scope, &feel_file_content, false) {
+              Ok(node) => match dmntk_evaluator::evaluate(&scope, &node) {
+                Ok(actual_value) => {
+                  if dmntk_evaluator::evaluate_equals(&actual_value, expected_value) {
+                    println!("test {} ... {}ok{}", i + 1, ASCII_GREEN, ASCII_RESET);
+                    passed += 1;
+                  } else {
+                    println!("test {} ... {}FAILED{}", i + 1, ASCII_RED, ASCII_RESET);
+                    println!("  expected: {}", expected_value);
+                    println!("    actual: {}", actual_value);
+                    failed += 1;
+                  }
+                }
+                Err(reason) => println!("evaluating expression failed with reason: {}", reason),
+              },
+              Err(reason) => println!("parsing expression failed with reason: {}", reason),
+            }
+          }
+          if failed > 0 {
+            println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+          } else {
+            println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
+          }
+        }
+        Err(reason) => println!("evaluation of test cases failed with reason: {}", reason),
+      },
+      Err(reason) => println!("loading test file `{}` failed with reason: {:?}", test_file_name, reason),
+    },
+    Err(reason) => println!("loading expression file `{}` failed with reason: {:?}", feel_file_name, reason),
+  }
 }
 
 /// Exports `FEEL` expression loaded from file to HTML output file.
