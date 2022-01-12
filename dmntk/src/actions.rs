@@ -52,6 +52,8 @@ enum Action {
   TestDecisionTable(String, String),
   /// Export decision table.
   ExportDecisionTable(String, String),
+  /// Recognize decision table.
+  RecognizeDecisionTable(String),
   /// Parse `DMN` model`.
   ParseDmnModel(String),
   /// Evaluate `DMN` model`.
@@ -99,6 +101,10 @@ pub async fn do_action() -> std::io::Result<()> {
     }
     Action::ExportDecisionTable(dectab_file_name, html_file_name) => {
       export_decision_table(&dectab_file_name, &html_file_name);
+      Ok(())
+    }
+    Action::RecognizeDecisionTable(dectab_file_name) => {
+      recognize_decision_table(&dectab_file_name);
       Ok(())
     }
     Action::ParseDmnModel(dectab_file_name) => {
@@ -184,6 +190,10 @@ fn get_cli_action() -> Action {
       matches.value_of("HTML_FILE").unwrap_or("unknown.html").to_string(),
     );
   }
+  // recognize decision table subcommand
+  if let Some(matches) = matches.subcommand_matches("rdt") {
+    return Action::RecognizeDecisionTable(matches.value_of("DECTAB_FILE").unwrap_or("unknown.dtb").to_string());
+  }
   // parse DMN model subcommand
   if let Some(matches) = matches.subcommand_matches("pdm") {
     return Action::ParseDmnModel(matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string());
@@ -218,19 +228,6 @@ fn get_cli_action() -> Action {
     );
   }
   Action::DoNothing
-}
-
-/// Recognizes the decision table loaded from text file.
-fn _recognize_decision_table_from_file(dtb_file_name: &str) {
-  match std::fs::read_to_string(dtb_file_name) {
-    Ok(ref text) => match dmntk_recognizer::Recognizer::recognize(text) {
-      Ok(recognizer) => {
-        recognizer.trace();
-      }
-      Err(reason) => println!("ERROR: {}", reason),
-    },
-    Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dtb_file_name, reason),
-  }
 }
 
 /// Parses `FEEL` expression loaded from file and prints the parsed `AST` to standard output.
@@ -346,6 +343,19 @@ fn test_decision_table(_test_file_name: &str, dtb_file_name: &str) {
 /// Exports decision table loaded from text file to HTML output file.
 fn export_decision_table(_dectab_file_name: &str, _html_file_name: &str) {
   println!("xdt command is not implemented yet")
+}
+
+/// Recognizes the decision table loaded from text file.
+fn recognize_decision_table(dtb_file_name: &str) {
+  match std::fs::read_to_string(dtb_file_name) {
+    Ok(ref text) => match dmntk_recognizer::Recognizer::recognize(text) {
+      Ok(recognizer) => {
+        recognizer.trace();
+      }
+      Err(reason) => println!("ERROR: {}", reason),
+    },
+    Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dtb_file_name, reason),
+  }
 }
 
 /// Parses `DMN` model loaded from XML file.
