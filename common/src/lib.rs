@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ extern crate serde_derive;
 extern crate serde_yaml;
 extern crate uriparse;
 
+pub mod ascii_ctrl;
 mod errors;
 mod examples;
 mod href;

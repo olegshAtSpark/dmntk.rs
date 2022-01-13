@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ impl<'a> From<&'a HRef> for &'a str {
 }
 
 impl<'a> From<&'a HRef> for String {
-  /// Converts a reference to [HRef] into string.
+  /// Converts a reference to [HRef] into string
   fn from(value: &'a HRef) -> Self {
     value.0.clone()
   }
@@ -83,14 +83,14 @@ mod errors {
   }
 
   impl From<HRefError> for DmntkError {
-    /// Converts [HRefError] into [DmntkError].
+    /// Converts `HRefError` into [DmntkError].
     fn from(e: HRefError) -> Self {
       DmntkError::new("HRefError", &e.to_string())
     }
   }
 
   impl std::fmt::Display for HRefError {
-    /// Implements [Display] trait for [HRefErrors](HRefError).
+    /// Implements [Display](std::fmt::Display) trait for [HRefErrors](HRefError).
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
       match self {
         HRefError::InvalidReference(s) => write!(f, "invalid reference): `{}`", s),

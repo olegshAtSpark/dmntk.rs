@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,12 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0013, "file: ///3_0013.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0013);
 }
 
 #[test]
@@ -41,7 +43,7 @@ fn _0001() {
   let ctx = context(
     r#"{listA: [3, 1, 5, 4], stringList: ["a", "8", "Aa", "A", "10", "9"], tableB: [{col1: 16, col2: 4, col3: 25, col4: 1}, {col1: 16, col2: 43, col3: 2, col4: 10}, {col1: 1, col2: 0, col3: 1, col4: 1}]}"#,
   );
-  assert_decision(&DEFINITIONS, "sort1", &ctx, r#"[5, 4, 3, 1]"#);
+  assert_decision(&MODEL_EVALUATOR, "sort1", &ctx, r#"[5, 4, 3, 1]"#);
 }
 
 #[test]
@@ -50,7 +52,7 @@ fn _0002() {
     r#"{listA: [3, 1, 5, 4], stringList: ["a", "8", "Aa", "A", "10", "9"], tableB: [{col1: 16, col2: 4, col3: 25, col4: 1}, {col1: 16, col2: 43, col3: 2, col4: 10}, {col1: 1, col2: 0, col3: 1, col4: 1}]}"#,
   );
   assert_decision(
-    &DEFINITIONS,
+    &MODEL_EVALUATOR,
     "sort2",
     &ctx,
     r#"[{col1: 1, col2: 0, col3: 1, col4: 1}, {col1: 16, col2: 4, col3: 25, col4: 1}, {col1: 16, col2: 43, col3: 2, col4: 10}]"#,
@@ -62,5 +64,5 @@ fn _0003() {
   let ctx = context(
     r#"{listA: [3, 1, 5, 4], stringList: ["a", "8", "Aa", "A", "10", "9"], tableB: [{col1: 16, col2: 4, col3: 25, col4: 1}, {col1: 16, col2: 43, col3: 2, col4: 10}, {col1: 1, col2: 0, col3: 1, col4: 1}]}"#,
   );
-  assert_decision(&DEFINITIONS, "sort3", &ctx, r#"["10", "8", "9", "A", "Aa", "a"]"#);
+  assert_decision(&MODEL_EVALUATOR, "sort3", &ctx, r#"["10", "8", "9", "A", "Aa", "a"]"#);
 }

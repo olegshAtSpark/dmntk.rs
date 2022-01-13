@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,11 @@
  * limitations under the License.
  */
 
+use crate::ModelEvaluator;
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
-use dmntk_model::model::Definitions;
+use std::sync::Arc;
 
 mod compliance;
 
@@ -52,9 +53,14 @@ pub fn context(input: &str) -> FeelContext {
   }
 }
 
+/// Utility function that builds a model evaluator from XML model definitions.
+fn build_model_evaluator(model_content: &str) -> Arc<ModelEvaluator> {
+  ModelEvaluator::new(&dmntk_model::parse(model_content).unwrap()).unwrap()
+}
+
 /// Utility function that evaluates a `Decision` specified by name and compares the result.
-fn assert_decision(definitions: &Definitions, name: &str, input_data: &FeelContext, expected: &str) {
-  let actual = crate::evaluate_decision_by_name(definitions, name, input_data).unwrap().to_string();
+fn assert_decision(model_evaluator: &ModelEvaluator, name: &str, input_data: &FeelContext, expected: &str) {
+  let actual = model_evaluator.evaluate_invocable(name, input_data).to_string();
   assert_eq!(
     expected, actual,
     "Assertion error, actual value of the decision does not match the expected value:\n  expected: {}\n    actual: {}\n",
@@ -63,10 +69,8 @@ fn assert_decision(definitions: &Definitions, name: &str, input_data: &FeelConte
 }
 
 /// Utility function that evaluates a `BusinessKnowledgeModel` specified by name and compares the result.
-fn assert_business_knowledge_model(definitions: &Definitions, name: &str, input_data: &FeelContext, expected: &str) {
-  let actual = crate::evaluate_business_knowledge_model_by_name(definitions, name, input_data)
-    .unwrap()
-    .to_string();
+fn assert_business_knowledge_model(model_evaluator: &ModelEvaluator, name: &str, input_data: &FeelContext, expected: &str) {
+  let actual = model_evaluator.evaluate_invocable(name, input_data).to_string();
   assert_eq!(
     expected, actual,
     "Assertion error, actual value of the business knowledge model does not match the expected value:\n  expected: {}\n    actual: {}\n",
@@ -75,8 +79,8 @@ fn assert_business_knowledge_model(definitions: &Definitions, name: &str, input_
 }
 
 /// Utility function that evaluates a `DecisionService` specified by name and compares the result with expected value.
-fn assert_decision_service(definitions: &Definitions, name: &str, input: &str, expected: &str) {
-  let actual = crate::eval_decision_service_by_name(definitions, name, &context(input)).unwrap().to_string();
+fn assert_decision_service(model_evaluator: &ModelEvaluator, name: &str, input: &str, expected: &str) {
+  let actual = model_evaluator.evaluate_invocable(name, &context(input)).to_string();
   assert_eq!(
     expected, actual,
     "Assertion error, actual value of the decision service does not match the expected value:\n  expected: {}\n    actual: {}\n",

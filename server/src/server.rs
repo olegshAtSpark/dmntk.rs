@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,21 +33,28 @@
 use crate::dto::{InputNodeDto, OutputNodeDto, WrappedValue};
 use crate::errors::*;
 use actix_web::web::Json;
-use actix_web::{get, post, web, App, HttpServer};
-use dmntk_common::{DmntkError, Result};
+use actix_web::{error, get, post, web, App, HttpResponse, HttpServer};
+use dmntk_common::{DmntkError, Jsonify, Result};
 use dmntk_feel::context::FeelContext;
+use dmntk_feel::values::Value;
+use dmntk_feel::Scope;
+use dmntk_model::model::NamedElement;
 use dmntk_workspace::Workspace;
 use serde::{Deserialize, Serialize};
+use std::env;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use std::sync::Mutex;
+use std::sync::RwLock;
 
 const DMNTK_NAME: &str = env!("CARGO_PKG_NAME");
 const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
 const DMNTK_COPYRIGHT: &str = env!("CARGO_PKG_AUTHORS");
+const DMNTK_DEFAULT_PORT: u16 = 22022;
+const DMNTK_DEFAULT_HOST: &str = "0.0.0.0";
 
 /// Shared workspace with decision model definitions.
 struct ApplicationData {
-  workspace: Mutex<Workspace>,
+  workspace: RwLock<Workspace>,
 }
 
 /// Data transfer object for an error.
@@ -76,6 +83,13 @@ impl<T> Default for ResultDto<T> {
   }
 }
 
+impl<T: serde::Serialize> ToString for ResultDto<T> {
+  /// Converts [ResultDto] to JSON string.
+  fn to_string(&self) -> String {
+    serde_json::to_string(self).unwrap_or_else(|_| "json conversion failed".to_string())
+  }
+}
+
 impl<T> ResultDto<T> {
   /// Creates [ResultDto] with some data inside.
   pub fn data(d: T) -> ResultDto<T> {
@@ -93,7 +107,7 @@ impl<T> ResultDto<T> {
   }
 }
 
-/// Data transfer object for system information.
+/// System information structure.
 #[derive(Serialize)]
 pub struct SystemInfoDto {
   /// System name.
@@ -118,93 +132,183 @@ impl Default for SystemInfoDto {
   }
 }
 
-/// Parameters for deploying DMN™ model definitions from *.dmn files.
+/// Parameters for adding DMN™ model definitions to workspace.
 #[derive(Deserialize)]
-pub struct DeployParams {
-  /// The URI of the deployed DMN™ model.
-  #[serde(rename = "source")]
-  pub source: Option<String>,
-  /// The content of the DMN™ model, encoded in `Base64`.
+pub struct AddDefinitionsParams {
+  /// Content of the DMN™ model, encoded in `Base64`.
   #[serde(rename = "content")]
   pub content: Option<String>,
-  /// Unique tag associated with the deployed model.
-  #[serde(rename = "tag")]
-  pub tag: Option<String>,
 }
 
-/// Output sent do caller after successful deployment.
-#[derive(Serialize, Debug)]
-pub struct DeployResult {
-  /// Unique name of the deployed model.
+/// Result data sent back to caller after adding definitions.
+#[derive(Debug, Serialize)]
+pub struct AddDefinitionsResult {
+  /// Namespace of added definitions.
+  #[serde(rename = "namespace")]
+  pub namespace: String,
+  /// Name of added definitions.
+  #[serde(rename = "name")]
+  pub name: String,
+}
+
+/// Parameters for replacing DMN™ model definitions in workspace.
+#[derive(Deserialize)]
+pub struct ReplaceDefinitionsParams {
+  /// Content of the DMN™ model, encoded in `Base64`.
+  #[serde(rename = "content")]
+  pub content: Option<String>,
+}
+
+/// Parameters for removing DMN™ model definitions from workspace.
+#[derive(Deserialize)]
+pub struct RemoveDefinitionsParams {
+  /// Namespace of the definitions to be removed.
+  #[serde(rename = "namespace")]
+  pub namespace: Option<String>,
+  /// Name of the definitions to be removed.
   #[serde(rename = "name")]
   pub name: Option<String>,
-  /// Unique identifier of the deployed model.
-  #[serde(rename = "id")]
-  pub id: Option<String>,
-  /// Unique tag associated with the deployed model.
-  #[serde(rename = "tag")]
-  pub tag: Option<String>,
 }
 
-/// Parameters for evaluating decision artefact.
+/// Operation status sent back to caller after request completion.
+#[derive(Debug, Serialize)]
+pub struct StatusResult {
+  /// Operation status.
+  #[serde(rename = "status")]
+  pub status: String,
+}
+
+/// Parameters for evaluating invocable in DMN™ model definitions.
+/// The format of input data is compatible with test cases
+/// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
 #[derive(Debug, Deserialize)]
-pub struct EvaluateParams {
-  /// Tag of the model where the artifact will be searched.
-  #[serde(rename = "tag")]
-  model_tag: Option<String>,
-  /// Type of the artifact to be evaluated.
-  #[serde(rename = "artifact")]
-  artifact_type: Option<String>,
-  /// Name of the artifact to be evaluated.
-  #[serde(rename = "name")]
-  artifact_name: Option<String>,
+pub struct TckEvaluateParams {
+  /// Name of the model where the invocable will be searched.
+  #[serde(rename = "model")]
+  model_name: Option<String>,
+  /// Name of the invocable to be evaluated.
+  #[serde(rename = "invocable")]
+  invocable_name: Option<String>,
   /// Collection of input values.
   #[serde(rename = "input")]
   input_values: Option<Vec<InputNodeDto>>,
 }
 
-/// Handler for system information.
-#[get("/info")]
-async fn system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
+/// Parameters for evaluating invocable in DMN™ model definitions.
+#[derive(Debug, Deserialize)]
+struct EvaluateParams {
+  /// Name of the model.
+  #[serde(rename = "model")]
+  model_name: Option<String>,
+  /// Name of the invocable in model.
+  #[serde(rename = "invocable")]
+  invocable_name: Option<String>,
+}
+
+/// Handler for retrieving system information.
+#[get("/system/info")]
+async fn get_system_info() -> std::io::Result<Json<ResultDto<SystemInfoDto>>> {
   Ok(Json(ResultDto::data(SystemInfoDto::default())))
 }
 
-/// Handler for deploying DMN™ definitions.
-#[post("/deploy-definitions")]
-async fn deploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
-    match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), false) {
+/// Handler for deleting all model definitions from workspace.
+#[post("/definitions/clear")]
+async fn post_definitions_clear(data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_clear_definitions(&mut workspace) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
   }
 }
 
-/// Handler for redeploying DMN™ definitions.
-#[post("/redeploy-definitions")]
-async fn redeploy_definitions(params: Json<DeployParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<DeployResult>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
-    match deploy_definitions_in_workspace(&mut workspace, &params.into_inner(), true) {
+/// Handler for adding model definitions to workspace.
+#[post("/definitions/add")]
+async fn post_definitions_add(params: Json<AddDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<AddDefinitionsResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_add_definitions(&mut workspace, &params.into_inner()) {
       Ok(result) => Ok(Json(ResultDto::data(result))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
   }
 }
 
-/// Handler for evaluating artifacts.
-#[post("/evl")]
-async fn evaluate_artifact(params: Json<EvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
-  if let Ok(mut workspace) = data.workspace.lock() {
-    match evaluate_artifact_in_workspace(&mut workspace, &params.into_inner()) {
+/// Handler for replacing model definitions in workspace.
+#[post("/definitions/replace")]
+async fn post_definitions_replace(params: Json<ReplaceDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_replace_definitions(&mut workspace, &params.into_inner()) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for removing model definitions from workspace.
+#[post("/definitions/remove")]
+async fn post_definitions_remove(params: Json<RemoveDefinitionsParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_remove_definitions(&mut workspace, &params.into_inner()) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for deploying model definitions stashed in workspace.
+#[post("/definitions/deploy")]
+async fn post_definitions_deploy(data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<StatusResult>>> {
+  if let Ok(mut workspace) = data.workspace.write() {
+    match do_deploy_definitions(&mut workspace) {
+      Ok(result) => Ok(Json(ResultDto::data(result))),
+      Err(reason) => Ok(Json(ResultDto::error(reason))),
+    }
+  } else {
+    Ok(Json(ResultDto::error(err_workspace_write_lock_failed())))
+  }
+}
+
+/// Handler for evaluating models with input values in format compatible with test cases
+/// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[post("/tck/evaluate")]
+async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
+  if let Ok(workspace) = data.workspace.read() {
+    match do_evaluate_tck(&workspace, &params.into_inner()) {
       Ok(response) => Ok(Json(ResultDto::data(response))),
       Err(reason) => Ok(Json(ResultDto::error(reason))),
     }
   } else {
-    Ok(Json(ResultDto::error(err_can_not_lock_workspace())))
+    Ok(Json(ResultDto::error(err_workspace_read_lock_failed())))
+  }
+}
+
+/// Handler for evaluating invocable in model.
+///
+/// Input values may be defined in `JSON` or `FEEL` context format.
+/// Result is always in JSON format.
+#[post("/evaluate/{model}/{invocable}")]
+async fn post_evaluate(params: web::Path<EvaluateParams>, request_body: String, data: web::Data<ApplicationData>) -> HttpResponse {
+  if let Ok(workspace) = data.workspace.read() {
+    match do_evaluate(&workspace, &params.into_inner(), &request_body) {
+      Ok(value) => HttpResponse::Ok()
+        .content_type("application/json")
+        .body(format!("{{\"data\":{}}}", value.jsonify())),
+      Err(reason) => HttpResponse::Ok()
+        .content_type("application/json")
+        .body(ResultDto::<String>::error(reason).to_string()),
+    }
+  } else {
+    HttpResponse::Ok()
+      .content_type("application/json")
+      .body(ResultDto::<String>::error(err_workspace_read_lock_failed()).to_string())
   }
 }
 
@@ -214,22 +318,33 @@ async fn not_found() -> std::io::Result<Json<ResultDto<()>>> {
 }
 
 /// Starts the server.
-pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) -> std::io::Result<()> {
-  // create workspace and load all definitions
-  let workspace = Workspace::default();
+pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>, opt_dir: Option<String>) -> std::io::Result<()> {
+  let workspace = Workspace::new(get_workspace_dir(opt_dir));
   let application_data = web::Data::new(ApplicationData {
-    workspace: Mutex::new(workspace),
+    workspace: RwLock::new(workspace),
   });
   let address = get_server_address(opt_host, opt_port);
-  println!("dmntk server {}", address);
+  println!("dmntk {}", address);
   HttpServer::new(move || {
     App::new()
       .app_data(application_data.clone())
-      .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024))
-      .service(system_info)
-      .service(deploy_definitions)
-      .service(redeploy_definitions)
-      .service(evaluate_artifact)
+      .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024).error_handler(|err, _| {
+        error::InternalError::from_response(
+          "",
+          HttpResponse::BadRequest()
+            .content_type("application/json")
+            .body(ResultDto::<String>::error(err_internal_error(&format!("{:?}", err))).to_string()),
+        )
+        .into()
+      }))
+      .service(get_system_info)
+      .service(post_definitions_clear)
+      .service(post_definitions_add)
+      .service(post_definitions_replace)
+      .service(post_definitions_remove)
+      .service(post_definitions_deploy)
+      .service(post_tck_evaluate)
+      .service(post_evaluate)
       .default_service(web::route().to(not_found))
   })
   .bind(address)?
@@ -237,13 +352,42 @@ pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>) ->
   .await
 }
 
+/// Returns the host address and the port number, the server will start to listen on.
+///
+/// The default host and port are defined by `DMNTK_DEFAULT_HOST` and `DMNTK_DEFAULT_PORT` constants.
+/// When other values are given as parameters to this function, these will be the actual host and port.
+/// Host and port may be also controlled using environment variables:
+/// - `HOST` or `DMNTK_HOST` for the host name,
+/// - `PORT` or `DMNTK_PORT` for the port name.
+///
+/// Priorities (from highest to lowest):
+/// - `opt_host` an `opt_port` parameters,
+/// - `DMNTK_HOST` and `DMNTK_PORT` environment variables
+/// - `HOST` and `PORT` environment variables
+/// - `DMNTK_DEFAULT_HOST` and `DMNTK_DEFAULT_PORT` constants.
 ///
 fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> String {
-  let mut host: String = "127.0.0.1".to_string();
+  let mut host = DMNTK_DEFAULT_HOST.to_string();
+  if let Ok(h) = env::var("HOST") {
+    host = h;
+  }
+  if let Ok(h) = env::var("DMNTK_HOST") {
+    host = h;
+  }
   if let Some(h) = opt_host {
     host = h;
   }
-  let mut port: u16 = 22022;
+  let mut port: u16 = DMNTK_DEFAULT_PORT;
+  if let Ok(p_str) = env::var("PORT") {
+    if let Ok(p) = u16::from_str(&p_str) {
+      port = p;
+    }
+  }
+  if let Ok(p_str) = env::var("DMNTK_PORT") {
+    if let Ok(p) = u16::from_str(&p_str) {
+      port = p;
+    }
+  }
   if let Some(p_str) = opt_port {
     if let Ok(p) = u16::from_str(&p_str) {
       port = p;
@@ -252,57 +396,167 @@ fn get_server_address(opt_host: Option<String>, opt_port: Option<String>) -> Str
   format!("{}:{}", host, port)
 }
 
+/// Returns root directory for workspace.
+fn get_workspace_dir(opt_dir: Option<String>) -> Option<PathBuf> {
+  let mut dir: Option<String> = None;
+  if let Ok(d) = env::var("DMNTK_DIR") {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  if let Ok(d) = env::var("DIR") {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  if let Some(d) = opt_dir {
+    let dir_path = Path::new(&d);
+    if dir_path.exists() && dir_path.is_dir() {
+      dir = Some(d);
+    }
+  }
+  dir.map(|d| PathBuf::from(&d))
+}
+
 ///
-fn deploy_definitions_in_workspace(workspace: &mut Workspace, params: &DeployParams, replace_existing: bool) -> Result<DeployResult> {
-  if let Some(source) = &params.source {
-    if let Some(content) = &params.content {
-      if let Some(tag) = &params.tag {
-        if let Ok(bytes) = base64::decode(content) {
-          if let Ok(xml) = String::from_utf8(bytes) {
-            let definitions = dmntk_model::parse(&xml, source)?;
-            let (name, id, tag) = workspace.deploy_definitions(tag, definitions, replace_existing)?;
-            Ok(DeployResult {
-              name: Some(name),
-              id,
-              tag: Some(tag),
-            })
-          } else {
-            Err(err_invalid_utf8_content())
+#[inline(always)]
+fn do_clear_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
+  workspace.clear();
+  Ok(StatusResult {
+    status: "definitions cleared".to_string(),
+  })
+}
+
+///
+#[inline(always)]
+fn do_add_definitions(workspace: &mut Workspace, params: &AddDefinitionsParams) -> Result<AddDefinitionsResult> {
+  if let Some(content) = &params.content {
+    if let Ok(bytes) = base64::decode(content) {
+      if let Ok(xml) = String::from_utf8(bytes) {
+        match dmntk_model::parse(&xml) {
+          Ok(definitions) => {
+            let namespace = definitions.namespace().to_string();
+            let name = definitions.name().to_string();
+            workspace.add(definitions)?;
+            Ok(AddDefinitionsResult { namespace, name })
           }
-        } else {
-          Err(err_invalid_base64_encoding())
+          Err(reason) => Err(reason),
         }
       } else {
-        Err(err_missing_parameter("tag"))
+        Err(err_invalid_utf8_content())
       }
     } else {
-      Err(err_missing_parameter("content"))
+      Err(err_invalid_base64_encoding())
     }
   } else {
-    Err(err_missing_parameter("source"))
+    Err(err_missing_parameter("content"))
+  }
+}
+
+///
+#[inline(always)]
+fn do_replace_definitions(workspace: &mut Workspace, params: &ReplaceDefinitionsParams) -> Result<StatusResult> {
+  if let Some(content) = &params.content {
+    if let Ok(bytes) = base64::decode(content) {
+      if let Ok(xml) = String::from_utf8(bytes) {
+        match dmntk_model::parse(&xml) {
+          Ok(definitions) => {
+            workspace.add(definitions)?;
+            Ok(StatusResult {
+              status: "definitions replaced".to_string(),
+            })
+          }
+          Err(reason) => Err(reason),
+        }
+      } else {
+        Err(err_invalid_utf8_content())
+      }
+    } else {
+      Err(err_invalid_base64_encoding())
+    }
+  } else {
+    Err(err_missing_parameter("content"))
+  }
+}
+
+///
+#[inline(always)]
+fn do_remove_definitions(workspace: &mut Workspace, params: &RemoveDefinitionsParams) -> Result<StatusResult> {
+  if let Some(namespace) = &params.namespace {
+    if let Some(name) = &params.name {
+      workspace.remove(namespace, name);
+      Ok(StatusResult {
+        status: "definitions removed".to_string(),
+      })
+    } else {
+      Err(err_missing_parameter("name"))
+    }
+  } else {
+    Err(err_missing_parameter("namespace"))
+  }
+}
+
+///
+#[inline(always)]
+fn do_deploy_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
+  match workspace.deploy() {
+    Ok(()) => Ok(StatusResult {
+      status: "definitions deployed".to_string(),
+    }),
+    Err(reason) => Err(reason),
+  }
+}
+
+/// Evaluates the invocable in model and returns the result.
+/// Input and output data format is compatible with
+/// [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[inline(always)]
+fn do_evaluate_tck(workspace: &Workspace, params: &TckEvaluateParams) -> Result<OutputNodeDto, DmntkError> {
+  if let Some(model_name) = &params.model_name {
+    if let Some(invocable_name) = &params.invocable_name {
+      if let Some(input_values) = &params.input_values {
+        // convert input values into FEEL context
+        let input_data = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;
+        // evaluate artifact with specified name
+        workspace.evaluate_invocable(model_name, invocable_name, &input_data)?.try_into()
+      } else {
+        Err(err_missing_parameter("input"))
+      }
+    } else {
+      Err(err_missing_parameter("invocable"))
+    }
+  } else {
+    Err(err_missing_parameter("model"))
   }
 }
 
 /// Evaluates the artifact specified in parameters and returns the result.
-fn evaluate_artifact_in_workspace(workspace: &mut Workspace, params: &EvaluateParams) -> Result<OutputNodeDto, DmntkError> {
-  if let Some(model_tag) = &params.model_tag {
-    if let Some(artifact_type) = &params.artifact_type {
-      if let Some(artifact_name) = &params.artifact_name {
-        if let Some(input_values) = &params.input_values {
-          // convert input data into context
-          let ctx = FeelContext::try_from(WrappedValue::try_from(input_values)?.0)?;
-          // evaluate artifact with specified name
-          workspace.evaluate_artifact(&ctx, model_tag, artifact_type, artifact_name)?.try_into()
-        } else {
-          Err(err_missing_parameter("input"))
-        }
-      } else {
-        Err(err_missing_parameter("name"))
-      }
+#[inline(always)]
+fn do_evaluate(workspace: &Workspace, params: &EvaluateParams, input: &str) -> Result<Value, DmntkError> {
+  if let Some(model_name) = &params.model_name {
+    if let Some(invocable_name) = &params.invocable_name {
+      let input_data = dmntk_evaluator::evaluate_context(&Scope::default(), input)?;
+      let value = workspace.evaluate_invocable(model_name, invocable_name, &input_data)?;
+      Ok(value)
     } else {
-      Err(err_missing_parameter("artifact"))
+      Err(err_missing_parameter("invocable"))
     }
   } else {
-    Err(err_missing_parameter("tag"))
+    Err(err_missing_parameter("model"))
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test() {
+    assert_eq!(
+      r#"{"errors":[{"details":"ServerError: unknown"}]}"#,
+      ResultDto::<String>::error(err_internal_error("unknown")).to_string()
+    );
   }
 }

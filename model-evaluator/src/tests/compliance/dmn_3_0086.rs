@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,22 +30,24 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0086, "file: ///3_0086.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0086);
 }
 
 #[test]
 #[ignore]
 fn _0001() {
   let ctx = context(r#"{A Person: {age: 21,name: "John Doe"}}"#);
-  assert_decision(&DEFINITIONS, "A Decision Ctx with DT", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0002() {
   let ctx = context(r#"{A Person: {age: 47,name: "John Doe"}}"#);
-  assert_decision(&DEFINITIONS, "A Decision Ctx with DT", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
 }

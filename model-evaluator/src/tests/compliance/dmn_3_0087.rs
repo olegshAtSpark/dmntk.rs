@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,12 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0087, "file: ///3_0087.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0087);
 }
 
 #[test]
@@ -42,7 +44,7 @@ fn _0001() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate:  .08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Strategy", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Strategy", &ctx, r#"null"#);
 }
 
 #[test]
@@ -51,7 +53,7 @@ fn _0002() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Routing", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Routing", &ctx, r#"null"#);
 }
 
 #[test]
@@ -60,7 +62,7 @@ fn _0003() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Application risk score", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Application risk score", &ctx, r#"null"#);
 }
 
 #[test]
@@ -69,7 +71,7 @@ fn _0004() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Pre-bureau risk category", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Pre-bureau risk category", &ctx, r#"null"#);
 }
 
 #[test]
@@ -78,7 +80,7 @@ fn _0005() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Bureau call type", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Bureau call type", &ctx, r#"null"#);
 }
 
 #[test]
@@ -87,7 +89,7 @@ fn _0006() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Eligibility", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Eligibility", &ctx, r#"null"#);
 }
 
 #[test]
@@ -96,7 +98,7 @@ fn _0007() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Post-bureau affordability", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Post-bureau affordability", &ctx, r#"null"#);
 }
 
 #[test]
@@ -105,7 +107,7 @@ fn _0008() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 3000,Income: 10000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Strategy", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Strategy", &ctx, r#"null"#);
 }
 
 #[test]
@@ -114,5 +116,5 @@ fn _0009() {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 3000,Income: 10000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&DEFINITIONS, "Routing", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "Routing", &ctx, r#"null"#);
 }

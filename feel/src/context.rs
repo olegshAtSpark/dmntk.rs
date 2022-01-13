@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@
 //! `FEEL` context.
 
 use self::errors::*;
-use crate::names::{Name, QualifiedName};
+use crate::names::Name;
+use crate::qualified_names::QualifiedName;
 use crate::strings::ToFeelString;
 use crate::types::FeelType;
 use crate::value_null;
@@ -135,7 +136,7 @@ impl FeelContext {
   pub fn contains_entry(&self, name: &Name) -> bool {
     self.0.contains_key(name)
   }
-  /// Checks if this [FeelContext] contains an entry pointed by [QualifiedName](crate::names::QualifiedName).
+  /// Checks if this [FeelContext] contains an entry pointed by [QualifiedName].
   pub fn contains_entries(&self, qname: &QualifiedName) -> bool {
     self.contains_deep(qname.as_slice())
   }
@@ -174,14 +175,14 @@ impl FeelContext {
     }
   }
   ///
-  pub fn overrwrite(&mut self, other: &FeelContext) {
+  pub fn overwrite(&mut self, other: &FeelContext) {
     for (name, value) in &other.0 {
       if self.0.contains_key(name) {
         self.0.insert(name.clone(), value.clone());
       }
     }
   }
-  /// Creates an entry with a value for specified [QualifiedName](crate::names::QualifiedName).
+  /// Creates an entry with a value for specified [QualifiedName].
   /// All non existing intermediary contexts will be created.
   pub fn create_entry(&mut self, qname: &QualifiedName, value: Value) {
     self.create_deep(qname.as_slice(), value);
@@ -293,7 +294,7 @@ pub mod errors {
   /// Context errors.
   #[derive(Debug, PartialEq)]
   enum ContextError {
-    /// Used when converting a [Value] to [Context].
+    /// Used when converting a [Value] to [FeelContext](super::FeelContext).
     ValueIsNotAContext(String),
   }
 
@@ -321,7 +322,8 @@ pub mod errors {
 #[cfg(test)]
 mod tests {
   use crate::context::FeelContext;
-  use crate::names::{Name, QualifiedName};
+  use crate::names::Name;
+  use crate::qualified_names::QualifiedName;
   use crate::values::Value;
   use crate::{value_number, FeelNumber, ToFeelString};
   use dmntk_common::Jsonify;

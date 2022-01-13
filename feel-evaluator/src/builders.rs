@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
 use std::convert::TryFrom;
 use std::ops::Deref;
-use std::rc::Rc;
 use std::str::FromStr;
+use std::sync::Arc;
 
 ///
 pub fn build_evaluator(node: &AstNode) -> Result<Evaluator> {
@@ -696,7 +696,7 @@ fn build_function_body(lhs: &AstNode, rhs: &bool) -> Result<Evaluator> {
     //FIXME implement external function body
     Ok(Box::new(move |_: &Scope| value_null!("invalid body of the external function")))
   } else {
-    let lhe = Rc::new(build_evaluator(lhs)?);
+    let lhe = Arc::new(build_evaluator(lhs)?);
     Ok(Box::new(move |_: &Scope| Value::FunctionBody(FunctionBody::LiteralExpression(lhe.clone()))))
   }
 }

@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Input data evaluator.
+//! Builder for input data evaluators.
 
 use crate::builders::item_definition::ItemDefinitionEvaluator;
 use crate::builders::{build_variable_evaluator, Variable, VariableEvaluatorFn};
@@ -84,8 +84,8 @@ mod tests {
 
   /// Utility function for building input data evaluator from definitions,
   /// and item definition evaluator from definitions.
-  fn build_evaluators(xml: &str, source: &str) -> (InputDataEvaluator, ItemDefinitionEvaluator) {
-    let definitions = &dmntk_model::parse(xml, source).unwrap();
+  fn build_evaluators(xml: &str) -> (InputDataEvaluator, ItemDefinitionEvaluator) {
+    let definitions = &dmntk_model::parse(xml).unwrap();
     let mut input_data_evaluator = InputDataEvaluator::default();
     input_data_evaluator.build(definitions).unwrap();
     let mut item_definitions_evaluator = ItemDefinitionEvaluator::default();
@@ -95,7 +95,7 @@ mod tests {
 
   #[test]
   fn _0001_1() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0001, "file:///0001.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0001);
     let context_str = r#"{Full Name: "John"}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -112,7 +112,7 @@ mod tests {
 
   #[test]
   fn _0001_2() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0001, "file:///0001.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0001);
     let context_str = r#"{Full Name: 50.0}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -123,7 +123,7 @@ mod tests {
 
   #[test]
   fn _0002_1() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0002, "file:///0002.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0002);
     let context_str = r#"{Monthly Salary: 12000.00}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -140,7 +140,7 @@ mod tests {
 
   #[test]
   fn _0002_2() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0002, "file:///0002.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0002);
     let context_str = r#"{Monthly Salary: "12000.00"}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -151,7 +151,7 @@ mod tests {
 
   #[test]
   fn _0003_1() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0003, "file:///0003.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0003);
     let context_str = r#"{Is Affordable: true}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -168,7 +168,7 @@ mod tests {
 
   #[test]
   fn _0003_2() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0003, "file:///0003.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0003);
     let context_str = r#"{Is Affordable: "no"}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     assert_eq!(
@@ -179,7 +179,7 @@ mod tests {
 
   #[test]
   fn _0103_1() {
-    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0103, "file:///0103.dmn");
+    let (input_data_evaluator, item_definitions_evaluator) = build_evaluators(DMN_0103);
     let context_str = r#"{Employment Status: "EMPLOYED"}"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let name = Name::new(&["Employment", "Status"]);

@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -894,8 +894,9 @@ pub fn split(input_string_value: &Value, delimiter_string_value: &Value) -> Valu
   value_null!("split")
 }
 
-/// Returns the square root of the given **value** specified as a parameter.
-/// If the given number is negative it returns [VALUE_NULL].
+/// Returns the square root of the given [Value].
+///
+/// When the given number is negative, this function returns [Value::Null].
 pub fn sqrt(value: &Value) -> Value {
   if let Value::Number(v) = value {
     if *v >= FeelNumber::zero() {

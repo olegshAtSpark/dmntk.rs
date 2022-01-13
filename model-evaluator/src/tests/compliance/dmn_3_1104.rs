@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,44 +30,46 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_1104, "file: ///3_1104.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_1104);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_001_1afe6930d1", &ctx, r#"0"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_001_1afe6930d1", &ctx, r#"0"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_002_249c23050d", &ctx, r#"1"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_002_249c23050d", &ctx, r#"1"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_003_e1df507dee", &ctx, r#"3"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_003_e1df507dee", &ctx, r#"3"#);
 }
 
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_004_f4c02fac3d", &ctx, r#"6"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_004_f4c02fac3d", &ctx, r#"6"#);
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_005_ca834dabac", &ctx, r#"10"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_005_ca834dabac", &ctx, r#"10"#);
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "feel-string-length-function_006_6c4930a0eb", &ctx, r#"11"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_006_6c4930a0eb", &ctx, r#"11"#);
 }

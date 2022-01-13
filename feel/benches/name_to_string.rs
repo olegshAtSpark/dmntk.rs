@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,23 +30,33 @@
  * limitations under the License.
  */
 
-use crate::errors::*;
-use crate::model_evaluator::ModelEvaluator;
-use dmntk_common::Result;
-use dmntk_feel::context::FeelContext;
-use dmntk_feel::values::Value;
-use dmntk_model::model::{Definitions, DmnElement, NamedElement};
+#![feature(test)]
 
-/// Evaluates a decision service specified by name.
-pub fn eval_decision_service_by_name(definitions: &Definitions, name: &str, input_data: &FeelContext) -> Result<Value> {
-  if let Some(decision_service) = definitions.decision_service_by_name(name) {
-    println!("AAA: <DECISION_SERVICE_NAME> = {}", decision_service.name());
-    println!("AAA: <INPUT_DATA>    = {}", input_data);
-    let id = decision_service.id().as_ref().ok_or_else(err_empty_identifier)?;
-    let model_evaluator = ModelEvaluator::new(definitions)?;
-    let result = model_evaluator.evaluate_decision_service(id, input_data);
-    Ok(result)
-  } else {
-    Err(err_decision_service_with_name_not_found(name))
-  }
+extern crate test;
+
+use dmntk_feel::Name;
+use test::Bencher;
+
+#[bench]
+fn feel_name_to_string_0001(b: &mut Bencher) {
+  let name: Name = "a".into();
+  b.iter(|| name.to_string());
+}
+
+#[bench]
+fn feel_name_to_string_0002(b: &mut Bencher) {
+  let name: Name = vec!["a", "b"].into();
+  b.iter(|| name.to_string());
+}
+
+#[bench]
+fn feel_name_to_string_0003(b: &mut Bencher) {
+  let name: Name = vec!["a", "b", "c"].into();
+  b.iter(|| name.to_string());
+}
+
+#[bench]
+fn feel_name_to_string_0004(b: &mut Bencher) {
+  let name: Name = vec!["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].into();
+  b.iter(|| name.to_string());
 }

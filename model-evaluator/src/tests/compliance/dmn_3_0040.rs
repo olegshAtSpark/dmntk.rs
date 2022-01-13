@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,26 +30,28 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0040, "file: ///3_0040.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0040);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Principal: 600000,Term: 360}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2878.693549432766768088520383236299"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2878.693549432766768088520383236299"#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Principal: 30000,Term: 60}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"649.117549836400293492700014885945"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"649.117549836400293492700014885945"#);
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{Principal: 600000,Term: 365}"#);
-  assert_decision(&DEFINITIONS, "Boxed Context", &ctx, r#"2858.116099896591400871418893289041"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2858.116099896591400871418893289041"#);
 }

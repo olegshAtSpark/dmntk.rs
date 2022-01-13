@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@
  * limitations under the License.
  */
 
-//! Model for **Decision Requirements Graph** (`DRG`)
-//! depicted in one or more **Decision Requirements Diagrams** (`DRD`s).
+//! Model for Decision Requirements Graph (DRG)
+//! depicted in one or more Decision Requirements Diagrams (DRD).
 
 pub(crate) mod parser;
 
@@ -43,6 +43,11 @@ use dmntk_common::{DmntkError, HRef, OptHRef, Result};
 use dmntk_feel::{FeelType, Name};
 use std::convert::TryFrom;
 use std::fmt::Display;
+
+pub const URI_FEEL: &str = "https://www.omg.org/spec/DMN/20191111/FEEL/";
+pub const URI_MODEL: &str = "https://www.omg.org/spec/DMN/20191111/MODEL/";
+pub const URI_UNINTERPRETED: &str = "http://www.omg.org/spec/DMN/uninterpreted/20140801";
+pub const URI_XML_SCHEMA: &str = "http://www.w3.org/2001/XMLSchema";
 
 /// [DmnElement] is the abstract superclass for the Decision Model elements.
 /// It provides the optional attributes `id`, `description` and `label`,
@@ -61,9 +66,10 @@ pub trait DmnElement {
   fn extension_attributes(&self) -> &Vec<ExtensionAttribute>;
 }
 
-/// [NamedElement] adds the required attribute `name` to [DmnElement].
+/// [NamedElement] adds attribute `name` to [DmnElement].
+/// `name` attribute is required for [NamedElement].
 pub trait NamedElement: DmnElement {
-  /// Returns the name of this element.
+  /// Returns the name of this [NamedElement].
   fn name(&self) -> &str;
   /// Returns the optional `FEEL` name for this element.
   fn feel_name(&self) -> &Option<Name>;
@@ -355,17 +361,17 @@ impl DrgElement {
 /// for all contained elements.
 #[derive(Debug, Clone)]
 pub struct Definitions {
-  /// Optional identifier for this [Definitions].
+  /// Optional identifier for this [Definitions] derived from [DMNElement](DmnElement).
   id: Option<String>,
-  /// Optional description of this [Definitions].
+  /// Optional description of this [Definitions] derived from [DMNElement](DmnElement).
   description: Option<String>,
-  /// Optional alternative short description of this [Definitions].
+  /// Optional alternative short description of this [Definitions] derived from [DMNElement](DmnElement).
   label: Option<String>,
-  /// Container to attach additional elements to any [Definitions].
+  /// Container to attach additional elements to any [Definitions] derived from [DMNElement](DmnElement).
   extension_elements: Option<ExtensionElement>,
-  /// Container to attach named extended attributes and model associations to any [Definitions].
+  /// Container to attach named extended attributes and model associations to any [Definitions] derived from [DMNElement](DmnElement).
   extension_attributes: Vec<ExtensionAttribute>,
-  /// Name of this [Definitions].
+  /// Name of this [Definitions] derived from [NamedElement].
   name: String,
   /// Optional `FEEL` name of this [ItemDefinition].
   feel_name: Option<Name>,
@@ -394,11 +400,10 @@ pub struct Definitions {
   drg_elements: Vec<DrgElement>,
   /// Container for the instances of [BusinessContextElement] that are contained in this [Definitions].
   business_context_elements: Vec<BusinessContextElementInstance>,
-  /// Reference to the source containing this [Definitions].
-  /// This attribute is not a part of specification,
-  /// but is handy when importing definitions from other sources.
-  source: String,
-  /// Optional DMNDI container.
+  /// Container used to import externally defined elements and make them available
+  /// for use by elements in this [Definitions].
+  imports: Vec<Import>,
+  /// Optional Diagram Interchange information contained within this [Definitions].
   dmndi: Option<Dmndi>,
 }
 
@@ -590,9 +595,9 @@ impl Definitions {
   pub fn business_context_elements(&self) -> &Vec<BusinessContextElementInstance> {
     &self.business_context_elements
   }
-  /// Returns reference to source model.
-  pub fn source(&self) -> &String {
-    &self.source
+  /// Returns reference to the container of instances of [Import] contained in this [Definitions].
+  pub fn imports(&self) -> &Vec<Import> {
+    &self.imports
   }
   /// Returns reference to optional [Dmndi] container.
   pub fn dmndi(&self) -> &Option<Dmndi> {
@@ -782,17 +787,82 @@ impl NamedElement for InputData {
 }
 
 /// `Import` class is used when referencing external elements,
-/// either DMN DRGElement or ItemDefinition instances contained
-/// in other `Definitions` elements, or non-DMN elements,
+/// either DMN [DRGElement](DrgElement) or [ItemDefinition] instances contained
+/// in other [Definitions] elements, or non-DMN elements,
 /// such as an XML Schema or a PMML file.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Import {
-  /// Specifies the style of import associated with this `Import`.
-  pub import_type: String,
+  /// Optional identifier of this this [Import].
+  id: Option<String>,
+  /// Optional description of this [Import].
+  description: Option<String>,
+  /// An optional alternative short description of this [Import].
+  label: Option<String>,
+  /// Container to attach additional elements to any [Import].
+  extension_elements: Option<ExtensionElement>,
+  /// Container to attach named extended attributes and model associations to any [Import].
+  extension_attributes: Vec<ExtensionAttribute>,
+  /// Name of this [Import]. Serves as a prefix in namespace-qualified names,
+  /// such as typeRefs specifying imported [ItemDefinitions](ItemDefinition)
+  /// and expressions referencing imported [InformationItems](InformationItem).
+  name: String,
+  /// Optional `FEEL` name of this [Import].
+  feel_name: Option<Name>,
+  /// Specifies the style of import associated with this [Import].
+  import_type: String,
   /// Identifies the location of the imported element.
-  pub location_uri: Option<String>,
+  location_uri: Option<String>,
   /// Identifies the namespace of the imported element.
-  pub namespace: String,
+  namespace: String,
+}
+
+impl DmnElement for Import {
+  /// Returns reference to optional identifier for this [InputData].
+  fn id(&self) -> &Option<String> {
+    &self.id
+  }
+  /// Returns reference to optional description of this [InputData].
+  fn description(&self) -> &Option<String> {
+    &self.description
+  }
+  /// Returns reference to optional alternative short description of this [InputData].
+  fn label(&self) -> &Option<String> {
+    &self.label
+  }
+  /// Returns reference to attached additional elements to any [InputData].
+  fn extension_elements(&self) -> &Option<ExtensionElement> {
+    &self.extension_elements
+  }
+  /// Returns reference to attached named extended attributes and model associations to any [InputData].
+  fn extension_attributes(&self) -> &Vec<ExtensionAttribute> {
+    &self.extension_attributes
+  }
+}
+
+impl NamedElement for Import {
+  /// Returns reference to the name of this [Import].
+  fn name(&self) -> &str {
+    &self.name
+  }
+  /// Returns a reference to optional `FEEL` name of this [Import].
+  fn feel_name(&self) -> &Option<Name> {
+    &self.feel_name
+  }
+}
+
+impl Import {
+  /// Returns reference to the import type for this [Import].
+  pub fn import_type(&self) -> &str {
+    &self.import_type
+  }
+  /// Returns reference to the optional location URI for this [Import].
+  pub fn location_uri(&self) -> &Option<String> {
+    &self.location_uri
+  }
+  /// Returns reference to the namespace of this [Import].
+  pub fn namespace(&self) -> &str {
+    &self.namespace
+  }
 }
 
 /// Enumeration of concrete instances of abstract [Expression], which are:
@@ -808,7 +878,7 @@ pub enum ExpressionInstance {
   DecisionTable(DecisionTable),
   FunctionDefinition(Box<FunctionDefinition>),
   Invocation(Box<Invocation>),
-  LiteralExpression(LiteralExpression),
+  LiteralExpression(Box<LiteralExpression>),
   Relation(Relation),
 }
 

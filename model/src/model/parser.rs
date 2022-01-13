@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ const NODE_ENCAPSULATED_LOGIC: &str = "encapsulatedLogic";
 const NODE_FUNCTION_DEFINITION: &str = "functionDefinition";
 const NODE_FORMAL_PARAMETER: &str = "formalParameter";
 const NODE_FUNCTION_ITEM: &str = "functionItem";
+const NODE_IMPORT: &str = "import";
 const NODE_INFORMATION_REQUIREMENT: &str = "informationRequirement";
 const NODE_INPUT_DATA: &str = "inputData";
 const NODE_INPUT: &str = "input";
@@ -120,10 +121,12 @@ const ATTR_PREFERRED_ORIENTATION: &str = "preferredOrientation";
 const ATTR_HEIGHT: &str = "height";
 const ATTR_HREF: &str = "href";
 const ATTR_ID: &str = "id";
+const ATTR_IMPORT_TYPE: &str = "importType";
 const ATTR_IS_COLLAPSED: &str = "isCollapsed";
 const ATTR_IS_COLLECTION: &str = "isCollection";
 const ATTR_KIND: &str = "kind";
 const ATTR_LABEL: &str = "label";
+const ATTR_LOCATION_URI: &str = "locationURI";
 const ATTR_NAME: &str = "name";
 const ATTR_NAMESPACE: &str = "namespace";
 const ATTR_OUTPUT_LABEL: &str = "outputLabel";
@@ -142,28 +145,21 @@ const ATTR_Y: &str = "y";
 pub struct ModelParser {}
 
 impl ModelParser {
-  /// Parses the XML document containing definitions.
-  pub fn parse(&mut self, xml: &str, source: &str) -> Result<Definitions> {
+  /// Parses the XML document containing [Definitions] serialized to interchange format.
+  pub fn parse(&mut self, xml: &str) -> Result<Definitions> {
     match roxmltree::Document::parse(xml) {
       Ok(document) => {
         let definitions_node = document.root_element();
         if definitions_node.tag_name().name() != NODE_DEFINITIONS {
           return Err(xml_unexpected_node(NODE_DEFINITIONS, definitions_node.tag_name().name()));
         }
-        self.parse_definitions(&definitions_node, source)
+        self.parse_definitions(&definitions_node)
       }
       Err(reason) => Err(xml_parsing_model_failed(&reason.to_string())),
     }
   }
-
-  /// Parses model definitions.
-  ///
-  /// # Arguments
-  ///
-  /// - mode   - definitions node.
-  /// - source - name of the model source file.
-  ///
-  fn parse_definitions(&mut self, node: &Node, source: &str) -> Result<Definitions> {
+  /// Parses [Definitions].
+  fn parse_definitions(&mut self, node: &Node) -> Result<Definitions> {
     let mut definitions = Definitions {
       name: required_name(node)?,
       feel_name: optional_feel_name(node)?,
@@ -180,13 +176,13 @@ impl ModelParser {
       item_definitions: self.parse_item_definitions(node, NODE_ITEM_DEFINITION)?,
       drg_elements: self.parse_drg_elements(node)?,
       business_context_elements: self.parse_business_context_elements(node)?,
-      source: source.to_owned(),
+      imports: self.parse_imports(node)?,
       dmndi: None, // DMNDI (if present) is parsed in next step below //FIXME maybe this could be done here?
     };
     self.parse_dmndi(node, &mut definitions)?;
     Ok(definitions)
   }
-
+  /// Parser a collection of [ItemDefinition].
   fn parse_item_definitions(&mut self, node: &Node, child_name: &str) -> Result<Vec<ItemDefinition>> {
     let mut items = vec![];
     for ref child_node in node.children().filter(|n| n.tag_name().name() == child_name) {
@@ -340,8 +336,8 @@ impl ModelParser {
         id: optional_attribute(child_node, ATTR_ID),
         description: optional_child_optional_content(child_node, NODE_DESCRIPTION),
         label: optional_attribute(child_node, ATTR_LABEL),
-        extension_elements: None,
-        extension_attributes: vec![],
+        extension_elements: self.parse_extension_elements(child_node),
+        extension_attributes: self.parse_extension_attributes(child_node),
         name: required_name(child_node)?,
         feel_name: optional_feel_name(child_node)?,
       };
@@ -402,12 +398,32 @@ impl ModelParser {
       Ok(FunctionKind::Feel)
     }
   }
-
+  ///
   #[allow(clippy::unnecessary_wraps)]
   fn parse_business_context_elements(&self, _node: &Node) -> Result<Vec<BusinessContextElementInstance>> {
     Ok(vec![])
   }
-
+  /// Parses a collection of [Imports](Import).
+  fn parse_imports(&self, node: &Node) -> Result<Vec<Import>> {
+    let mut imports = vec![];
+    for ref child_node in node.children().filter(|n| n.tag_name().name() == NODE_IMPORT) {
+      let import = Import {
+        id: optional_attribute(child_node, ATTR_ID),
+        description: optional_child_optional_content(child_node, NODE_DESCRIPTION),
+        label: optional_attribute(child_node, ATTR_LABEL),
+        extension_elements: self.parse_extension_elements(child_node),
+        extension_attributes: self.parse_extension_attributes(child_node),
+        name: required_name(child_node)?,
+        feel_name: optional_feel_name(child_node)?,
+        import_type: required_attribute(child_node, ATTR_IMPORT_TYPE)?,
+        location_uri: optional_attribute(child_node, ATTR_LOCATION_URI),
+        namespace: required_attribute(child_node, ATTR_NAMESPACE)?,
+      };
+      imports.push(import);
+    }
+    Ok(imports)
+  }
+  ///
   fn parse_information_item_child(&self, node: &Node, child_name: &str) -> Result<InformationItem> {
     if let Some(child_node) = node.children().find(|n| n.tag_name().name() == child_name) {
       self.parse_information_item(&child_node)
@@ -505,7 +521,7 @@ impl ModelParser {
       return Ok(Some(ExpressionInstance::Invocation(Box::new(invocation))));
     }
     if let Some(literal_expression) = self.parse_optional_literal_expression(node) {
-      return Ok(Some(ExpressionInstance::LiteralExpression(literal_expression)));
+      return Ok(Some(ExpressionInstance::LiteralExpression(Box::new(literal_expression))));
     }
     if let Some(relation) = self.parse_optional_relation(node)? {
       return Ok(Some(ExpressionInstance::Relation(relation)));
@@ -704,7 +720,7 @@ impl ModelParser {
         for ref expression_instance_node in row_node.children() {
           if expression_instance_node.tag_name().name() == NODE_LITERAL_EXPRESSION {
             let literal_expression = self.parse_literal_expression(expression_instance_node);
-            elements.push(ExpressionInstance::LiteralExpression(literal_expression));
+            elements.push(ExpressionInstance::LiteralExpression(Box::new(literal_expression)));
           }
         }
         if elements.len() != columns.len() {

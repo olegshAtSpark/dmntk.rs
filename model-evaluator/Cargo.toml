@@ -14,9 +14,9 @@ dmntk-feel = "0.0.44"
 dmntk-feel-evaluator = "0.0.44"
 dmntk-feel-parser = "0.0.44"
 dmntk-model = "0.0.44"
-dmntk-recognizer = "0.0.44"
 thiserror = "1.0.30"
 
 [dev-dependencies]
-dmntk-examples = { path = "../examples" }
+dmntk-examples = "0.0.44"
+dmntk-recognizer = "0.0.44"
 lazy_static = "1.4.0"

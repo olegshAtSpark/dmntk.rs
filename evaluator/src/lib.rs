@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,14 @@
  * limitations under the License.
  */
 
+extern crate dmntk_common;
+extern crate dmntk_feel;
 extern crate dmntk_feel_evaluator;
+extern crate dmntk_feel_parser;
 extern crate dmntk_model_evaluator;
 
+mod test_files;
+
 pub use crate::dmntk_feel_evaluator::{evaluate, evaluate_context, evaluate_equals, evaluate_max, evaluate_min, evaluate_node_type, evaluate_sum};
-pub use crate::dmntk_model_evaluator::{
-  eval_decision_service_by_name, evaluate_business_knowledge_model_by_name, evaluate_decision_by_name, evaluate_decision_table_and_context,
-  evaluate_decision_table_and_test,
-};
+pub use crate::dmntk_model_evaluator::{build_decision_table_evaluator, ModelEvaluator};
+pub use test_files::evaluate_test_cases;

@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -462,6 +462,82 @@ fn _00013() {
                 │  └─ `aYearsAndMonthsDuration`
                 └─ At
                    └─ `P5M`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0014() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{Full Name: "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0015() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{Full           Name: "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0016() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{"Full Name": "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full Name`
+          └─ String
+             └─ `John Doe`
+    "#,
+    false,
+  );
+}
+
+#[test]
+fn _0017() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{"Full           Name": "John Doe"}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `Full           Name`
+          └─ String
+             └─ `John Doe`
     "#,
     false,
   );

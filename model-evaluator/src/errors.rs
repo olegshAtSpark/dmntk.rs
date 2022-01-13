@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,8 @@ use dmntk_feel::FeelType;
 /// Errors related to model evaluation.
 #[derive(Error, Debug)]
 pub enum ModelEvaluatorError {
-  #[error("business knowledge model with name `{0}` was not found")]
-  BusinessKnowledgeModelWithNameNotFound(String),
   #[error("business knowledge model with reference `{0}` was not found")]
   BusinessKnowledgeModelWithReferenceNotFound(String),
-  #[error("decision with name `{0}` was not found")]
-  DecisionWithNameNotFound(String),
-  #[error("decision service with name `{0}` was not found")]
-  DecisionServiceWithNameNotFound(String),
   #[error("input data with identifier `{0}` has no type reference definition")]
   InputDataWithoutTypeReference(String),
   #[error("empty FEEL name")]
@@ -68,6 +62,10 @@ pub enum ModelEvaluatorError {
   EmptyFunctionBody,
   #[error("empty value expression")]
   EmptyValueExpression,
+  #[error("read lock failed with reason '{0}'")]
+  ReadLockFailed(String),
+  #[error("write lock failed with reason '{0}'")]
+  WriteLockFailed(String),
 }
 
 impl From<ModelEvaluatorError> for DmntkError {
@@ -76,20 +74,8 @@ impl From<ModelEvaluatorError> for DmntkError {
   }
 }
 
-pub fn err_business_knowledge_model_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::BusinessKnowledgeModelWithNameNotFound(name.to_string()).into()
-}
-
 pub fn err_business_knowledge_model_with_reference_not_found(reference: &str) -> DmntkError {
   ModelEvaluatorError::BusinessKnowledgeModelWithReferenceNotFound(reference.to_string()).into()
-}
-
-pub fn err_decision_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::DecisionWithNameNotFound(name.to_string()).into()
-}
-
-pub fn err_decision_service_with_name_not_found(name: &str) -> DmntkError {
-  ModelEvaluatorError::DecisionServiceWithNameNotFound(name.to_string()).into()
 }
 
 pub fn err_input_data_without_type_reference(s: &str) -> DmntkError {
@@ -138,4 +124,12 @@ pub fn err_empty_function_body() -> DmntkError {
 
 pub fn err_empty_value_expression() -> DmntkError {
   ModelEvaluatorError::EmptyValueExpression.into()
+}
+
+pub fn err_read_lock_failed(reason: impl ToString) -> DmntkError {
+  ModelEvaluatorError::ReadLockFailed(reason.to_string()).into()
+}
+
+pub fn err_write_lock_failed(reason: impl ToString) -> DmntkError {
+  ModelEvaluatorError::WriteLockFailed(reason.to_string()).into()
 }

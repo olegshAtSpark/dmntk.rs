@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -515,14 +515,14 @@ mod errors {
   }
 
   impl From<TypesError> for DmntkError {
-    /// Converts [TypesError] into [DmntkError].
+    /// Converts `TypesError` into [DmntkError].
     fn from(e: TypesError) -> Self {
       DmntkError::new("TypesError", &e.to_string())
     }
   }
 
   impl std::fmt::Display for TypesError {
-    /// Implements [Display] trait for [TypesError].
+    /// Implements [Display](std::fmt::Display) trait for [TypesError].
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
       match self {
         TypesError::InvalidFeelTypeName(s) => {
@@ -540,7 +540,7 @@ mod errors {
     TypesError::InvalidFeelTypeName(s.to_owned()).into()
   }
 
-  /// Creates an [InvalidValueForRetrievingWithTypeCheck](TypesError::InvalidValueForRetrievingWithTypeCheck) error.
+  /// Creates an [InvalidValueForRetrievingUsingFeelType](TypesError::InvalidValueForRetrievingUsingFeelType) error.
   pub fn invalid_value_for_retrieving_using_feel_type(s1: &str, s2: &str) -> DmntkError {
     TypesError::InvalidValueForRetrievingUsingFeelType(s1.to_owned(), s2.to_owned()).into()
   }

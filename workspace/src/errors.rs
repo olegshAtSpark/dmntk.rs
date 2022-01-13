@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,47 +30,36 @@
  * limitations under the License.
  */
 
-//! Errors reported by the workspace.
+//! Errors reported by workspace.
 
 use dmntk_common::DmntkError;
 
-/// Errors related with operating on workspaces.
+/// Errors reported by workspace.
 #[derive(Error, Debug)]
-pub enum WorkspaceError {
-  #[error("artifact '{0}' with name '{1}' was not found")]
-  ArtifactNotFound(String, String),
-  #[error("'{0}' is not a valid name of invoked artifact")]
-  InvalidInvokedArtifactName(String),
+enum WorkspaceError {
+  #[error("model evaluator for definitions '{0}' is not deployed")]
+  ModelEvaluatorIsNotDeployed(String),
+  #[error("definitions with namespace '{0}' already exist in workspace")]
+  DefinitionsWithNamespaceAlreadyExist(String),
   #[error("definitions with name '{0}' already exist in workspace")]
   DefinitionsWithNameAlreadyExist(String),
-  #[error("definitions with identifier '{0}' already exist in workspace")]
-  DefinitionsWithIdAlreadyExist(String),
-  #[error("definitions with tag '{0}' already exist in workspace")]
-  DefinitionsWithTagAlreadyExist(String),
 }
 
 impl From<WorkspaceError> for DmntkError {
+  /// Converts a workspace error into [DmntkError].
   fn from(e: WorkspaceError) -> Self {
     DmntkError::new("WorkspaceError", &e.to_string())
   }
 }
 
-pub fn err_artifact_not_found(artifact: String, name: String) -> DmntkError {
-  WorkspaceError::ArtifactNotFound(artifact, name).into()
+pub fn err_model_evaluator_is_not_deployed(definitions_name: &str) -> DmntkError {
+  WorkspaceError::ModelEvaluatorIsNotDeployed(definitions_name.to_string()).into()
 }
 
-pub fn err_invalid_invoked_artifact_name(name: String) -> DmntkError {
-  WorkspaceError::InvalidInvokedArtifactName(name).into()
+pub fn err_definitions_with_namespace_already_exists(definitions_namespace: &str) -> DmntkError {
+  WorkspaceError::DefinitionsWithNamespaceAlreadyExist(definitions_namespace.to_string()).into()
 }
 
-pub fn err_definitions_with_name_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithNameAlreadyExist(name).into()
-}
-
-pub fn err_definitions_with_id_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithIdAlreadyExist(name).into()
-}
-
-pub fn err_definitions_with_tag_already_exists(name: String) -> DmntkError {
-  WorkspaceError::DefinitionsWithTagAlreadyExist(name).into()
+pub fn err_definitions_with_name_already_exists(definitions_name: &str) -> DmntkError {
+  WorkspaceError::DefinitionsWithNameAlreadyExist(definitions_name.to_string()).into()
 }

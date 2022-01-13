@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ pub use ast::{AstNode, OptAstNode};
 pub use dmntk_feel_number::FeelNumber;
 pub use evaluator::Evaluator;
 pub use function::FunctionBody;
-pub use names::{Name, OptName, QualifiedName};
+pub use names::Name;
+pub use qualified_names::QualifiedName;
 pub use scope::Scope;
 pub use strings::ToFeelString;
 pub use temporal::date::FeelDate;
@@ -65,6 +66,7 @@ pub mod context;
 mod evaluator;
 mod function;
 mod names;
+mod qualified_names;
 mod scope;
 mod strings;
 mod temporal;

@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,134 +30,136 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0076, "file: ///3_0076.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0076);
 }
 
 #[test]
 #[ignore]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "boxed_001", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "boxed_001", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "incorrect_001", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "incorrect_001", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "incorrect_002", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "incorrect_002", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "incorrect_003", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "incorrect_003", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_001", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_001", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_002", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_002", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_003", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_003", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_004", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_004", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_005", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_005", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_006", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_006", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_007", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_007", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0012() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_007_a", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_007_a", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0013() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_008", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_008", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0014() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_009", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_009", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0015() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_010", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_010", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0016() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_011", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_011", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0017() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "literal_012", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "literal_012", &ctx, r#"null"#);
 }
 
 #[test]
 #[ignore]
 fn _0018() {
   let ctx = context(r#"{}"#);
-  assert_decision(&DEFINITIONS, "varargs_001", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "varargs_001", &ctx, r#"null"#);
 }

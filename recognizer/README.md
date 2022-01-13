@@ -17,7 +17,7 @@
 [apache-url]: https://github.com/dmntk/dmntk.rs/blob/main/LICENSE-APACHE
 [build-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/build.yml/badge.svg
 [tests-badge]: https://github.com/dmntk/dmntk.rs/actions/workflows/tests.yml/badge.svg
-[coverage-badge]: https://img.shields.io/badge/Coverage-80%25-green.svg
+[coverage-badge]: https://img.shields.io/badge/Coverage-85%25-green.svg
 
 ## Overview
 

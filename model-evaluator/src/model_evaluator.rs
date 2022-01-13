@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,122 +34,196 @@ use crate::builders::{
   BusinessKnowledgeModelEvaluator, DecisionEvaluator, DecisionServiceEvaluator, InputDataContextEvaluator, InputDataEvaluator, ItemDefinitionContextEvaluator,
   ItemDefinitionEvaluator, ItemDefinitionTypeEvaluator,
 };
+use crate::errors::{err_read_lock_failed, err_write_lock_failed};
 use dmntk_common::Result;
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value;
 use dmntk_feel::{value_null, Name};
 use dmntk_model::model::Definitions;
-use std::cell::{Ref, RefCell};
-use std::rc::Rc;
+use std::collections::HashMap;
+use std::sync::{Arc, RwLock, RwLockReadGuard};
 
-/*
-   # let input_data_evaluator = InputDataEvaluator::new(definitions)?;
-   # let input_data_context_evaluator = InputDataContextEvaluator::new(definitions)?;
-   # let item_definition_evaluator = ItemDefinitionEvaluator::new(definitions)?;
-   let item_definition_context_evaluator = ItemDefinitionContextEvaluator::new(definitions)?;
-   let item_definition_type_evaluator = ItemDefinitionTypeEvaluator::new(definitions)?;
-   let business_knowledge_model_evaluator = BusinessKnowledgeModelEvaluator::new(definitions, &item_definition_type_evaluator)?;
-   let decision_evaluator = DecisionEvaluator::new(      definitions,      &input_data_context_evaluator,      &item_definition_context_evaluator,      &item_definition_type_evaluator,    )?;
-   let decision_service_evaluator = DecisionServiceEvaluator::new(definitions, &item_definition_type_evaluator, &input_data_evaluator, &decision_evaluator)?;
-*/
+///
+#[derive(Debug)]
+pub enum InvocableType {
+  Decision(String),
+  BusinessKnowledgeModel(String, Name),
+  DecisionService(String),
+}
 
 ///
 #[derive(Default)]
 pub struct ModelEvaluator {
   /// Input data evaluator.
-  input_data_evaluator: RefCell<InputDataEvaluator>,
+  input_data_evaluator: RwLock<InputDataEvaluator>,
   /// Input data context evaluator.
-  input_data_context_evaluator: RefCell<InputDataContextEvaluator>,
+  input_data_context_evaluator: RwLock<InputDataContextEvaluator>,
   /// Item definition evaluator.
-  item_definition_evaluator: RefCell<ItemDefinitionEvaluator>,
+  item_definition_evaluator: RwLock<ItemDefinitionEvaluator>,
   /// Item definition context evaluator.
-  item_definition_context_evaluator: RefCell<ItemDefinitionContextEvaluator>,
+  item_definition_context_evaluator: RwLock<ItemDefinitionContextEvaluator>,
   ///Item definition type evaluator.
-  item_definition_type_evaluator: RefCell<ItemDefinitionTypeEvaluator>,
+  item_definition_type_evaluator: RwLock<ItemDefinitionTypeEvaluator>,
   /// Business knowledge model evaluator.
-  business_knowledge_model_evaluator: RefCell<BusinessKnowledgeModelEvaluator>,
+  business_knowledge_model_evaluator: RwLock<BusinessKnowledgeModelEvaluator>,
   /// Decision evaluator.
-  decision_evaluator: RefCell<DecisionEvaluator>,
+  decision_evaluator: RwLock<DecisionEvaluator>,
   /// Decision service evaluator.
-  decision_service_evaluator: RefCell<DecisionServiceEvaluator>,
+  decision_service_evaluator: RwLock<DecisionServiceEvaluator>,
+  /// Map of [InvocableType] indexed by invocable (decision, business knowledge model or decision service) name.
+  invocable_by_name: RwLock<HashMap<String, InvocableType>>,
 }
 
 impl ModelEvaluator {
   /// Creates an instance of [ModelEvaluator].
-  pub fn new(definitions: &Definitions) -> Result<Rc<Self>> {
-    let model_evaluator = Rc::new(ModelEvaluator::default());
-    model_evaluator.input_data_evaluator.borrow_mut().build(definitions)?;
-    model_evaluator.input_data_context_evaluator.borrow_mut().build(definitions)?;
-    model_evaluator.item_definition_evaluator.borrow_mut().build(definitions)?;
-    model_evaluator.item_definition_context_evaluator.borrow_mut().build(definitions)?;
-    model_evaluator.item_definition_type_evaluator.borrow_mut().build(definitions)?;
+  pub fn new(definitions: &Definitions) -> Result<Arc<Self>> {
+    let model_evaluator = Arc::new(ModelEvaluator::default());
+    model_evaluator
+      .input_data_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions)?;
+    model_evaluator
+      .input_data_context_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions)?;
+    model_evaluator
+      .item_definition_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions)?;
+    model_evaluator
+      .item_definition_context_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions)?;
+    model_evaluator
+      .item_definition_type_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions)?;
     model_evaluator
       .business_knowledge_model_evaluator
-      .borrow_mut()
+      .write()
+      .map_err(err_write_lock_failed)?
       .build(definitions, &model_evaluator)?;
-    model_evaluator.decision_evaluator.borrow_mut().build(definitions, &model_evaluator)?;
+    model_evaluator
+      .decision_evaluator
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions, &model_evaluator)?;
     model_evaluator
       .decision_service_evaluator
-      .borrow_mut()
-      .build(definitions, Rc::clone(&model_evaluator))?;
+      .write()
+      .map_err(err_write_lock_failed)?
+      .build(definitions, Arc::clone(&model_evaluator))?;
     Ok(model_evaluator)
   }
   ///
-  pub fn input_data_evaluator(&self) -> Ref<InputDataEvaluator> {
-    self.input_data_evaluator.borrow()
+  pub fn input_data_evaluator(&self) -> Result<RwLockReadGuard<InputDataEvaluator>> {
+    self.input_data_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn input_data_context_evaluator(&self) -> Ref<InputDataContextEvaluator> {
-    self.input_data_context_evaluator.borrow()
+  pub fn input_data_context_evaluator(&self) -> Result<RwLockReadGuard<InputDataContextEvaluator>> {
+    self.input_data_context_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn item_definition_context_evaluator(&self) -> Ref<ItemDefinitionContextEvaluator> {
-    self.item_definition_context_evaluator.borrow()
+  pub fn item_definition_context_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionContextEvaluator>> {
+    self.item_definition_context_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn item_definition_evaluator(&self) -> Ref<ItemDefinitionEvaluator> {
-    self.item_definition_evaluator.borrow()
+  pub fn item_definition_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionEvaluator>> {
+    self.item_definition_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn item_definition_type_evaluator(&self) -> Ref<ItemDefinitionTypeEvaluator> {
-    self.item_definition_type_evaluator.borrow()
+  pub fn item_definition_type_evaluator(&self) -> Result<RwLockReadGuard<ItemDefinitionTypeEvaluator>> {
+    self.item_definition_type_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn business_knowledge_model_evaluator(&self) -> Ref<BusinessKnowledgeModelEvaluator> {
-    self.business_knowledge_model_evaluator.borrow()
+  pub fn business_knowledge_model_evaluator(&self) -> Result<RwLockReadGuard<BusinessKnowledgeModelEvaluator>> {
+    self.business_knowledge_model_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn decision_service_evaluator(&self) -> Ref<DecisionServiceEvaluator> {
-    self.decision_service_evaluator.borrow()
+  pub fn decision_service_evaluator(&self) -> Result<RwLockReadGuard<DecisionServiceEvaluator>> {
+    self.decision_service_evaluator.read().map_err(err_read_lock_failed)
   }
   ///
-  pub fn decision_evaluator(&self) -> Ref<DecisionEvaluator> {
-    self.decision_evaluator.borrow()
+  pub fn decision_evaluator(&self) -> Result<RwLockReadGuard<DecisionEvaluator>> {
+    self.decision_evaluator.read().map_err(err_read_lock_failed)
+  }
+  /// Evaluates an invocable with specified name.
+  pub fn evaluate_invocable(&self, invocable_name: &str, input_data: &FeelContext) -> Value {
+    if let Ok(invocable_by_name) = self.invocable_by_name.read() {
+      match invocable_by_name.get(invocable_name) {
+        Some(InvocableType::Decision(id)) => {
+          // evaluate decision
+          self.evaluate_decision(id, input_data)
+        }
+        Some(InvocableType::BusinessKnowledgeModel(id, output_variable_name)) => {
+          // evaluate business knowledge model
+          self.evaluate_business_knowledge_model(id, input_data, output_variable_name)
+        }
+        Some(InvocableType::DecisionService(id)) => {
+          // evaluate decision service
+          self.evaluate_decision_service(id, input_data)
+        }
+        None => value_null!("invocable with name '{}' not found", invocable_name),
+      }
+    } else {
+      value_null!("write lock failed when acquiring invocable_by_name map")
+    }
+  }
+  ///
+  pub fn add_invocable_decision(&self, name: &str, id: &str) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::Decision(id.to_string()));
+    }
+  }
+  ///
+  pub fn add_invocable_business_knowledge_model(&self, name: &str, id: &str, output_variable_name: Name) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::BusinessKnowledgeModel(id.to_string(), output_variable_name));
+    }
+  }
+  ///
+  pub fn add_invocable_decision_service(&self, name: &str, id: &str) {
+    if let Ok(mut invocable_by_name) = self.invocable_by_name.write() {
+      invocable_by_name.insert(name.to_string(), InvocableType::DecisionService(id.to_string()));
+    }
   }
   /// Evaluates a business knowledge model.
   pub fn evaluate_business_knowledge_model(&self, id: &str, input_data: &FeelContext, output_variable_name: &Name) -> Value {
-    let mut evaluated_ctx = FeelContext::default();
-    self.business_knowledge_model_evaluator().evaluate(id, input_data, self, &mut evaluated_ctx);
-    if let Some(Value::FunctionDefinition(parameters, body, result_type)) = evaluated_ctx.get_entry(output_variable_name) {
-      let mut parameters_ctx = FeelContext::default();
-      for (name, _) in parameters {
-        if let Some(value) = input_data.get_entry(name) {
-          parameters_ctx.set_entry(name, value.to_owned());
+    if let Ok(business_knowledge_model_evaluator) = self.business_knowledge_model_evaluator() {
+      let mut evaluated_ctx = FeelContext::default();
+      business_knowledge_model_evaluator.evaluate(id, input_data, self, &mut evaluated_ctx);
+      if let Some(Value::FunctionDefinition(parameters, body, result_type)) = evaluated_ctx.get_entry(output_variable_name) {
+        let mut parameters_ctx = FeelContext::default();
+        for (name, _) in parameters {
+          if let Some(value) = input_data.get_entry(name) {
+            parameters_ctx.set_entry(name, value.to_owned());
+          }
         }
+        parameters_ctx.zip(&evaluated_ctx);
+        let result = body.evaluate(&parameters_ctx.into());
+        result_type.coerced(&result)
+      } else {
+        value_null!()
       }
-      parameters_ctx.zip(&evaluated_ctx);
-      let result = body.evaluate(&parameters_ctx.into());
-      result_type.coerced(&result)
     } else {
       value_null!()
     }
   }
   /// Evaluates a decision.
   pub fn evaluate_decision(&self, id: &str, input_data: &FeelContext) -> Value {
-    let mut evaluated_ctx = FeelContext::default();
-    if let Some(output_variable_name) = self.decision_evaluator().evaluate(id, input_data, self, &mut evaluated_ctx) {
-      if let Some(output_value) = evaluated_ctx.get_entry(&output_variable_name) {
-        output_value.clone()
+    if let Ok(decision_evaluator) = self.decision_evaluator() {
+      let mut evaluated_ctx = FeelContext::default();
+      if let Some(output_variable_name) = decision_evaluator.evaluate(id, input_data, self, &mut evaluated_ctx) {
+        if let Some(output_value) = evaluated_ctx.get_entry(&output_variable_name) {
+          output_value.clone()
+        } else {
+          value_null!()
+        }
       } else {
         value_null!()
       }
@@ -159,10 +233,14 @@ impl ModelEvaluator {
   }
   /// Evaluates a decision service.
   pub fn evaluate_decision_service(&self, id: &str, input_data: &FeelContext) -> Value {
-    let mut evaluated_ctx = FeelContext::default();
-    if let Some(output_variable_name) = self.decision_service_evaluator().evaluate(id, input_data, self, &mut evaluated_ctx) {
-      if let Some(output_value) = evaluated_ctx.get_entry(&output_variable_name) {
-        output_value.clone()
+    if let Ok(decision_service_evaluator) = self.decision_service_evaluator() {
+      let mut evaluated_ctx = FeelContext::default();
+      if let Some(output_variable_name) = decision_service_evaluator.evaluate(id, input_data, self, &mut evaluated_ctx) {
+        if let Some(output_value) = evaluated_ctx.get_entry(&output_variable_name) {
+          output_value.clone()
+        } else {
+          value_null!()
+        }
       } else {
         value_null!()
       }

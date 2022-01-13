@@ -19,16 +19,16 @@
 
 ## Overview
 
-Decision Model and Notation Toolkit (DMNTK) is a platform for building, testing and evaluating decision models.
+**DMNTK** is a set of tools for building, testing and evaluating decision models.
 
-DMNTK is based on the [Decision Model and Notation (DMN™)](https://www.omg.org/dmn/),
-the industry standard from the [Object Management Group (OMG®)](https://www.omg.org/),
+**DMNTK** is based on the [Decision Model and Notation (DMN™)](https://www.omg.org/dmn/),
+the industry standard led by the [Object Management Group (OMG®)](https://www.omg.org/),
 the institution behind such standards like UML®, BPMN™ and CORBA®.
 
-DMNTK is written in [Rust](https://www.rust-lang.org/), a programming language that empowers
+**DMNTK** is written in [Rust](https://www.rust-lang.org/), a programming language that empowers
 building reliable and efficient software.
 
-DMNTK aims to be fully compliant with [DMN™ specification](https://www.omg.org/spec/DMN).
+**DMNTK** aims to be fully compliant with [DMN™ specification](https://www.omg.org/spec/DMN).
 
 ## Installation
 
@@ -44,34 +44,72 @@ Check available commands:
 $ dmntk --help
 ```
 
-## Quick example
+## Overview
 
-Create a file named **ex1.ctx**. Copy text shown below and save.
+**DMNTK** may be used to:
 
-This is the evaluation context (empty context).
+- parse `FEEL` expressions,
+- parse `DMN` models,
+- parse decision tables,
+- evaluate `FEEL` expressions,
+- evaluate `DMN` models,
+- evaluate decision tables,
+- test `FEEL` expressions,
+- test `DMN` models,
+- test decision tables,
+
+and last but not least:
+
+- to evaluate `DMN` models as a service.
+
+## Examples
+
+**DMNTK** provides examples ready to play with.
+
+To install the examples run:
+
+```
+$ dmntk exs
+```
+
+### Evaluate `FEEL` expression
 
 ```text
-{}
-```
-
-Create a file named **ex1.feel**. Copy text shown below and save.
-
-This is the evaluated `FEEL` expression (addition).
-
-```text
-1 + 2
-```
-
-Evaluate the expression:
-
-```shell
-# dmntk efl ex1.ctx ex1.feel
-```
-
-The expected result is:
-
-```shell
+$ cd ./examples/e1
+$ dmntk efe e1.ctx e1.feel
 3
+```
+
+### Evaluate `DMN` model
+
+```text
+$ cd ./examples/e2
+$ dmntk edm e2.ctx e2.dmn
+"Hello John Doe"
+```
+
+### Evaluate decision table
+
+```text
+$ cd ./examples/e3
+$ dmntk edt e3.ctx e3.dtb
+0.15
+```
+
+### Run as a service
+
+```text
+$ cd ./examples/e2
+$ dmntk srv -D .
+Loaded 1 file(s) from directory: .
+dmntk 0.0.0.0:22022
+```
+
+Switch to another terminal window and run: 
+
+```text
+$ curl -s -d '{"Full Name":"John Doe"}' -H "Content-Type: application/json" -X POST http://0.0.0.0:22022/evaluate/compliance-level-2-test-0001/Greeting%20Message
+{"data":"Hello John Doe"}
 ```
 
 ## License

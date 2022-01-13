@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,22 +30,11 @@
  * limitations under the License.
  */
 
-use crate::errors::*;
-use crate::model_evaluator::ModelEvaluator;
-use dmntk_common::Result;
-use dmntk_feel::context::FeelContext;
-use dmntk_feel::values::Value;
-use dmntk_model::model::{Definitions, DmnElement, NamedElement, RequiredVariable};
+pub const E1_CTX: &str = include_str!("e1/e1.ctx");
+pub const E1_FEEL: &str = include_str!("e1/e1.feel");
 
-/// Evaluates a [BusinessKnowledgeModel] defined by specified name.
-pub fn evaluate_business_knowledge_model_by_name(definitions: &Definitions, name: &str, ctx: &FeelContext) -> Result<Value> {
-  if let Some(business_knowledge_model) = definitions.business_knowledge_model_by_name(name) {
-    let id = business_knowledge_model.id().as_ref().ok_or_else(err_empty_identifier)?;
-    let output_variable_name = business_knowledge_model.variable().feel_name().as_ref().ok_or_else(err_empty_feel_name)?;
-    let model_evaluator = ModelEvaluator::new(definitions)?;
-    let result = model_evaluator.evaluate_business_knowledge_model(id, ctx, output_variable_name);
-    Ok(result)
-  } else {
-    Err(err_business_knowledge_model_with_name_not_found(name))
-  }
-}
+pub const E2_CTX: &str = include_str!("e2/e2.ctx");
+pub const E2_DMN: &str = include_str!("e2/e2.dmn");
+
+pub const E3_CTX: &str = include_str!("e3/e3.ctx");
+pub const E3_DTB: &str = include_str!("e3/e3.dtb");

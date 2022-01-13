@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Builder for item definition type evaluator.
+//! Builder for item definition type evaluators.
 
 use crate::errors::*;
 use dmntk_common::Result;
@@ -39,7 +39,7 @@ use dmntk_model::model::{Definitions, ItemDefinition, ItemDefinitionType, NamedE
 use std::collections::{BTreeMap, HashMap};
 
 /// Type of function that evaluates the item definition type.
-type ItemDefinitionTypeEvaluatorFn = Box<dyn Fn(&ItemDefinitionTypeEvaluator) -> Option<FeelType>>;
+type ItemDefinitionTypeEvaluatorFn = Box<dyn Fn(&ItemDefinitionTypeEvaluator) -> Option<FeelType> + Send + Sync>;
 
 /// Item definition type evaluators.
 #[derive(Default)]
@@ -173,75 +173,75 @@ mod tests {
   use dmntk_feel::{FeelType, Name};
 
   /// Utility function for building item definition type evaluator from definitions.
-  fn build_evaluator(xml: &str, source: &str) -> ItemDefinitionTypeEvaluator {
+  fn build_evaluator(xml: &str) -> ItemDefinitionTypeEvaluator {
     let mut evaluator = ItemDefinitionTypeEvaluator::default();
-    evaluator.build(&dmntk_model::parse(xml, source).unwrap()).unwrap();
+    evaluator.build(&dmntk_model::parse(xml).unwrap()).unwrap();
     evaluator
   }
 
   #[test]
   fn simple_type_string() {
-    let evaluator = build_evaluator(DMN_0101, "file:///0101.dmn");
+    let evaluator = build_evaluator(DMN_0101);
     assert_eq!(Some(FeelType::String), evaluator.eval("tCustomerName"));
   }
 
   #[test]
   fn simple_type_number() {
-    let evaluator = build_evaluator(DMN_0102, "file:///0102.dmn");
+    let evaluator = build_evaluator(DMN_0102);
     assert_eq!(Some(FeelType::Number), evaluator.eval("tMonthlySalary"));
   }
 
   #[test]
   fn simple_type_boolean() {
-    let evaluator = build_evaluator(DMN_0103, "file:///0103.dmn");
+    let evaluator = build_evaluator(DMN_0103);
     assert_eq!(Some(FeelType::Boolean), evaluator.eval("tIsAffordable"));
   }
 
   #[test]
   fn simple_type_date() {
-    let evaluator = build_evaluator(DMN_0104, "file:///0104.dmn");
+    let evaluator = build_evaluator(DMN_0104);
     assert_eq!(Some(FeelType::Date), evaluator.eval("tBirthday"));
   }
 
   #[test]
   fn simple_type_time() {
-    let evaluator = build_evaluator(DMN_0105, "file:///0105.dmn");
+    let evaluator = build_evaluator(DMN_0105);
     assert_eq!(Some(FeelType::Time), evaluator.eval("tDeliveryTime"));
   }
 
   #[test]
   fn simple_type_date_time() {
-    let evaluator = build_evaluator(DMN_0106, "file:///0106.dmn");
+    let evaluator = build_evaluator(DMN_0106);
     assert_eq!(Some(FeelType::DateTime), evaluator.eval("tAppointment"));
   }
 
   #[test]
   fn simple_type_days_and_time_duration() {
-    let evaluator = build_evaluator(DMN_0107, "file:///0107.dmn");
+    let evaluator = build_evaluator(DMN_0107);
     assert_eq!(Some(FeelType::DaysAndTimeDuration), evaluator.eval("tCourseDuration"));
   }
 
   #[test]
   fn simple_type_years_and_month_duration() {
-    let evaluator = build_evaluator(DMN_0108, "file:///0108.dmn");
+    let evaluator = build_evaluator(DMN_0108);
     assert_eq!(Some(FeelType::YearsAndMonthsDuration), evaluator.eval("tGrowthDuration"));
   }
 
   #[test]
   fn referenced_type_string() {
-    let evaluator = build_evaluator(DMN_0201, "file:///0201.dmn");
+    let evaluator = build_evaluator(DMN_0201);
     assert_eq!(Some(FeelType::String), evaluator.eval("tCustomerName"));
   }
 
   #[test]
   fn referenced_type_number() {
-    let evaluator = build_evaluator(DMN_0202, "file:///0202.dmn");
+    let evaluator = build_evaluator(DMN_0202);
     assert_eq!(Some(FeelType::Number), evaluator.eval("tMonthlySalary"));
   }
 
   #[test]
   fn component_type() {
-    let evaluator = build_evaluator(DMN_0301, "file:///0301.dmn");
+    let evaluator = build_evaluator(DMN_0301);
     let name_principal: Name = "principal".into();
     let name_rate: Name = "rate".into();
     let name_term_months: Name = "termMonths".into();
@@ -252,61 +252,61 @@ mod tests {
 
   #[test]
   fn collection_of_simple_type_string() {
-    let evaluator = build_evaluator(DMN_0401, "file:///0401.dmn");
+    let evaluator = build_evaluator(DMN_0401);
     assert_eq!(Some(FeelType::list(&FeelType::String)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_number() {
-    let evaluator = build_evaluator(DMN_0402, "file:///0402.dmn");
+    let evaluator = build_evaluator(DMN_0402);
     assert_eq!(Some(FeelType::list(&FeelType::Number)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_boolean() {
-    let evaluator = build_evaluator(DMN_0403, "file:///0403.dmn");
+    let evaluator = build_evaluator(DMN_0403);
     assert_eq!(Some(FeelType::list(&FeelType::Boolean)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_date() {
-    let evaluator = build_evaluator(DMN_0404, "file:///0404.dmn");
+    let evaluator = build_evaluator(DMN_0404);
     assert_eq!(Some(FeelType::list(&FeelType::Date)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_time() {
-    let evaluator = build_evaluator(DMN_0405, "file:///0405.dmn");
+    let evaluator = build_evaluator(DMN_0405);
     assert_eq!(Some(FeelType::list(&FeelType::Time)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_date_time() {
-    let evaluator = build_evaluator(DMN_0406, "file:///0406.dmn");
+    let evaluator = build_evaluator(DMN_0406);
     assert_eq!(Some(FeelType::list(&FeelType::DateTime)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_days_and_time_duration() {
-    let evaluator = build_evaluator(DMN_0407, "file:///0407.dmn");
+    let evaluator = build_evaluator(DMN_0407);
     assert_eq!(Some(FeelType::list(&FeelType::DaysAndTimeDuration)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn collection_of_simple_type_years_and_months_duration() {
-    let evaluator = build_evaluator(DMN_0408, "file:///0408.dmn");
+    let evaluator = build_evaluator(DMN_0408);
     assert_eq!(Some(FeelType::list(&FeelType::YearsAndMonthsDuration)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn test_evaluate_input_data_0501_1() {
-    let evaluator = build_evaluator(DMN_0501, "file:///0501.dmn");
+    let evaluator = build_evaluator(DMN_0501);
     assert_eq!(Some(FeelType::list(&FeelType::String)), evaluator.eval("tItems"));
   }
 
   #[test]
   fn test_evaluate_input_data_0601_1() {
-    let evaluator = build_evaluator(DMN_0601, "file:///0601.dmn");
+    let evaluator = build_evaluator(DMN_0601);
     let name_number: Name = "number".into();
     let name_name: Name = "name".into();
     let name_manager: Name = "manager".into();

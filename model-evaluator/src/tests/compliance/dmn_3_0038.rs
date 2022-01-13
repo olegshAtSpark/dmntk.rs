@@ -3,7 +3,7 @@
  *
  * MIT license
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -15,7 +15,7 @@
  *
  * Apache license, Version 2.0
  *
- * Copyright (c) 2018-2021 Dariusz Depta Engos Software
+ * Copyright (c) 2018-2022 Dariusz Depta Engos Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,20 +30,22 @@
  * limitations under the License.
  */
 
-use crate::tests::{assert_decision, context};
+use super::super::*;
+use crate::model_evaluator::ModelEvaluator;
+use std::sync::Arc;
 
 lazy_static! {
-  static ref DEFINITIONS: dmntk_model::model::Definitions = dmntk_model::parse(dmntk_examples::DMN_3_0038, "file: ///3_0038.dmn").unwrap();
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0038);
 }
 
 #[test]
 fn _0001() {
   let ctx = context(r#"{Person: {Children: 2,Gender: "Female",Name: "Alice"}}"#);
-  assert_decision(&DEFINITIONS, "Person's description", &ctx, r#""Alice is a mother of 2 children.""#);
+  assert_decision(&MODEL_EVALUATOR, "Person's description", &ctx, r#""Alice is a mother of 2 children.""#);
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{Person: {Children: 3,Gender: "Male",Name: "Bob"}}"#);
-  assert_decision(&DEFINITIONS, "Person's description", &ctx, r#""Bob is a dad of 3 children.""#);
+  assert_decision(&MODEL_EVALUATOR, "Person's description", &ctx, r#""Bob is a dad of 3 children.""#);
 }
