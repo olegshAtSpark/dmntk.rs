@@ -44,33 +44,47 @@ Check available commands:
 $ dmntk --help
 ```
 
-## Example
+## Overview
+
+**DMNTK** may be used to:
+
+- parse `FEEL` expressions,
+- parse `DMN` models,
+- parse decision tables,
+- evaluate `FEEL` expressions,
+- evaluate `DMN` models,
+- evaluate decision tables,
+- test `FEEL` expressions,
+- test `DMN` models,
+- test decision tables,
+
+and last but not least:
+
+- to evaluate `DMN` models as a service.
+
+## Examples
+
+### Evaluate `FEEL` expression
 
 Copy the text shown below and save in a file named **e1.ctx**.
 This is the evaluation context (**empty context** in this case):
 
 ```text
-{}
-```
-
-Copy text shown below and save in a file named **e1.feel**.
-This is the evaluated `FEEL` expression (**addition** in this case):
-
-```text
-1 + 2
-```
-
-Evaluate the `FEEL` expression using **dmntk**:
-
-```shell
-# dmntk efl e1.ctx e1.feel
-```
-
-The expected result is:
-
-```shell
+$ echo "{}" > e.ctx
+$ echo "1 + 2" > e.feel
+$ dmntk efe e1.ctx e1.feel
 3
 ```
+
+### Evaluate `DMN` model
+
+
+### Evaluate decision table
+
+
+### Run as a service
+
+
 
 ## License
 
