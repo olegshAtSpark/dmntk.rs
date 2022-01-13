@@ -30,6 +30,7 @@
  * limitations under the License.
  */
 
+use crate::examples::*;
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
 use clap::{load_yaml, App, AppSettings};
 use dmntk_common::ascii_ctrl::*;
@@ -66,8 +67,10 @@ enum Action {
   TestDmnModel(String, String, String),
   /// Export `DMN` model`.
   ExportDmnModel(String, String),
-  /// Start **dmntk** as a service.
+  /// Start `dmntk` as a service.
   StartService(Option<String>, Option<String>, Option<String>),
+  /// Generate examples.
+  GenerateExamples,
   /// Do nothing, no action was specified.
   DoNothing,
 }
@@ -128,6 +131,10 @@ pub async fn do_action() -> std::io::Result<()> {
       Ok(())
     }
     Action::StartService(opt_host, opt_port, opt_dir) => dmntk_server::start_server(opt_host, opt_port, opt_dir).await,
+    Action::GenerateExamples => {
+      generate_examples();
+      Ok(())
+    }
     Action::DoNothing => Ok(()),
   }
 }
@@ -232,6 +239,10 @@ fn get_cli_action() -> Action {
       matches.value_of("port").map(|port| port.to_string()),
       matches.value_of("dir").map(|dir| dir.to_string()),
     );
+  }
+  // generate examples
+  if let Some(_matches) = matches.subcommand_matches("exs") {
+    return Action::GenerateExamples;
   }
   Action::DoNothing
 }
@@ -568,6 +579,26 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
 /// Exports `DMN` model loaded from XML file to HTML output file.
 fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
   println!("xdm command is not implemented yet")
+}
+
+/// Generates examples in current directory.
+fn generate_examples() {
+  let create_dir = |path| {
+    std::fs::create_dir_all(path).expect(&format!("creating '{}' directory failed", path));
+  };
+  let write_file = |path, contents| {
+    std::fs::write(path, contents).expect(&format!("saving example file '{}' failed", path));
+  };
+  create_dir("examples");
+  create_dir("examples/e1");
+  write_file("./examples/e1/e1.ctx", E1_CTX);
+  write_file("./examples/e1/e1.feel", E1_FEEL);
+  create_dir("examples/e2");
+  write_file("./examples/e2/e2.ctx", E2_CTX);
+  write_file("./examples/e2/e2.dmn", E2_DMN);
+  create_dir("examples/e3");
+  write_file("./examples/e3/e3.ctx", E3_CTX);
+  write_file("./examples/e3/e3.dtb", E3_DTB);
 }
 
 /// Utility function for displaying test case result.

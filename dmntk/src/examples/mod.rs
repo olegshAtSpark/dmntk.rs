@@ -30,28 +30,11 @@
  * limitations under the License.
  */
 
-//! Entrypoint of `DMNTK`.
+pub const E1_CTX: &str = include_str!("e1/e1.ctx");
+pub const E1_FEEL: &str = include_str!("e1/e1.feel");
 
-extern crate actix_web;
-extern crate base64;
-extern crate clap;
-extern crate dmntk_common;
-extern crate dmntk_evaluator;
-extern crate dmntk_feel;
-extern crate dmntk_feel_parser;
-extern crate dmntk_recognizer;
-extern crate serde;
-extern crate serde_derive;
-extern crate serde_yaml;
+pub const E2_CTX: &str = include_str!("e2/e2.ctx");
+pub const E2_DMN: &str = include_str!("e2/e2.dmn");
 
-mod actions;
-mod examples;
-
-const DMNTK_VERSION: &str = env!("CARGO_PKG_VERSION");
-const DMNTK_DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
-
-/// Main entrypoint of `DMNTK`.
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-  actions::do_action().await
-}
+pub const E3_CTX: &str = include_str!("e3/e3.ctx");
+pub const E3_DTB: &str = include_str!("e3/e3.dtb");

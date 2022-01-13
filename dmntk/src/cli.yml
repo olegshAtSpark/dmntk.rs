@@ -175,3 +175,6 @@ subcommands:
             long: dir
             help: Directory name where DMN files are searched
             takes_value: true
+  - exs:
+      about: Generate examples in current directory
+      display_order: 15

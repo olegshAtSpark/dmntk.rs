@@ -64,27 +64,53 @@ and last but not least:
 
 ## Examples
 
+**DMNTK** provides examples ready to play with.
+
+To install the examples run:
+
+```
+$ dmntk exs
+```
+
 ### Evaluate `FEEL` expression
 
-Copy the text shown below and save in a file named **e1.ctx**.
-This is the evaluation context (**empty context** in this case):
-
 ```text
-$ echo "{}" > e.ctx
-$ echo "1 + 2" > e.feel
+$ cd ./examples/e1
 $ dmntk efe e1.ctx e1.feel
 3
 ```
 
 ### Evaluate `DMN` model
 
+```text
+$ cd ./examples/e2
+$ dmntk edm e2.ctx e2.dmn
+"Hello John Doe"
+```
 
 ### Evaluate decision table
 
+```text
+$ cd ./examples/e3
+$ dmntk edt e3.ctx e3.dtb
+0.15
+```
 
 ### Run as a service
 
+```text
+$ cd ./examples/e2
+$ dmntk srv -D .
+Loaded 1 file(s) from directory: .
+dmntk 0.0.0.0:22022
+```
 
+Switch to another terminal window and run: 
+
+```text
+$ curl -s -d '{"Full Name":"John Doe"}' -H "Content-Type: application/json" -X POST http://0.0.0.0:22022/evaluate/compliance-level-2-test-0001/Greeting%20Message
+{"data":"Hello John Doe"}
+```
 
 ## License
 
