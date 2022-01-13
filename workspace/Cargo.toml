@@ -10,9 +10,10 @@ edition = "2021"
 
 [dependencies]
 dmntk-common = "0.0.45"
-dmntk-evaluator = "0.0.45"
 dmntk-feel = "0.0.45"
+dmntk-feel-evaluator = "0.0.45"
 dmntk-model = "0.0.45"
+dmntk-model-evaluator = "0.0.45"
 thiserror = "1.0.30"
 walkdir = "2.3.2"
 
