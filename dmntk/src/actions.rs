@@ -584,10 +584,10 @@ fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
 /// Generates examples in current directory.
 fn generate_examples() {
   let create_dir = |path| {
-    std::fs::create_dir_all(path).expect(&format!("creating '{}' directory failed", path));
+    std::fs::create_dir_all(path).unwrap_or_else(|_| panic!("creating '{}' directory failed", path));
   };
   let write_file = |path, contents| {
-    std::fs::write(path, contents).expect(&format!("saving example file '{}' failed", path));
+    std::fs::write(path, contents).unwrap_or_else(|_| panic!("saving example file '{}' failed", path));
   };
   create_dir("examples");
   create_dir("examples/e1");
