@@ -1,6 +1,6 @@
 [package]
 name = "dmntk-feel-grammar"
-version = "0.0.45-dev"
+version = "0.0.46-dev"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | FEEL grammar"
 documentation = "https://docs.rs/dmntk-feel-grammar"
