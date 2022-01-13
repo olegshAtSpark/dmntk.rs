@@ -295,11 +295,7 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
               Err(reason) => println!("parsing expression failed with reason: {}", reason),
             }
           }
-          if failed > 0 {
-            println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
-          } else {
-            println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
-          }
+          display_test_summary(passed, failed);
         }
         Err(reason) => println!("evaluation of test cases failed with reason: {}", reason),
       },
@@ -377,11 +373,50 @@ fn evaluate_decision_table(input_file_name: &str, dectab_file_name: &str) {
 }
 
 /// Tests decision table loaded from file.
-fn test_decision_table(_test_file_name: &str, dtb_file_name: &str) {
-  match std::fs::read_to_string(dtb_file_name) {
-    Ok(_dtb_input) => unimplemented!(),
-    Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dtb_file_name, reason),
+fn test_decision_table(test_file_name: &str, dectab_file_name: &str) {
+  let dtb_file_content = match std::fs::read_to_string(dectab_file_name) {
+    Ok(dtb_file_content) => dtb_file_content,
+    Err(reason) => {
+      println!("loading decision table file `{}` failed with reason: {}", dectab_file_name, reason);
+      return;
+    }
+  };
+  let decision_table = match dmntk_recognizer::build(&dtb_file_content) {
+    Ok(decision_table) => decision_table,
+    Err(reason) => {
+      println!("building decision table failed with reason: {}", reason);
+      return;
+    }
+  };
+  let test_file_content = match std::fs::read_to_string(test_file_name) {
+    Ok(test_file_content) => test_file_content,
+    Err(reason) => {
+      println!("loading test file `{}` failed with reason: {}", test_file_name, reason);
+      return;
+    }
+  };
+  let test_cases = match dmntk_evaluator::evaluate_test_cases(&test_file_content) {
+    Ok(test_cases) => test_cases,
+    Err(reason) => {
+      println!("evaluating test file failed with reason: {}", reason);
+      return;
+    }
+  };
+  let mut passed = 0_usize;
+  let mut failed = 0_usize;
+  for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
+    let scope = input_data.clone().into();
+    let evaluator = match dmntk_evaluator::build_decision_table_evaluator(&scope, &decision_table) {
+      Ok(evaluator) => evaluator,
+      Err(reason) => {
+        println!("building decision table evaluator failed with reason: {}", reason);
+        return;
+      }
+    };
+    let actual = evaluator(&scope) as Value;
+    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
   }
+  display_test_summary(passed, failed);
 }
 
 /// Exports decision table loaded from text file to HTML output file.
@@ -527,11 +562,7 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
     let actual = model_evaluator.evaluate_invocable(invocable_name, input_data);
     display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
   }
-  if failed > 0 {
-    println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
-  } else {
-    println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
-  }
+  display_test_summary(passed, failed);
 }
 
 /// Exports `DMN` model loaded from XML file to HTML output file.
@@ -549,5 +580,14 @@ fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, p
     println!("  expected: {}", expected);
     println!("    actual: {}", actual);
     *failed += 1;
+  }
+}
+
+/// Utility function for displaying test summary.
+fn display_test_summary(passed: usize, failed: usize) {
+  if failed > 0 {
+    println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+  } else {
+    println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
   }
 }

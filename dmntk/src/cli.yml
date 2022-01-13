@@ -132,7 +132,7 @@ subcommands:
             help: File containing test cases for tested decision table
             required: true
             index: 1
-        - FEEL_FILE:
+        - DECTAB_FILE:
             help: File containing FEEL expression to be tested
             required: true
             index: 2
