@@ -39,4 +39,5 @@ extern crate dmntk_model_evaluator;
 mod test_files;
 
 pub use crate::dmntk_feel_evaluator::{evaluate, evaluate_context, evaluate_equals, evaluate_max, evaluate_min, evaluate_node_type, evaluate_sum};
+pub use crate::dmntk_model_evaluator::ModelEvaluator;
 pub use test_files::evaluate_test_cases;

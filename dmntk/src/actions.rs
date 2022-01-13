@@ -32,8 +32,9 @@
 
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
 use clap::{load_yaml, App, AppSettings};
-use dmntk_common::ascii256;
 use dmntk_common::ascii_ctrl::*;
+use dmntk_common::{ascii256, Jsonify};
+use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
 use dmntk_model::model::{DmnElement, NamedElement, RequiredVariable};
 
@@ -60,9 +61,9 @@ enum Action {
   /// Parse `DMN` model`.
   ParseDmnModel(String),
   /// Evaluate `DMN` model`.
-  EvaluateDmnModel(String, String),
+  EvaluateDmnModel(String, String, String),
   /// Test `DMN` model`.
-  TestDmnModel(String, String),
+  TestDmnModel(String, String, String),
   /// Export `DMN` model`.
   ExportDmnModel(String, String),
   /// Start **dmntk** as a service.
@@ -114,12 +115,12 @@ pub async fn do_action() -> std::io::Result<()> {
       parse_dmn_model(&dectab_file_name);
       Ok(())
     }
-    Action::EvaluateDmnModel(dectab_file_name, ctx_file_name) => {
-      evaluate_dmn_model(&dectab_file_name, &ctx_file_name);
+    Action::EvaluateDmnModel(dectab_file_name, ctx_file_name, invocable_name) => {
+      evaluate_dmn_model(&dectab_file_name, &ctx_file_name, &invocable_name);
       Ok(())
     }
-    Action::TestDmnModel(test_file_name, dectab_file_name) => {
-      test_dmn_model(&test_file_name, &dectab_file_name);
+    Action::TestDmnModel(test_file_name, dectab_file_name, invocable_name) => {
+      test_dmn_model(&test_file_name, &dectab_file_name, &invocable_name);
       Ok(())
     }
     Action::ExportDmnModel(dectab_file_name, html_file_name) => {
@@ -206,6 +207,7 @@ fn get_cli_action() -> Action {
     return Action::EvaluateDmnModel(
       matches.value_of("INPUT_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
+      matches.value_of("invocable").unwrap_or("unknown").to_string(),
     );
   }
   // test DMN model subcommand
@@ -213,6 +215,7 @@ fn get_cli_action() -> Action {
     return Action::TestDmnModel(
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
+      matches.value_of("invocable").unwrap_or("unknown").to_string(),
     );
   }
   // export DMN model subcommand
@@ -282,21 +285,11 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
         Ok(test_cases) => {
           let mut passed = 0_usize;
           let mut failed = 0_usize;
-          for (i, (input_data, expected_value)) in test_cases.iter().enumerate() {
+          for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
             let scope = input_data.clone().into();
             match dmntk_feel_parser::parse_expression(&scope, &feel_file_content, false) {
               Ok(node) => match dmntk_evaluator::evaluate(&scope, &node) {
-                Ok(actual_value) => {
-                  if dmntk_evaluator::evaluate_equals(&actual_value, expected_value) {
-                    println!("test {} ... {}ok{}", i + 1, ASCII_GREEN, ASCII_RESET);
-                    passed += 1;
-                  } else {
-                    println!("test {} ... {}FAILED{}", i + 1, ASCII_RED, ASCII_RESET);
-                    println!("  expected: {}", expected_value);
-                    println!("    actual: {}", actual_value);
-                    failed += 1;
-                  }
-                }
+                Ok(actual) => display_test_result(&actual, &expected, &test_no, &mut passed, &mut failed),
                 Err(reason) => println!("evaluating expression failed with reason: {}", reason),
               },
               Err(reason) => println!("parsing expression failed with reason: {}", reason),
@@ -442,16 +435,92 @@ fn parse_dmn_model(dmn_file_name: &str) {
 }
 
 /// Evaluates `DMN` model loaded from XML file.
-fn evaluate_dmn_model(_input_file_name: &str, _dmn_file_name: &str) {
-  println!("edm command is not implemented yet")
+fn evaluate_dmn_model(input_file_name: &str, dmn_file_name: &str, invocable_name: &str) {
+  match std::fs::read_to_string(dmn_file_name) {
+    Ok(dmn_file_content) => match std::fs::read_to_string(input_file_name) {
+      Ok(input_file_content) => match dmntk_evaluator::evaluate_context(&Scope::default(), &input_file_content) {
+        Ok(input_data) => match dmntk_model::parse(&dmn_file_content) {
+          Ok(definitions) => match dmntk_evaluator::ModelEvaluator::new(&definitions) {
+            Ok(model_evaluator) => {
+              let result = model_evaluator.evaluate_invocable(invocable_name, &input_data);
+              println!("{}", result.jsonify())
+            }
+            Err(reason) => println!("evaluating invocable {} failed with reason: {}", invocable_name, reason),
+          },
+          Err(reason) => println!("parsing model failed with reason: {}", reason),
+        },
+        Err(reason) => println!("evaluating input data failed with reason: {}", reason),
+      },
+      Err(reason) => println!("loading input data file `{}` failed with reason: {:?}", input_file_name, reason),
+    },
+    Err(reason) => println!("loading model file `{}` failed with reason: {:?}", dmn_file_name, reason),
+  }
 }
 
 /// Tests `DMN` model loaded from XML file.
-fn test_dmn_model(_test_file_name: &str, _dmn_file_name: &str) {
-  println!("tdm command is not implemented yet")
+fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &str) {
+  let dmn_file_content = match std::fs::read_to_string(dmn_file_name) {
+    Ok(dmn_file_content) => dmn_file_content,
+    Err(reason) => {
+      println!("loading model file `{}` failed with reason: {}", dmn_file_name, reason);
+      return;
+    }
+  };
+  let definitions = match dmntk_model::parse(&dmn_file_content) {
+    Ok(definitions) => definitions,
+    Err(reason) => {
+      println!("parsing model file failed with reason: {}", reason);
+      return;
+    }
+  };
+  let model_evaluator = match dmntk_evaluator::ModelEvaluator::new(&definitions) {
+    Ok(model_evaluator) => model_evaluator,
+    Err(reason) => {
+      println!("preparing model evaluator failed with reason: {}", reason);
+      return;
+    }
+  };
+  let test_file_content = match std::fs::read_to_string(test_file_name) {
+    Ok(test_file_content) => test_file_content,
+    Err(reason) => {
+      println!("loading test file `{}` failed with reason: {}", test_file_name, reason);
+      return;
+    }
+  };
+  let test_cases = match dmntk_evaluator::evaluate_test_cases(&test_file_content) {
+    Ok(test_cases) => test_cases,
+    Err(reason) => {
+      println!("evaluating test file failed with reason: {}", reason);
+      return;
+    }
+  };
+  let mut passed = 0_usize;
+  let mut failed = 0_usize;
+  for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
+    let actual = model_evaluator.evaluate_invocable(invocable_name, input_data);
+    display_test_result(&actual, &expected, &test_no, &mut passed, &mut failed);
+  }
+  if failed > 0 {
+    println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+  } else {
+    println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
+  }
 }
 
 /// Exports `DMN` model loaded from XML file to HTML output file.
 fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
   println!("xdm command is not implemented yet")
+}
+
+///
+fn display_test_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize) {
+  if dmntk_evaluator::evaluate_equals(&actual, expected) {
+    println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
+    *passed += 1;
+  } else {
+    println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
+    println!("  expected: {}", expected);
+    println!("    actual: {}", actual);
+    *failed += 1;
+  }
 }

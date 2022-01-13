@@ -78,6 +78,12 @@ subcommands:
       about: Test DMN Model
       display_order: 8
       args:
+        - invocable:
+            short: i
+            long: invocable
+            help: Name of the invocable (decision, bkm, decision service) to be tested
+            required: true
+            takes_value: true
         - TEST_FILE:
             help: File containing test cases for tested DMN model
             required: true
