@@ -9,5 +9,5 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-examples = "0.0.44"
-dmntk-model = "0.0.44"
+dmntk-examples = "0.0.45"
+dmntk-model = "0.0.45"

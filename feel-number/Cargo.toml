@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = "0.0.44"
+dmntk-common = "0.0.45"
 libc = "0.2.112"
 lazy_static = "1.4.0"
 thiserror = "1.0.30"
