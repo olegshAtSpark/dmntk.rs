@@ -1,6 +1,6 @@
 [package]
 name = "dmntk"
-version = "0.0.44"
+version = "0.0.45"
 authors = ["Dariusz Depta <dariusz.depta@dmntk.io>"]
 description = "DMNTK | Decision Model and Notation Toolkit"
 documentation = "https://docs.rs/dmntk"
