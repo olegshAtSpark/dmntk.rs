@@ -289,7 +289,7 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
             let scope = input_data.clone().into();
             match dmntk_feel_parser::parse_expression(&scope, &feel_file_content, false) {
               Ok(node) => match dmntk_evaluator::evaluate(&scope, &node) {
-                Ok(actual) => display_test_result(&actual, &expected, &test_no, &mut passed, &mut failed),
+                Ok(actual) => display_test_result(&actual, expected, &test_no, &mut passed, &mut failed),
                 Err(reason) => println!("evaluating expression failed with reason: {}", reason),
               },
               Err(reason) => println!("parsing expression failed with reason: {}", reason),
@@ -498,7 +498,7 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
   let mut failed = 0_usize;
   for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
     let actual = model_evaluator.evaluate_invocable(invocable_name, input_data);
-    display_test_result(&actual, &expected, &test_no, &mut passed, &mut failed);
+    display_test_result(&actual, expected, &test_no, &mut passed, &mut failed);
   }
   if failed > 0 {
     println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
@@ -514,7 +514,7 @@ fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
 
 ///
 fn display_test_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize) {
-  if dmntk_evaluator::evaluate_equals(&actual, expected) {
+  if dmntk_evaluator::evaluate_equals(actual, expected) {
     println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
     *passed += 1;
   } else {
