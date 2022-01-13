@@ -32,8 +32,10 @@
 
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
 use clap::{load_yaml, App, AppSettings};
-use dmntk_common::{ASCII_GREEN, ASCII_RED, ASCII_RESET};
+use dmntk_common::ascii256;
+use dmntk_common::ascii_ctrl::*;
 use dmntk_feel::Scope;
+use dmntk_model::model::{DmnElement, NamedElement, RequiredVariable};
 
 /// Available command-line actions.
 enum Action {
@@ -381,8 +383,62 @@ fn recognize_decision_table(dtb_file_name: &str) {
 }
 
 /// Parses `DMN` model loaded from XML file.
-fn parse_dmn_model(_dmn_file_name: &str) {
-  println!("pdm command is not implemented yet")
+fn parse_dmn_model(dmn_file_name: &str) {
+  let c_a = ascii256!(255);
+  let c_b = ascii256!(82);
+  let c_c = ascii256!(184);
+  let c_d = ascii256!(208);
+  let none = "(none)".to_string();
+  match std::fs::read_to_string(dmn_file_name) {
+    Ok(dmn_file_content) => match dmntk_model::parse(&dmn_file_content) {
+      Ok(definitions) => {
+        println!("\n{}Model{}", c_a, ASCII_RESET);
+        println!("{} ├─ name:{} {}{}", c_a, c_b, definitions.name(), ASCII_RESET);
+        println!("{} ├─ namespace:{} {}{}", c_a, c_b, definitions.namespace(), ASCII_RESET);
+        println!("{} └─ id:{} {}{}", c_a, c_b, definitions.id().as_ref().unwrap_or(&none), ASCII_RESET);
+        // definitions
+        if definitions.decisions().is_empty() {
+          println!("\n{}Decisions{} {}{}", c_a, c_c, none, ASCII_RESET);
+        } else {
+          println!("\n{}Decisions{}", c_a, ASCII_RESET);
+          let decision_count = definitions.decisions().len();
+          for (i, decision) in definitions.decisions().iter().enumerate() {
+            if i < decision_count - 1 {
+              print!(" {}├─{}", c_a, ASCII_RESET);
+            } else {
+              print!(" {}└─{}", c_a, ASCII_RESET);
+            }
+            println!(" {}{}{}", c_c, decision.name(), ASCII_RESET);
+          }
+        }
+        // item data
+        if definitions.input_data().is_empty() {
+          println!("\n{}Input data{} {}{}", c_a, c_c, none, ASCII_RESET);
+        } else {
+          println!("\n{}Input data{}", c_a, ASCII_RESET);
+          let input_data_count = definitions.input_data().len();
+          for (i, input_data) in definitions.input_data().iter().enumerate() {
+            if i < input_data_count - 1 {
+              print!(" {}├─{}", c_a, ASCII_RESET);
+            } else {
+              print!(" {}└─{}", c_a, ASCII_RESET);
+            }
+            println!(
+              " {}{} ({}){}",
+              c_d,
+              input_data.name(),
+              input_data.variable().type_ref().as_ref().unwrap_or(&none),
+              ASCII_RESET
+            );
+          }
+        }
+        // more...
+        print!("\n{}MORE DETAILS WILL BE IMPLEMENTED...{}\n\n", ASCII_RED, ASCII_RESET);
+      }
+      Err(reason) => println!("parsing model file failed with reason: {}", reason),
+    },
+    Err(reason) => println!("loading model file `{}` failed with reason: {:?}", dmn_file_name, reason),
+  }
 }
 
 /// Evaluates `DMN` model loaded from XML file.
