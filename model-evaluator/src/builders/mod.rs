@@ -35,7 +35,7 @@
 mod business_knowledge_model;
 mod decision;
 mod decision_service;
-mod decision_table;
+pub(crate) mod decision_table;
 mod input_data;
 mod input_data_context;
 mod item_definition;

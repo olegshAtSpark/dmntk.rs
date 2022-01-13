@@ -49,4 +49,5 @@ mod model_evaluator;
 #[cfg(test)]
 mod tests;
 
+pub use builders::decision_table::build_decision_table_evaluator;
 pub use model_evaluator::ModelEvaluator;
