@@ -147,16 +147,15 @@ impl Recognizer {
     // assign the number of recognized input clauses
     self.input_clause_count = r.width();
     // detect if the input values are present in decision table
-    let input_values_present: bool;
-    match r.height() {
+    let input_values_present = match r.height() {
       1 => {
         // by single row there are no input values, only input expressions
-        input_values_present = false;
+        false
       }
       2 => {
         // by two rows when regions in each column are the same, then there are no input/output values
         // otherwise the are input/output values provided
-        input_values_present = !self.plane.equal_regions_in_columns(&r)?;
+        !self.plane.equal_regions_in_columns(&r)?
       }
       3 => {
         // by three rows there must be always input/output values provided, just checking if the
@@ -164,10 +163,10 @@ impl Recognizer {
         if !self.plane.unique_regions_in_columns(&r.inc_top(1))? {
           return Err(invalid_input_expressions());
         }
-        input_values_present = true;
+        true
       }
       _ => return Err(too_many_rows_in_input_clause()),
-    }
+    };
     // retrieve input expressions from plane
     for col in r.left..r.right {
       self.input_expressions.push(self.plane.region_text(0, col)?);
@@ -413,6 +412,6 @@ impl Recognizer {
 
   /// Displays a single tracing line.
   fn trace_line(&self, text: &str) {
-    print!("{}|", text.replace("\n", " ").trim());
+    print!("{}|", text.replace('\n', " ").trim());
   }
 }

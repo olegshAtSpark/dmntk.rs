@@ -265,7 +265,7 @@ impl ToFeelString for Value {
     match self {
       Value::Context(context) => context.to_feel_string(),
       Value::List(items) => items.to_feel_string(),
-      Value::String(value) => format!("\"{}\"", value.replace("\"", "\\\"")),
+      Value::String(value) => format!("\"{}\"", value.replace('"', "\\\"")),
       other => other.to_string(),
     }
   }

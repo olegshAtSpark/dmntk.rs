@@ -210,6 +210,7 @@ mod tests {
   }
 
   #[test]
+  #[allow(clippy::nonminimal_bool)]
   fn test_equality() {
     let name_a: Name = "a".into();
     let name_b: Name = "b".into();

@@ -58,6 +58,7 @@ macro_rules! from_feel_number_into {
 
 /// FEEL number.
 #[derive(Copy, Clone)]
+#[must_use]
 pub struct FeelNumber(DecQuad);
 
 impl FeelNumber {

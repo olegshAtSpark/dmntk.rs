@@ -183,12 +183,11 @@ pub fn build(text: &str) -> Result<DecisionTable> {
 
   let information_item_name = recognizer.information_item_name.clone();
   let hit_policy = recognizer.hit_policy;
-  let aggregation;
-  if let HitPolicy::Collect(built_in_aggregator) = hit_policy {
-    aggregation = Some(built_in_aggregator)
+  let aggregation = if let HitPolicy::Collect(built_in_aggregator) = hit_policy {
+    Some(built_in_aggregator)
   } else {
-    aggregation = None
-  }
+    None
+  };
   let preferred_orientation = recognizer.orientation;
   let output_label = recognizer.output_label.clone();
 

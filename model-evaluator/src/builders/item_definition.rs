@@ -485,10 +485,7 @@ mod tests {
     let context_str = r#"{ Customer Name : "Whistler" }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
-    assert_eq!(
-      Value::String("Whistler".to_string()),
-      evaluator.eval(&"tCustomerName".to_string(), value).unwrap()
-    );
+    assert_eq!(Value::String("Whistler".to_string()), evaluator.eval("tCustomerName", value).unwrap());
   }
 
   #[test]
@@ -499,7 +496,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
     assert_eq!(
       value_null!("expected type 'string', actual type is 'number' in value '12000'"),
-      evaluator.eval(&"tCustomerName".to_string(), value).unwrap()
+      evaluator.eval("tCustomerName", value).unwrap()
     );
   }
 
@@ -509,7 +506,7 @@ mod tests {
     let context_str = r#"{ Monthly Salary : 12000.00 }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
-    assert_eq!(value_number!(12_000), evaluator.eval(&"tMonthlySalary".to_string(), value).unwrap());
+    assert_eq!(value_number!(12_000), evaluator.eval("tMonthlySalary", value).unwrap());
   }
 
   #[test]
@@ -520,7 +517,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
     assert_eq!(
       value_null!("expected type 'number', actual type is 'boolean' in value 'true'"),
-      evaluator.eval(&"tMonthlySalary".to_string(), value).unwrap()
+      evaluator.eval("tMonthlySalary", value).unwrap()
     );
   }
 
@@ -530,11 +527,11 @@ mod tests {
     let context_str = r#"{ Is Affordable : true }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Is", "Affordable"])).unwrap();
-    assert_eq!(Value::Boolean(true), evaluator.eval(&"tIsAffordable".to_string(), value).unwrap());
+    assert_eq!(Value::Boolean(true), evaluator.eval("tIsAffordable", value).unwrap());
     let context_str = r#"{ Is Affordable : false }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Is", "Affordable"])).unwrap();
-    assert_eq!(Value::Boolean(false), evaluator.eval(&"tIsAffordable".to_string(), value).unwrap());
+    assert_eq!(Value::Boolean(false), evaluator.eval("tIsAffordable", value).unwrap());
   }
 
   #[test]
@@ -545,7 +542,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Is", "Affordable"])).unwrap();
     assert_eq!(
       value_null!(r#"expected type 'boolean', actual type is 'string' in value '"Yes"'"#),
-      evaluator.eval(&"tIsAffordable".to_string(), value).unwrap()
+      evaluator.eval("tIsAffordable", value).unwrap()
     );
   }
 
@@ -555,10 +552,7 @@ mod tests {
     let context_str = r#"{ Birthday : date("1982-04-12") }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Birthday"])).unwrap();
-    assert_eq!(
-      Value::Date(FeelDate::new(1982, 4, 12)),
-      evaluator.eval(&"tBirthday".to_string(), value).unwrap()
-    );
+    assert_eq!(Value::Date(FeelDate::new(1982, 4, 12)), evaluator.eval("tBirthday", value).unwrap());
   }
 
   #[test]
@@ -569,7 +563,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Delivery", "Time"])).unwrap();
     assert_eq!(
       Value::Time(FeelTime::new_hms_opt(18, 35, 23, 0).unwrap()),
-      evaluator.eval(&"tDeliveryTime".to_string(), value).unwrap()
+      evaluator.eval("tDeliveryTime", value).unwrap()
     );
   }
 
@@ -581,7 +575,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Appointment"])).unwrap();
     assert_eq!(
       Value::DateTime(FeelDateTime::new(FeelDate::new(2021, 10, 12), FeelTime::new_hms_opt(18, 35, 23, 0).unwrap())),
-      evaluator.eval(&"tAppointment".to_string(), value).unwrap()
+      evaluator.eval("tAppointment", value).unwrap()
     );
   }
 
@@ -593,7 +587,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Course", "Duration"])).unwrap();
     assert_eq!(
       Value::DaysAndTimeDuration(FeelDaysAndTimeDuration::default().second(183600).build()),
-      evaluator.eval(&"tCourseDuration".to_string(), value).unwrap()
+      evaluator.eval("tCourseDuration", value).unwrap()
     );
   }
 
@@ -605,7 +599,7 @@ mod tests {
     let value = context.get_entry(&Name::new(&["Growth", "Duration"])).unwrap();
     assert_eq!(
       Value::YearsAndMonthsDuration(FeelYearsAndMonthsDuration::new_ym(2, 5)),
-      evaluator.eval(&"tGrowthDuration".to_string(), value).unwrap()
+      evaluator.eval("tGrowthDuration", value).unwrap()
     );
   }
 
@@ -615,10 +609,7 @@ mod tests {
     let context_str = r#"{ Customer Name : "Bloomberg" }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Customer", "Name"])).unwrap();
-    assert_eq!(
-      Value::String("Bloomberg".to_string()),
-      evaluator.eval(&"tCustomerName".to_string(), value).unwrap()
-    );
+    assert_eq!(Value::String("Bloomberg".to_string()), evaluator.eval("tCustomerName", value).unwrap());
   }
 
   #[test]
@@ -627,7 +618,7 @@ mod tests {
     let context_str = r#"{ Monthly Salary : 12000.00 }"#;
     let context = dmntk_feel_evaluator::evaluate_context(&Default::default(), context_str).unwrap();
     let value = context.get_entry(&Name::new(&["Monthly", "Salary"])).unwrap();
-    assert_eq!(value_number!(12_000), evaluator.eval(&"tMonthlySalary".to_string(), value).unwrap());
+    assert_eq!(value_number!(12_000), evaluator.eval("tMonthlySalary", value).unwrap());
   }
 
   #[test]
@@ -641,7 +632,7 @@ mod tests {
     ctx.set_entry(&"rate".into(), value_number!(60));
     ctx.set_entry(&"termMonths".into(), value_number!(28));
     let expected = Value::Context(ctx);
-    assert_eq!(expected, evaluator.eval(&"tLoan".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tLoan", value).unwrap());
   }
 
   #[test]
@@ -656,7 +647,7 @@ mod tests {
       Value::String("Earth".to_string()),
       Value::String("Mars".to_string()),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -672,7 +663,7 @@ mod tests {
       value_number!(12_000),
       value_number!(13_000),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -688,7 +679,7 @@ mod tests {
       Value::Boolean(true),
       Value::Boolean(true),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -702,7 +693,7 @@ mod tests {
       Value::Date(FeelDate::new(2021, 10, 11)),
       Value::Date(FeelDate::new(2021, 10, 12)),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -716,7 +707,7 @@ mod tests {
       Value::Time(FeelTime::new_hms_opt(12, 21, 36, 0).unwrap()),
       Value::Time(FeelTime::new_hms_opt(12, 21, 37, 0).unwrap()),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -729,7 +720,7 @@ mod tests {
       Value::DateTime(FeelDateTime::new(FeelDate::new(2021, 10, 10), FeelTime::new_hms_opt(21, 23, 18, 0).unwrap())),
       Value::DateTime(FeelDateTime::new(FeelDate::new(2021, 10, 11), FeelTime::new_hms_opt(12, 18, 59, 0).unwrap())),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -741,7 +732,7 @@ mod tests {
     let expected = Value::List(Values::new(vec![Value::DaysAndTimeDuration(
       FeelDaysAndTimeDuration::default().second(183600).build(),
     )]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -754,7 +745,7 @@ mod tests {
       Value::YearsAndMonthsDuration(FeelYearsAndMonthsDuration::new_ym(2, 3)),
       Value::YearsAndMonthsDuration(FeelYearsAndMonthsDuration::new_ym(2, 4)),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -768,7 +759,7 @@ mod tests {
       Value::String("Venus".to_string()),
       Value::String("Earth".to_string()),
     ]));
-    assert_eq!(expected, evaluator.eval(&"tItems".to_string(), value).unwrap());
+    assert_eq!(expected, evaluator.eval("tItems", value).unwrap());
   }
 
   #[test]
@@ -790,6 +781,6 @@ mod tests {
     ctx_3.set_entry(&"name".into(), Value::String("Three".to_string()));
     ctx_3.set_entry(&"manager".into(), Value::String("Bob".to_string()));
     let expected = Value::List(Values::new(vec![Value::Context(ctx_1), Value::Context(ctx_2), Value::Context(ctx_3)]));
-    assert_eq!(Some(expected), evaluator.eval(&"tItems".to_string(), value));
+    assert_eq!(Some(expected), evaluator.eval("tItems", value));
   }
 }

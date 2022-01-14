@@ -48,6 +48,7 @@ lazy_static! {
 /// Days and time duration in `FEEL`.
 /// Holds the number of nanoseconds in the duration.
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd)]
+#[must_use]
 pub struct FeelDaysAndTimeDuration(i128);
 
 /// Number of nanoseconds in a day.
