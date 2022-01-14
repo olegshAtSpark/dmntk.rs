@@ -84,7 +84,7 @@ $ dmntk efe e1.ctx e1.feel
 
 ```text
 $ cd ./examples/e2
-$ dmntk edm e2.ctx e2.dmn
+$ dmntk edm e2.ctx e2.dmn -i "Greeting Message"
 "Hello John Doe"
 ```
 
