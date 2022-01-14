@@ -46,7 +46,7 @@ enum Action {
   /// Evaluate `FEEL` expression.
   EvaluateFeelExpression(String, String),
   /// Test `FEEL` expression.
-  TestFeelExpression(String, String),
+  TestFeelExpression(String, String, bool),
   /// Export `FEEL` expression to HTML.
   ExportFeelExpression(String, String),
   /// Parse decision table.
@@ -54,7 +54,7 @@ enum Action {
   /// Evaluate decision table.
   EvaluateDecisionTable(String, String),
   /// Test decision table.
-  TestDecisionTable(String, String),
+  TestDecisionTable(String, String, bool),
   /// Export decision table.
   ExportDecisionTable(String, String),
   /// Recognize decision table.
@@ -64,7 +64,7 @@ enum Action {
   /// Evaluate `DMN` model`.
   EvaluateDmnModel(String, String, String),
   /// Test `DMN` model`.
-  TestDmnModel(String, String, String),
+  TestDmnModel(String, String, String, bool),
   /// Export `DMN` model`.
   ExportDmnModel(String, String),
   /// Start `dmntk` as a service.
@@ -86,8 +86,8 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_feel_expression(&input_file_name, &feel_file_name);
       Ok(())
     }
-    Action::TestFeelExpression(test_file_name, feel_file_name) => {
-      test_feel_expression(&test_file_name, &feel_file_name);
+    Action::TestFeelExpression(test_file_name, feel_file_name, summary_only) => {
+      test_feel_expression(&test_file_name, &feel_file_name, summary_only);
       Ok(())
     }
     Action::ExportFeelExpression(feel_file_name, html_file_name) => {
@@ -102,8 +102,8 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_decision_table(&input_file_name, &dectab_file_name);
       Ok(())
     }
-    Action::TestDecisionTable(test_file_name, dectab_file_name) => {
-      test_decision_table(&test_file_name, &dectab_file_name);
+    Action::TestDecisionTable(test_file_name, dectab_file_name, summary_only) => {
+      test_decision_table(&test_file_name, &dectab_file_name, summary_only);
       Ok(())
     }
     Action::ExportDecisionTable(dectab_file_name, html_file_name) => {
@@ -122,8 +122,8 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_dmn_model(&dectab_file_name, &ctx_file_name, &invocable_name);
       Ok(())
     }
-    Action::TestDmnModel(test_file_name, dectab_file_name, invocable_name) => {
-      test_dmn_model(&test_file_name, &dectab_file_name, &invocable_name);
+    Action::TestDmnModel(test_file_name, dectab_file_name, invocable_name, summary_only) => {
+      test_dmn_model(&test_file_name, &dectab_file_name, &invocable_name, summary_only);
       Ok(())
     }
     Action::ExportDmnModel(dectab_file_name, html_file_name) => {
@@ -167,6 +167,7 @@ fn get_cli_action() -> Action {
     return Action::TestFeelExpression(
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("FEEL_FILE").unwrap_or("unknown.feel").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export FEEL expression subcommand
@@ -192,6 +193,7 @@ fn get_cli_action() -> Action {
     return Action::TestDecisionTable(
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DECTAB_FILE").unwrap_or("unknown.dtb").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export decision table subcommand
@@ -223,6 +225,7 @@ fn get_cli_action() -> Action {
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
       matches.value_of("invocable").unwrap_or("unknown").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export DMN model subcommand
@@ -289,7 +292,7 @@ fn evaluate_feel_expression(ctx_file_name: &str, feel_file_name: &str) {
 }
 
 /// Tests `FEEL` expression loaded from file and prints the test result to standard output.
-fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
+fn test_feel_expression(test_file_name: &str, feel_file_name: &str, summary_only: bool) {
   match std::fs::read_to_string(feel_file_name) {
     Ok(feel_file_content) => match std::fs::read_to_string(test_file_name) {
       Ok(test_file_content) => match dmntk_evaluator::evaluate_test_cases(&test_file_content) {
@@ -300,13 +303,13 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
             let scope = input_data.clone().into();
             match dmntk_feel_parser::parse_expression(&scope, &feel_file_content, false) {
               Ok(node) => match dmntk_evaluator::evaluate(&scope, &node) {
-                Ok(actual) => display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed),
+                Ok(actual) => display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only),
                 Err(reason) => println!("evaluating expression failed with reason: {}", reason),
               },
               Err(reason) => println!("parsing expression failed with reason: {}", reason),
             }
           }
-          display_test_summary(passed, failed);
+          display_test_summary(passed, failed, summary_only);
         }
         Err(reason) => println!("evaluation of test cases failed with reason: {}", reason),
       },
@@ -384,7 +387,7 @@ fn evaluate_decision_table(input_file_name: &str, dectab_file_name: &str) {
 }
 
 /// Tests decision table loaded from file.
-fn test_decision_table(test_file_name: &str, dectab_file_name: &str) {
+fn test_decision_table(test_file_name: &str, dectab_file_name: &str, summary_only: bool) {
   let dtb_file_content = match std::fs::read_to_string(dectab_file_name) {
     Ok(dtb_file_content) => dtb_file_content,
     Err(reason) => {
@@ -425,9 +428,9 @@ fn test_decision_table(test_file_name: &str, dectab_file_name: &str) {
       }
     };
     let actual = evaluator(&scope) as Value;
-    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
+    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only);
   }
-  display_test_summary(passed, failed);
+  display_test_summary(passed, failed, summary_only);
 }
 
 /// Exports decision table loaded from text file to HTML output file.
@@ -531,7 +534,7 @@ fn evaluate_dmn_model(input_file_name: &str, dmn_file_name: &str, invocable_name
 }
 
 /// Tests `DMN` model loaded from XML file.
-fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &str) {
+fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &str, summary_only: bool) {
   let dmn_file_content = match std::fs::read_to_string(dmn_file_name) {
     Ok(dmn_file_content) => dmn_file_content,
     Err(reason) => {
@@ -571,9 +574,9 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
   let mut failed = 0_usize;
   for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
     let actual = model_evaluator.evaluate_invocable(invocable_name, input_data);
-    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
+    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only);
   }
-  display_test_summary(passed, failed);
+  display_test_summary(passed, failed, summary_only);
 }
 
 /// Exports `DMN` model loaded from XML file to HTML output file.
@@ -602,22 +605,32 @@ fn generate_examples() {
 }
 
 /// Utility function for displaying test case result.
-fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize) {
+fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize, summary_only: bool) {
   if dmntk_evaluator::evaluate_equals(actual, expected) {
-    println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
     *passed += 1;
+    if !summary_only {
+      println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
+    }
   } else {
-    println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
-    println!("  expected: {}", expected);
-    println!("    actual: {}", actual);
     *failed += 1;
+    if !summary_only {
+      println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
+      println!("  expected: {}", expected);
+      println!("    actual: {}", actual);
+    }
   }
 }
 
 /// Utility function for displaying test summary.
-fn display_test_summary(passed: usize, failed: usize) {
+fn display_test_summary(passed: usize, failed: usize, summary_only: bool) {
   if failed > 0 {
-    println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+    if summary_only {
+      println!("test result: FAILED. {} passed; {} failed.", passed, failed);
+    } else {
+      println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+    }
+  } else if summary_only {
+    println!("test result: ok. {} passed; {} failed.", passed, failed);
   } else {
     println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
   }

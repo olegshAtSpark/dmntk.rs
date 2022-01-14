@@ -28,6 +28,10 @@ subcommands:
       about: Test FEEL Expression
       display_order: 10
       args:
+        - summary:
+            short: s
+            long: summary
+            help: Display only summary after completing all tests
         - TEST_FILE:
             help: File containing test cases for tested FEEL expression
             required: true
@@ -81,9 +85,13 @@ subcommands:
         - invocable:
             short: i
             long: invocable
-            help: Name of the invocable (decision, bkm, decision service) to be tested
+            help: Name of the invocable to be tested
             required: true
             takes_value: true
+        - summary:
+            short: s
+            long: summary
+            help: Display only summary after completing all tests
         - TEST_FILE:
             help: File containing test cases for tested DMN model
             required: true
@@ -128,6 +136,10 @@ subcommands:
       about: Test Decision Table
       display_order: 9
       args:
+        - summary:
+            short: s
+            long: summary
+            help: Display only summary after completing all tests
         - TEST_FILE:
             help: File containing test cases for tested decision table
             required: true
