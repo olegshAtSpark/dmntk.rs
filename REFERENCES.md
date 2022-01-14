@@ -8,5 +8,6 @@
 ---
 
 - [Contributor Covenant](https://www.contributor-covenant.org/)
-- [Keep a changelog](https://keepachangelog.com)
+- [Keep a Changelog](https://keepachangelog.com)
+- [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
