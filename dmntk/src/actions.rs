@@ -33,6 +33,7 @@
 use crate::examples::*;
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
 use clap::{load_yaml, App, AppSettings};
+use difference::Changeset;
 use dmntk_common::ascii_ctrl::*;
 use dmntk_common::{ascii256, Jsonify};
 use dmntk_feel::values::Value;
@@ -615,8 +616,14 @@ fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, p
     *failed += 1;
     if !summary_only {
       println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
-      println!("  expected: {}", expected);
-      println!("    actual: {}", actual);
+      println!("    {}expected{}: {}", ASCII_GREEN, ASCII_RESET, expected);
+      println!("      {}actual{}: {}", ASCII_RED, ASCII_RESET, actual);
+      println!(
+        "  {}difference{}: {}",
+        ASCII_MAGENTA,
+        ASCII_RESET,
+        Changeset::new(&expected.jsonify(), &actual.jsonify(), "")
+      );
     }
   }
 }
