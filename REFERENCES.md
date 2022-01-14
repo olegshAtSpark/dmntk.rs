@@ -5,6 +5,8 @@
 - [Combining DMN and Blockchain](https://www.businessprocessincubator.com/content/combining-dmn-and-blockchain/)
 - [Decision Management Community](https://dmcommunity.org/category/blockchain/)
 
+---
+
 - [Contributor Covenant](https://www.contributor-covenant.org/)
 - [Keep a changelog](https://keepachangelog.com)
 
