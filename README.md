@@ -18,7 +18,7 @@
 
 ## Project status
 
-Under refactoring, code review and testing before alpha release.
+Released pre-alpha version, check this [README](dmntk/README.md) for details.
 
 ## License
 
