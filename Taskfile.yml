@@ -32,6 +32,14 @@ tasks:
     cmds:
       - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
 
+  llvm-cov:
+    desc: Runs LLVM code coverage (does not work yet)
+    cmds:
+      - cmd: find . -name "*.profraw" -type f -delete
+      - cmd: cargo clean
+      - cmd: RUSTFLAGS="-Zinstrument-coverage -Zgcc-ld=lld" LLVM_PROFILE_FILE="coverage-%p-%9m.profraw" cargo test
+      - cmd: grcov . -s . --binary-path ./target/debug/ -t html --branch -o ./target/debug/coverage/
+
   doc:
     desc: Generates documentation
     cmds:
