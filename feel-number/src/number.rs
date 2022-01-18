@@ -529,6 +529,12 @@ mod tests {
   }
 
   #[test]
+  fn test_debug() {
+    assert_eq!("49", format!("{:?}", FeelNumber::new(49, 0)));
+    assert_eq!("1.23456789", format!("{:?}", FeelNumber::new(123456789, 8)));
+  }
+
+  #[test]
   fn test_abs() {
     assert_eq!("0", FeelNumber::new(0, 0).abs().to_string());
     assert_eq!("0", FeelNumber::new(-0, 0).abs().to_string());
@@ -603,6 +609,12 @@ mod tests {
     assert!(!(FeelNumber::from_i128(1) == FeelNumber::from_i128(0)));
     assert!((FeelNumber::new(123456, 2) == FeelNumber::new(123456, 2)));
     assert!(!(FeelNumber::new(123456, 2) == FeelNumber::new(-123456, 2)));
+    assert!((FeelNumber::from_i128(0) == 0_isize));
+    assert!((FeelNumber::from_i128(1) == 1_isize));
+    assert!((FeelNumber::from_i128(-1) == -1_isize));
+    assert!((0_isize == FeelNumber::from_i128(0)));
+    assert!((1_isize == FeelNumber::from_i128(1)));
+    assert!((-1_isize == FeelNumber::from_i128(-1)));
   }
 
   #[test]
@@ -624,6 +636,16 @@ mod tests {
   fn test_exp() {
     assert_eq!("2.718281828459045235360287471352662", FeelNumber::from_i128(1).exp().to_string());
     assert_eq!("54.59815003314423907811026120286088", FeelNumber::from_i128(4).exp().to_string());
+  }
+
+  #[test]
+  fn test_from_string() {
+    assert_eq!("0", FeelNumber::from_string("0").to_string());
+    assert_eq!("-0", FeelNumber::from_string("-0").to_string());
+    assert_eq!("1", FeelNumber::from_string("1").to_string());
+    assert_eq!("-1", FeelNumber::from_string("-1").to_string());
+    assert_eq!("1.23456789", FeelNumber::from_string("1.23456789").to_string());
+    assert_eq!("-1.23456789", FeelNumber::from_string("-1.23456789").to_string());
   }
 
   #[test]
@@ -755,6 +777,9 @@ mod tests {
   fn test_square() {
     assert_eq!("4", FeelNumber::from_i128(2).square().unwrap().to_string());
     assert_eq!("25", FeelNumber::from_i128(5).square().unwrap().to_string());
+    assert_eq!(None, FeelNumber::from_string("NaN").square());
+    assert_eq!(None, FeelNumber::from_string("Inf").square());
+    assert_eq!(None, FeelNumber::from_string("-Inf").square());
   }
 
   #[test]
