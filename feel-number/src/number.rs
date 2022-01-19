@@ -489,26 +489,23 @@ mod errors {
   use dmntk_common::DmntkError;
 
   /// `FEEL` number errors.
-  #[derive(Error, Debug)]
-  enum FeelNumberError {
-    #[error("invalid number literal '{0}'")]
-    InvalidNumberLiteral(String),
-    #[error("number conversion failed")]
-    NumberConversionFailed,
-  }
+  struct FeelNumberError(String);
 
   impl From<FeelNumberError> for DmntkError {
+    /// Converts into [DmntkError].
     fn from(e: FeelNumberError) -> Self {
-      DmntkError::new("FeelNumberError", &e.to_string())
+      DmntkError::new("FeelNumberError", &e.0)
     }
   }
 
+  /// Creates invalid number literal error.
   pub fn err_invalid_number_literal(s: &str) -> DmntkError {
-    FeelNumberError::InvalidNumberLiteral(s.to_string()).into()
+    FeelNumberError(format!("invalid number literal '{}'", s)).into()
   }
 
+  /// Creates number conversion error.
   pub fn err_number_conversion_failed() -> DmntkError {
-    FeelNumberError::NumberConversionFailed.into()
+    FeelNumberError("number conversion failed".to_string()).into()
   }
 }
 
@@ -835,6 +832,15 @@ mod tests {
 
   #[test]
   fn test_try_from_number_to_u64() {
+    assert!(u64::try_from(FeelNumber::from_i128(0)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_i128(2)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_usize(usize::MAX)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_usize(usize::MIN)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_isize(isize::MAX)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_isize(isize::MIN)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(i128::MAX)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(i128::MIN)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(-1)).is_err());
     assert_eq!(Some(300_000_000), FeelNumber::from_i128(300_000_000).to_u64());
   }
 }
