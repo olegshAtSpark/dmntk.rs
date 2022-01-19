@@ -30,9 +30,9 @@
  * limitations under the License.
  */
 
-//! Definition of common error type.
+//! Definition of the common error type.
 
-/// Common result type
+/// Common result type.
 pub type Result<T, E = DmntkError> = std::result::Result<T, E>;
 
 /// Common error definition used by all `DMNTK` components.
@@ -58,10 +58,28 @@ mod tests {
   use crate::errors::DmntkError;
 
   #[test]
-  fn test_new_dmntk_error() {
+  fn test_new() {
     assert_eq!(
       "ParserError: unexpected end of file",
       format!("{}", DmntkError::new("ParserError", "unexpected end of file"))
     );
+  }
+
+  #[test]
+  fn test_debug() {
+    assert_eq!(
+      r#"DmntkError("ParserError: unexpected end of file")"#,
+      format!("{:?}", DmntkError::new("ParserError", "unexpected end of file"))
+    );
+  }
+
+  #[test]
+  fn test_equal() {
+    assert!((DmntkError::new("ParserError", "unexpected end of file") == DmntkError::new("ParserError", "unexpected end of file")));
+  }
+
+  #[test]
+  fn test_not_equal() {
+    assert!((DmntkError::new("ParserError", "unexpected end of files") != DmntkError::new("ParserError", "unexpected end of file")));
   }
 }
