@@ -74,17 +74,17 @@ impl TryFrom<&str> for HRef {
 mod errors {
   use crate::DmntkError;
 
-  /// Errors reported by [HRef].
+  /// Errors reported by [HRef](crate::href::HRef).
   struct HRefError(String);
 
   impl From<HRefError> for DmntkError {
-    /// Converts `HRefError` into [DmntkError].
+    /// Converts into [DmntkError].
     fn from(e: HRefError) -> Self {
       DmntkError::new("HRefError", &e.0)
     }
   }
 
-  /// Creates an [InvalidReference](HRefError::InvalidReference) error.
+  /// Creates an invalid reference error.
   pub fn err_invalid_reference(s: &str) -> DmntkError {
     HRefError(format!("invalid reference '{}'", s)).into()
   }
@@ -140,6 +140,7 @@ mod tests {
   }
 
   #[test]
+  #[allow(clippy::redundant_clone)]
   fn test_href_clone() {
     let href_src = HRef::try_from("#_c03e81bf-a53d-47c5-9135-189935765fdc").unwrap();
     let href_dst = href_src.clone();
