@@ -19,23 +19,23 @@ tasks:
     cmds:
       - cmd: cargo clean
 
-  cov-open:
-    desc: Runs code coverage and opens it in browser
+  cov:
+    desc: Runs code coverage (grcov)
+    cmds:
+      - cmd: ./coverage.sh
+
+  tcov-open:
+    desc: Runs code coverage and opens it in browser (tarpaulin)
     cmds:
       - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
       - cmd: echo -e '#!/usr/bin/env bash\n\nfirefox ./target/tarpaulin/tarpaulin-report.html &' > ./target/tarpaulin/open-report.sh
       - cmd: chmod +x ./target/tarpaulin/open-report.sh
       - cmd: ./target/tarpaulin/open-report.sh
 
-  cov:
-    desc: Runs code coverage
+  tcov:
+    desc: Runs code coverage (tarpaulin)
     cmds:
       - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
-
-  cover:
-    desc: Runs code coverage
-    cmds:
-      - cmd: ./coverage.sh
 
   doc:
     desc: Generates documentation
