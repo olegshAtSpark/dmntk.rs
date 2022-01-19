@@ -67,46 +67,32 @@ impl TryFrom<&str> for HRef {
     if let Ok(uri) = URI::try_from(value) {
       return Ok(Self(uri.to_string()));
     }
-    Err(invalid_reference(value))
+    Err(err_invalid_reference(value))
   }
 }
 
-/// Definitions of errors reported by module `href`.
 mod errors {
   use crate::DmntkError;
 
-  /// HRef errors.
-  #[derive(Debug, PartialEq)]
-  pub enum HRefError {
-    /// Error reported when the specified text is not a valid `FEEL` type name.
-    InvalidReference(String),
-  }
+  /// Errors reported by [HRef].
+  struct HRefError(String);
 
   impl From<HRefError> for DmntkError {
     /// Converts `HRefError` into [DmntkError].
     fn from(e: HRefError) -> Self {
-      DmntkError::new("HRefError", &e.to_string())
-    }
-  }
-
-  impl std::fmt::Display for HRefError {
-    /// Implements [Display](std::fmt::Display) trait for [HRefErrors](HRefError).
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      match self {
-        HRefError::InvalidReference(s) => write!(f, "invalid reference): `{}`", s),
-      }
+      DmntkError::new("HRefError", &e.0)
     }
   }
 
   /// Creates an [InvalidReference](HRefError::InvalidReference) error.
-  pub fn invalid_reference(s: &str) -> DmntkError {
-    HRefError::InvalidReference(s.to_owned()).into()
+  pub fn err_invalid_reference(s: &str) -> DmntkError {
+    HRefError(format!("invalid reference '{}'", s)).into()
   }
 }
 
 #[cfg(test)]
 mod tests {
-  use crate::HRef;
+  use super::*;
   use std::convert::TryFrom;
 
   fn assert_href(expected: &str, uri: &str) {
@@ -116,7 +102,7 @@ mod tests {
   }
 
   #[test]
-  fn valid_references() {
+  fn test_valid_references() {
     assert_href("", "");
     assert_href("ref", "#ref");
     assert_href(":alfa", ":alfa");
@@ -127,21 +113,37 @@ mod tests {
   }
 
   #[test]
-  fn invalid_references() {
+  fn test_invalid_references() {
     assert!(HRef::try_from("##").is_err());
+    assert_eq!("HRefError: invalid reference '##'", HRef::try_from("##").err().unwrap().to_string());
   }
 
   #[test]
-  fn href_into_str() {
+  fn test_href_into_str() {
     let href = &HRef::try_from("#_c03e81bf-a53d-47c5-9135-189935765fdc").unwrap();
     let actual: &str = href.into();
     assert_eq!("_c03e81bf-a53d-47c5-9135-189935765fdc", actual);
   }
 
   #[test]
-  fn href_into_string() {
+  fn test_href_into_string() {
     let href = &HRef::try_from("#_c03e81bf-a53d-47c5-9135-189935765fdc").unwrap();
     let actual: String = href.into();
-    assert_eq!("_c03e81bf-a53d-47c5-9135-189935765fdc".to_string(), actual);
+    assert_eq!("_c03e81bf-a53d-47c5-9135-189935765fdc", actual);
+  }
+
+  #[test]
+  fn test_href_debug() {
+    let href = &HRef::try_from("#_c03e81bf-a53d-47c5-9135-189935765fdc").unwrap();
+    let actual: String = format!("{:?}", href);
+    assert_eq!(r#"HRef("_c03e81bf-a53d-47c5-9135-189935765fdc")"#, actual);
+  }
+
+  #[test]
+  fn test_href_clone() {
+    let href_src = HRef::try_from("#_c03e81bf-a53d-47c5-9135-189935765fdc").unwrap();
+    let href_dst = href_src.clone();
+    let actual: String = (&href_dst).into();
+    assert_eq!("_c03e81bf-a53d-47c5-9135-189935765fdc", actual);
   }
 }

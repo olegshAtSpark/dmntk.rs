@@ -32,6 +32,11 @@ tasks:
     cmds:
       - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
 
+  cover:
+    desc: Runs code coverage
+    cmds:
+      - cmd: ./coverage.sh
+
   doc:
     desc: Generates documentation
     cmds:
