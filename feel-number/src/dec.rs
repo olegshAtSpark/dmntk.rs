@@ -743,4 +743,35 @@ mod tests {
     assert_eq!("0.8", dec_to_string(&dec_fract(&dec_from_string("1.8"))));
     assert_eq!("0.9", dec_to_string(&dec_fract(&dec_from_string("1.9"))));
   }
+
+  #[test]
+  fn test_dec_quad_debug() {
+    let dq = dec_from_string("1");
+    assert_eq!(r#"DecQuad([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 34])"#, format!("{:?}", dq));
+  }
+
+  #[test]
+  #[allow(clippy::clone_on_copy)]
+  fn test_dec_quad_clone() {
+    let dq_src = dec_from_string("123");
+    let dq_dst = dq_src.clone();
+    assert_eq!("123", dec_to_string(&dq_dst));
+  }
+
+  #[test]
+  #[allow(clippy::clone_on_copy)]
+  fn test_dec_number_clone() {
+    let q = dec_from_string("123.123000");
+    let mut qr = DecQuad::default();
+    let mut n = DecNumber::default();
+    let mut nr = DecNumber::default();
+    let n_cloned;
+    unsafe {
+      decimal128ToNumber(&q, &mut n);
+      decNumberReduce(&mut nr, &n, &mut DEFAULT_CONTEXT.clone());
+      n_cloned = nr.clone();
+      decimal128FromNumber(&mut qr, &n_cloned, &mut DEFAULT_CONTEXT.clone());
+    }
+    assert_eq!("123.123", dec_to_string(&qr));
+  }
 }
