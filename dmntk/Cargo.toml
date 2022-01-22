@@ -11,7 +11,7 @@ edition = "2021"
 [dependencies]
 actix-web = "3.3.2"
 base64 = "0.13.0"
-clap = { version = "2.33.3", features = ["yaml"] }
+clap = { version = "3.0.10", features = ["cargo"] }
 difference = "2.0.0"
 dmntk-common = { path = "../common" }
 dmntk-evaluator = { path = "../evaluator" }

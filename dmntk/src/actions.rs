@@ -32,7 +32,7 @@
 
 use crate::examples::*;
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
-use clap::{load_yaml, App, AppSettings};
+use clap::{arg, App, ArgMatches};
 use difference::Changeset;
 use dmntk_common::ascii_ctrl::*;
 use dmntk_common::{ascii256, Jsonify};
@@ -140,15 +140,63 @@ pub async fn do_action() -> std::io::Result<()> {
   }
 }
 
+/// Parses CLI argument matches.
+#[rustfmt::skip]
+fn get_matches() -> ArgMatches {
+  App::new("dmntk").version(DMNTK_VERSION).about(DMNTK_DESCRIPTION)
+    .subcommand(App::new("pfe").about("Parse FEEL Expression").display_order(7)
+      .arg(arg!(<CONTEXT_FILE>).help("File containing context for parsed FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be parsed").required(true).index(2)))
+    .subcommand(App::new("efe").about("Evaluate FEEL Expression").display_order(4)
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tfe").about("Test FEEL Expression").display_order(10)
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(false).display_order(1))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be tested").required(true).index(2)))
+    .subcommand(App::new("xfe").about("eXport FEEL Expression").display_order(13)
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be exported to HTML").required(true).index(1))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+    .subcommand(App::new("pdm").about("Parse DMN Model").display_order(5)
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be parsed").required(true).index(1)))
+    .subcommand(App::new("edm").about("Evaluate DMN Model").display_order(2)
+      .arg(arg!(-i --invocable).help("Name of the invocable (decision, bkm, decision service) to be evaluated").required(true).takes_value(true).display_order(1))
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated DMN model").required(true).index(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tdm").about("Test DMN Model").display_order(8)
+      .arg(arg!(-i --invocable).help("Name of the invocable to be tested").required(true).takes_value(true).display_order(1))
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(true).display_order(2))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested DMN model").required(true).index(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be tested").required(true).index(2)))
+    .subcommand(App::new("xdm").about("eXport DMN Model").display_order(11)
+      .arg(arg!(<FEEL_FILE>).help("File containing DMN model to be exported to HTML").required(true).index(1))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+    .subcommand(App::new("pdt").about("Parse Decision Table").display_order(6)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be parsed").required(true).index(1)))
+    .subcommand(App::new("edt").about("Evaluate Decision Table").display_order(3)
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated decision table").required(true).index(1))
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tdt").about("Test Decision Table").display_order(9)
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(true).display_order(2))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested decision table").required(true).index(1))
+      .arg(arg!(<DECTAB_FILE>).help("File containing FEEL expression to be tested").required(true).index(2)))
+    .subcommand(App::new("xdt").about("eXport Decision Table").display_order(12)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be exported to HTML").required(true).index(1))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+    .subcommand(App::new("rdt").about("Recognize Decision Table").display_order(14)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be recognized").required(true).index(1)))
+    .subcommand(App::new("srv").about("Run DMNTK as a service").display_order(1)
+      .arg(arg!(-H --host).help("Host name").takes_value(true).display_order(1))
+      .arg(arg!(-P --port).help("Port number").takes_value(true).display_order(2))
+      .arg(arg!(-D --dir).help("Directory where DMN files are searched").takes_value(true).display_order(3)))
+    .subcommand(App::new("exs").about("Generate examples in current directory").display_order(15))
+    .get_matches()
+}
+
 /// Checks the list of arguments passed from the command line
 /// and returns an action related to valid argument.
 fn get_cli_action() -> Action {
-  let yaml = load_yaml!("cli.yml");
-  let matches = App::from_yaml(yaml)
-    .version(DMNTK_VERSION)
-    .about(DMNTK_DESCRIPTION)
-    .setting(AppSettings::SubcommandRequiredElseHelp)
-    .get_matches();
+  let matches = get_matches();
   // parse FEEL expression subcommand
   if let Some(matches) = matches.subcommand_matches("pfe") {
     return Action::ParseFeelExpression(
@@ -248,6 +296,10 @@ fn get_cli_action() -> Action {
   if let Some(_matches) = matches.subcommand_matches("exs") {
     return Action::GenerateExamples;
   }
+  println!("dmntk {}", DMNTK_VERSION);
+  println!("{}", DMNTK_DESCRIPTION);
+  println!("dmntk: missing subcommand");
+  println!("Try 'dmntk --help' for more information.");
   Action::DoNothing
 }
 
