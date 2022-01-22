@@ -41,3 +41,7 @@ grcov . --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --
 
 # generate coverage report
 genhtml -o ./target/coverage ./target/lcov/lcov.info
+
+echo ""
+echo "open coverage report: file://$WORKING_DIRECTORY/target/coverage/index.html"
+echo ""
