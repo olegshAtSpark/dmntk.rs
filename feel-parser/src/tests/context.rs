@@ -542,3 +542,31 @@ fn _0017() {
     false,
   );
 }
+
+#[test]
+fn _0018() {
+  let scope = scope!();
+  accept(
+    &scope,
+    StartContext,
+    r#"{person: {name: "John", age: 27}}"#,
+    r#"
+       Context
+       └─ ContextEntry
+          ├─ ContextEntryKey
+          │  └─ `person`
+          └─ Context
+             ├─ ContextEntry
+             │  ├─ ContextEntryKey
+             │  │  └─ `name`
+             │  └─ String
+             │     └─ `John`
+             └─ ContextEntry
+                ├─ ContextEntryKey
+                │  └─ `age`
+                └─ Numeric
+                   └─ `27.`
+    "#,
+    false,
+  );
+}

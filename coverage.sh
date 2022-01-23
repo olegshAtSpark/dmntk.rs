@@ -37,10 +37,10 @@ mkdir ./target/lcov
 mkdir ./target/coverage
 
 # generate coverage info
-grcov . -q --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --ignore "*chrono-tz*" -o ./target/lcov/lcov.info
+grcov . --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --ignore "*chrono-tz*" -o ./target/lcov/lcov.info
 
 # generate coverage report
-genhtml -o ./target/coverage ./target/lcov/lcov.info
+genhtml -q -o ./target/coverage ./target/lcov/lcov.info
 
 echo ""
 echo "open coverage report: file://$WORKING_DIRECTORY/target/coverage/index.html"
