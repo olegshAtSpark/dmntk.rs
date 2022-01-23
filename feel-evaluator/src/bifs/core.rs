@@ -264,13 +264,13 @@ pub fn decimal(number_value: &Value, scale_value: &Value) -> Value {
       if (-6111..6176).contains(scale) {
         Value::Number((*number).round(scale))
       } else {
-        value_null!("decimal: scale is out of range")
+        value_null!("[core::decimal] scale is out of range: {}", scale)
       }
     } else {
-      value_null!("decimal: 1")
+      value_null!("[core::decimal] scale value is not a number: {}", scale_value)
     }
   } else {
-    value_null!("decimal: 2")
+    value_null!("[core::decimal] number value is not a number: {}", number_value)
   }
 }
 

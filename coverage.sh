@@ -38,7 +38,7 @@ fi
 mkdir ./target/lcov
 mkdir ./target/coverage
 # generate coverage info
-grcov . --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --ignore "*chrono-tz*" -o ./target/lcov/lcov.info
+grcov . --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --ignore "*chrono-tz*" --ignore "*tests*" -o ./target/lcov/lcov.info
 # generate coverage report
 genhtml -q -o ./target/coverage ./target/lcov/lcov.info
 # display final message

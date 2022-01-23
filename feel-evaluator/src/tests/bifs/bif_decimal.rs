@@ -65,11 +65,33 @@ fn _0005() {
 #[test]
 fn _0006() {
   let scope = &te_scope("{}");
-  te_null(false, scope, "decimal(1/3, 6177)", "decimal: scale is out of range");
+  te_null(false, scope, "decimal(1/3, 6177)", "[core::decimal] scale is out of range: 6177");
 }
 
 #[test]
 fn _0007() {
   let scope = &te_scope("{}");
-  te_null(false, scope, "decimal(1/3, -6112)", "decimal: scale is out of range");
+  te_null(false, scope, "decimal(1/3, -6112)", "[core::decimal] scale is out of range: -6112");
+}
+
+#[test]
+fn _0008() {
+  let scope = &te_scope("{}");
+  te_null(
+    false,
+    scope,
+    r#"decimal(1/3, "scale")"#,
+    r#"[core::decimal] scale value is not a number: "scale""#,
+  );
+}
+
+#[test]
+fn _0009() {
+  let scope = &te_scope("{}");
+  te_null(
+    false,
+    scope,
+    r#"decimal("number", 6)"#,
+    r#"[core::decimal] number value is not a number: "number""#,
+  );
 }
