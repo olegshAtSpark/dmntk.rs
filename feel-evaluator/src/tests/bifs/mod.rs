@@ -54,6 +54,7 @@ mod bif_get_entries;
 mod bif_get_value;
 mod bif_index_of;
 mod bif_insert_before;
+mod bif_list_contains;
 mod bif_log;
 mod bif_lower_case;
 mod bif_reverse;

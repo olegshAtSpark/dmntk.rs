@@ -411,8 +411,16 @@ fn bif_is(_parameters: &NamedParameters) -> Value {
   value_null!("unimplemented bif_is")
 }
 
-fn bif_list_contains(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_list_contains")
+fn bif_list_contains(parameters: &NamedParameters) -> Value {
+  if let Some((list_value, _)) = get_param(parameters, &NAME_LIST) {
+    if let Some((match_value, _)) = get_param(parameters, &NAME_MATCH) {
+      core::list_contains(list_value, match_value)
+    } else {
+      parameter_not_found!(&NAME_MATCH)
+    }
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_log(parameters: &NamedParameters) -> Value {

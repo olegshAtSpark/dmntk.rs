@@ -460,7 +460,7 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> 
   value_null!("index is out of range")
 }
 
-/// ???
+/// Returns `true` when the list contain the specified element.
 pub fn list_contains(list: &Value, element: &Value) -> Value {
   if let Value::List(items) = list {
     for item in items.as_vec() {
@@ -468,8 +468,10 @@ pub fn list_contains(list: &Value, element: &Value) -> Value {
         return VALUE_TRUE;
       }
     }
+    VALUE_FALSE
+  } else {
+    invalid_argument_type!("list contains", "list", list.type_of())
   }
-  VALUE_FALSE
 }
 
 /// Returns the natural logarithm (base **e**) of the number parameter.
