@@ -33,29 +33,6 @@
 use super::*;
 
 #[test]
-fn test_date() {
-  let scope = &te_scope("{}");
-  te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
-  te_date(false, scope, r#"date(2012,12,25)"#, 2012, 12, 25);
-  te_date(false, scope, r#"date("262143-12-31")"#, 262143, 12, 31);
-  te_date(false, scope, r#"date("999999999-12-31")"#, 999_999_999, 12, 31);
-  te_date(false, scope, r#"date(999999999,12,31)"#, 999_999_999, 12, 31);
-  te_date(false, scope, r#"date("-262144-01-01")"#, -262144, 1, 1);
-  te_date(false, scope, r#"date("-999999999-01-01")"#, -999_999_999, 1, 1);
-  te_date(false, scope, r#"date(-999999999,01,01)"#, -999_999_999, 1, 1);
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18"))"#, 2012, 12, 25);
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18Z"))"#, 2012, 12, 25);
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18z"))"#, 2012, 12, 25);
-  te_bool(false, scope, r#"date("2012-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, true);
-  te_bool(false, scope, r#"date("2000-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
-  te_bool(false, scope, r#"date("2020-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
-  te_bool(false, scope, r#"date("2012-12-31") in (date("2012-12-25")..date("2013-02-14"))"#, true);
-  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
-  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
-  te_null(false, scope, r#"date("2017,13,31")"#, "date_1 1");
-}
-
-#[test]
 fn test_duration() {
   let scope = &te_scope("{}");
   te_years_and_months_duration(false, scope, r#"duration("P1Y")"#, 1, 0);

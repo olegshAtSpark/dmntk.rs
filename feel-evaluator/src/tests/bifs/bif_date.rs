@@ -31,10 +31,125 @@
  */
 
 use super::super::*;
+use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  let scope = &te_scope(r#"{}"#);
+  let scope = &scope!();
+  te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0002() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0003() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(2012,12,25)"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0004() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date("262143-12-31")"#, 262143, 12, 31);
+}
+
+#[test]
+fn _0005() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date("999999999-12-31")"#, 999_999_999, 12, 31);
+}
+
+#[test]
+fn _0006() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(999999999,12,31)"#, 999_999_999, 12, 31);
+}
+
+#[test]
+fn _0007() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date("-262144-01-01")"#, -262144, 1, 1);
+}
+
+#[test]
+fn _0008() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date("-999999999-01-01")"#, -999_999_999, 1, 1);
+}
+
+#[test]
+fn _0009() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(-999999999,01,01)"#, -999_999_999, 1, 1);
+}
+
+#[test]
+fn _0010() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18"))"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0011() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18Z"))"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0012() {
+  let scope = &scope!();
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18z"))"#, 2012, 12, 25);
+}
+
+#[test]
+fn _0013() {
+  let scope = &scope!();
+  te_bool(false, scope, r#"date("2012-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, true);
+}
+
+#[test]
+fn _0014() {
+  let scope = &scope!();
+  te_bool(false, scope, r#"date("2000-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
+}
+
+#[test]
+fn _0015() {
+  let scope = &scope!();
+  te_bool(false, scope, r#"date("2020-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
+}
+
+#[test]
+fn _0016() {
+  let scope = &scope!();
+  te_bool(false, scope, r#"date("2012-12-31") in (date("2012-12-25")..date("2013-02-14"))"#, true);
+}
+
+#[test]
+fn _0017() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
+}
+
+#[test]
+fn _0018() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
+}
+
+#[test]
+fn _0019() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date("2017,13,31")"#, "date_1 1");
+}
+
+#[test]
+fn _0020() {
+  let scope = &scope!();
   te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
   te_number(false, scope, r#"date("2012-12-25").day"#, 25, 0);
   te_number(false, scope, r#"date("2012-12-25").month"#, 12, 0);
@@ -42,10 +157,30 @@ fn _0001() {
 }
 
 #[test]
-fn _0002() {
+fn _0021() {
   let scope = &te_scope(r#"{fromString: "2012-12-25"}"#);
   te_date(false, scope, r#"date(fromString)"#, 2012, 12, 25);
   te_number(false, scope, r#"date(fromString).day"#, 25, 0);
   te_number(false, scope, r#"date(fromString).month"#, 12, 0);
   te_number(false, scope, r#"date(fromString).year"#, 2012, 0);
+}
+
+#[test]
+fn _0022() {
+  te_null(
+    false,
+    &scope!(),
+    r#"date(10)"#,
+    r#"[core::date] invalid argument type, expected string or date and time, actual type is number"#,
+  );
+}
+
+#[test]
+fn _0023() {
+  te_null(
+    false,
+    &scope!(),
+    r#"date(date("2012-12-25"))"#,
+    r#"[core::date] invalid argument type, expected string or date and time, actual type is date"#,
+  );
 }

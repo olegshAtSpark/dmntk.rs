@@ -211,7 +211,7 @@ pub fn count(list: &Value) -> Value {
   }
 }
 
-/// ???
+/// Returns date converted from string or date and time.
 pub fn date_1(value: &Value) -> Value {
   match value {
     Value::String(text) => {
@@ -221,9 +221,8 @@ pub fn date_1(value: &Value) -> Value {
         value_null!("date_1 1")
       }
     }
-    Value::Date(date) => Value::Date(date.clone()),
     Value::DateTime(date_time) => Value::Date(date_time.date()),
-    _ => value_null!("date_1 2: {}", value),
+    _ => invalid_argument_type!("date", "string or date and time", value.type_of()),
   }
 }
 
