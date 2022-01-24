@@ -31,21 +31,112 @@
  */
 
 use super::super::*;
+use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "any(1)", "");
+  let scope = scope!();
+  te_bool(false, &scope, "any(true)", true);
 }
 
 #[test]
 fn _0002() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "any(true)", true);
+  let scope = scope!();
+  te_bool(false, &scope, "any(false)", false);
 }
 
 #[test]
 fn _0003() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "any([123,false])", "");
+  let scope = scope!();
+  te_bool(false, &scope, "any(true,true,true)", true);
+}
+
+#[test]
+fn _0004() {
+  let scope = scope!();
+  te_bool(false, &scope, "any(false,false,false)", false);
+}
+
+#[test]
+fn _0005() {
+  let scope = scope!();
+  te_bool(false, &scope, "any(false,true,false,false)", true);
+}
+
+#[test]
+fn _0006() {
+  let scope = scope!();
+  te_bool(false, &scope, "any(false,true,false,true)", true);
+}
+
+#[test]
+fn _0007() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([true])", true);
+}
+
+#[test]
+fn _0008() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([false])", false);
+}
+
+#[test]
+fn _0009() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([true,true,true])", true);
+}
+
+#[test]
+fn _0010() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([false,false,false])", false);
+}
+
+#[test]
+fn _0011() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([false,true,false,false])", true);
+}
+
+#[test]
+fn _0012() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([false,true,false,true])", true);
+}
+
+#[test]
+fn _0013() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([false,null,true])", true);
+}
+
+#[test]
+fn _0014() {
+  let scope = scope!();
+  te_bool(false, &scope, "any([])", false);
+}
+
+#[test]
+fn _0015() {
+  let scope = scope!();
+  te_null(false, &scope, "any(1)", "");
+}
+
+#[test]
+fn _0016() {
+  let scope = scope!();
+  te_null(false, &scope, "any(1,2,3)", "");
+}
+
+#[test]
+fn _0017() {
+  let scope = scope!();
+  te_null(false, &scope, "any([123,false])", "");
+}
+
+#[test]
+fn _0018() {
+  let scope = scope!();
+  te_null(false, &scope, "any([true,8,false])", "");
 }

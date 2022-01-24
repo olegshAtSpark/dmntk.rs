@@ -68,7 +68,7 @@ pub fn all(values: &[Value]) -> Value {
   VALUE_TRUE
 }
 
-/// ???
+/// Returns `true` if any item is `true`, `false` if empty or all items are `false`, else `null`.
 pub fn any(values: &[Value]) -> Value {
   if values.is_empty() {
     return VALUE_FALSE;
@@ -76,12 +76,14 @@ pub fn any(values: &[Value]) -> Value {
   let mut has_true = false;
   let mut all_false = true;
   for value in values {
-    if let Value::Boolean(v) = value {
-      if *v {
-        has_true = true;
+    match value {
+      Value::Boolean(v) => {
+        if *v {
+          has_true = true;
+        }
       }
-    } else {
-      all_false = false;
+      Value::Null(_) => {}
+      _ => all_false = false,
     }
   }
   match (has_true, all_false) {
