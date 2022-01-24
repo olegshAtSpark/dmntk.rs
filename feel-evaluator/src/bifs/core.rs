@@ -413,7 +413,7 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
     if let Value::String(entry_key) = key {
       let name = Name::from(entry_key.to_owned());
       if let Some(entry_value) = ctx.get_entry(&name) {
-        return entry_value.clone();
+        entry_value.clone()
       } else {
         value_null!()
       }
