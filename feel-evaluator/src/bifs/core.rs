@@ -943,10 +943,10 @@ pub fn starts_with(input_string_value: &Value, match_string_value: &Value) -> Va
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.starts_with(match_string))
     } else {
-      value_null!("starts_with")
+      invalid_argument_type!("starts with", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("starts_with")
+    invalid_argument_type!("starts with", "string", input_string_value.type_of())
   }
 }
 

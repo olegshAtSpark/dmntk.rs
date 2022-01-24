@@ -56,5 +56,6 @@ mod bif_log;
 mod bif_lower_case;
 mod bif_reverse;
 mod bif_sort;
+mod bif_starts_with;
 mod bif_string;
 mod bif_time;
