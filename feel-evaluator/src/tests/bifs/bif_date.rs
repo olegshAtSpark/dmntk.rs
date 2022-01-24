@@ -184,3 +184,53 @@ fn _0023() {
     r#"[core::date] invalid argument type, expected string or date and time, actual type is date"#,
   );
 }
+
+#[test]
+fn _0024() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date(2020,2,30)"#, r#"[core::date] invalid date '2020-02-30'"#);
+}
+
+#[test]
+fn _0025() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(384756328456345,790485703985734,45490654698475)"#,
+    r#"[core::date] invalid date '384756328456345-790485703985734-45490654698475'"#,
+  );
+}
+
+#[test]
+fn _0026() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(true,2,30)"#,
+    r#"[core::date] invalid argument type, expected number (year), actual type is boolean"#,
+  );
+}
+
+#[test]
+fn _0027() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(2020,"02",30)"#,
+    r#"[core::date] invalid argument type, expected number (month), actual type is string"#,
+  );
+}
+
+#[test]
+fn _0028() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(2020,2,null)"#,
+    r#"[core::date] invalid argument type, expected number (day), actual type is Null"#,
+  );
+}

@@ -226,7 +226,7 @@ pub fn date_1(value: &Value) -> Value {
   }
 }
 
-/// ???
+/// Returns date created from year, month and day.
 pub fn date_3(year_value: &Value, month_value: &Value, day_value: &Value) -> Value {
   if let Value::Number(year) = year_value {
     if let Value::Number(month) = month_value {
@@ -234,16 +234,21 @@ pub fn date_3(year_value: &Value, month_value: &Value, day_value: &Value) -> Val
         if let Ok(date) = FeelDate::try_from((*year, *month, *day)) {
           Value::Date(date)
         } else {
-          value_null!("date_3 1")
+          value_null!(
+            "[core::date] invalid date '{:04}-{:02}-{:02}'",
+            year.to_u64().unwrap_or(0),
+            month.to_u64().unwrap_or(0),
+            day.to_u64().unwrap_or(0)
+          )
         }
       } else {
-        value_null!("date_3 2")
+        invalid_argument_type!("date", "number (day)", day_value.type_of())
       }
     } else {
-      value_null!("date_3 3")
+      invalid_argument_type!("date", "number (month)", month_value.type_of())
     }
   } else {
-    value_null!("date_3 4")
+    invalid_argument_type!("date", "number (year)", year_value.type_of())
   }
 }
 

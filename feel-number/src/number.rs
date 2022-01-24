@@ -447,6 +447,7 @@ impl From<usize> for FeelNumber {
 from_feel_number_into!(isize);
 from_feel_number_into!(usize);
 from_feel_number_into!(u64);
+from_feel_number_into!(u32);
 
 /// Converts a string in scientific notation into digits without exponent.
 fn scientific_to_plain(s: String) -> String {
