@@ -176,3 +176,9 @@ fn _0024() {
   let scope = scope!();
   te_null(false, &scope, "all()", r#"expected 1+ parameters, actual number of parameters is 0"#);
 }
+
+#[test]
+fn _0025() {
+  let scope = scope!();
+  te_null(false, &scope, "all(l: [true,true,true])", r#"parameter 'list' not found"#);
+}
