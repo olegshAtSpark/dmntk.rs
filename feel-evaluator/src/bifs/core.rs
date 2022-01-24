@@ -1279,41 +1279,9 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
 
 #[cfg(test)]
 mod tests {
-  use crate::bifs::core;
   use crate::bifs::core::substring;
   use dmntk_feel::values::Value;
-  use dmntk_feel::{value_null, value_number, FeelDaysAndTimeDuration, FeelNumber, FeelYearsAndMonthsDuration};
-
-  #[test]
-  fn bif_abs() {
-    let expected = value_number!(1201, 2);
-    assert_eq!(expected, core::abs(&value_number!(1201, 2)));
-    assert_eq!(expected, core::abs(&value_number!(-1201, 2)));
-    assert_eq!(
-      Value::Null(Some(
-        "invalid argument type, expected number, actual type is days and time duration".to_string()
-      )),
-      core::abs(&Value::DaysAndTimeDuration(FeelDaysAndTimeDuration::default().second(2).nano(5).build()))
-    );
-    assert_eq!(
-      Value::Null(Some(
-        "invalid argument type, expected number, actual type is years and months duration".to_string()
-      )),
-      core::abs(&Value::YearsAndMonthsDuration(FeelYearsAndMonthsDuration::new_m(-18)))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is Null".to_string())),
-      core::abs(&Value::Null(None))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is boolean".to_string())),
-      core::abs(&Value::Boolean(true))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is string".to_string())),
-      core::abs(&Value::String("text".to_string()))
-    );
-  }
+  use dmntk_feel::{value_null, value_number, FeelNumber};
 
   #[test]
   fn bif_substring() {
