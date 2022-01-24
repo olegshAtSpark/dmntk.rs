@@ -496,7 +496,7 @@ pub fn lower_case(input_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     Value::String(input_string.to_lowercase().trim().to_string())
   } else {
-    value_null!("lower_case")
+    invalid_argument_type!("lower case", "string", input_string_value.type_of())
   }
 }
 
