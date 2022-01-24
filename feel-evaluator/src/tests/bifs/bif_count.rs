@@ -44,22 +44,22 @@ fn _0002() {
 }
 
 #[test]
-fn _00021() {
+fn _0003() {
   te_number(false, &scope!(), r#"count(list: ["A"])"#, 1, 0);
 }
 
 #[test]
-fn _0003() {
+fn _0004() {
   te_number(false, &scope!(), r#"count(["A","B"])"#, 2, 0);
 }
 
 #[test]
-fn _0004() {
+fn _0005() {
   te_number(false, &scope!(), r#"count(["A",1,true,date("2021-01-24"),null])"#, 5, 0);
 }
 
 #[test]
-fn _0005() {
+fn _0006() {
   te_null(
     false,
     &scope!(),
@@ -69,12 +69,12 @@ fn _0005() {
 }
 
 #[test]
-fn _0006() {
+fn _0007() {
   te_null(false, &scope!(), r#"count()"#, r#"expected 1 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
-fn _0007() {
+fn _0008() {
   te_null(
     false,
     &scope!(),
@@ -84,6 +84,6 @@ fn _0007() {
 }
 
 #[test]
-fn _0008() {
+fn _0009() {
   te_null(false, &scope!(), r#"count(l: [1,2,3])"#, r#"parameter 'list' not found"#);
 }
