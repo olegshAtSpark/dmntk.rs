@@ -202,12 +202,12 @@ pub fn contains(input_string_value: &Value, match_string_value: &Value) -> Value
   }
 }
 
-/// ???
+/// Returns size of list, or zero if list is empty.
 pub fn count(list: &Value) -> Value {
   if let Value::List(items) = list {
     Value::Number(items.as_vec().len().into())
   } else {
-    value_null!("parameter is not a list")
+    invalid_argument_type!("count", "list", list.type_of())
   }
 }
 

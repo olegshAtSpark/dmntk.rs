@@ -30,27 +30,35 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_even;
-mod bif_exp;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_insert_before;
-mod bif_log;
-mod bif_lower_case;
-mod bif_sort;
-mod bif_string;
-mod bif_time;
+#[test]
+fn _0001() {
+  te_number(false, &scope!(), r#"count([])"#, 0, 0);
+}
+
+#[test]
+fn _0002() {
+  te_number(false, &scope!(), r#"count(["A"])"#, 1, 0);
+}
+
+#[test]
+fn _0003() {
+  te_number(false, &scope!(), r#"count(["A","B"])"#, 2, 0);
+}
+
+#[test]
+fn _0004() {
+  te_number(false, &scope!(), r#"count(["A",1,true,date("2021-01-24"),null])"#, 5, 0);
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"count(1)"#,
+    r#"[core::count] invalid argument type, expected list, actual type is number"#,
+  );
+}
