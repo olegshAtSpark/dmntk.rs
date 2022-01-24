@@ -42,12 +42,24 @@ use std::borrow::Borrow;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 
+/// Builds null value with invalid argument type message.
+macro_rules! invalid_argument_type {
+  ($function:literal, $expected:literal, $actual:expr) => {{
+    value_null!(
+      "[core::{}] invalid argument type, expected {}, actual type is {}",
+      $function,
+      $expected,
+      $actual
+    )
+  }};
+}
+
 /// Returns the absolute value of the argument.
 pub fn abs(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.abs())
   } else {
-    value_null!("invalid argument type, expected number, actual type is {}", value.type_of())
+    invalid_argument_type!("abs", "number", value.type_of())
   }
 }
 
@@ -112,7 +124,7 @@ pub fn append(list: &Value, values: &[Value]) -> Value {
     }
     return Value::List(appended);
   }
-  value_null!("[core::append] invalid argument type, expected list, actual type is {}", list.type_of())
+  invalid_argument_type!("append", "list", list.type_of())
 }
 
 ///
@@ -158,7 +170,7 @@ pub fn ceiling(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.ceiling())
   } else {
-    value_null!("[core::ceiling] invalid argument type, expected number, actual type is {}", value.type_of())
+    invalid_argument_type!("ceiling", "number", value.type_of())
   }
 }
 
@@ -171,7 +183,7 @@ pub fn concatenate(values: &[Value]) -> Value {
         concatenated.push(item.clone());
       }
     } else {
-      return value_null!("[core::concatenate] invalid argument type, expected list, actual type is {}", value.type_of());
+      return invalid_argument_type!("concatenate", "list", value.type_of());
     }
   }
   Value::List(Values::new(concatenated))
@@ -183,10 +195,10 @@ pub fn contains(input_string_value: &Value, match_string_value: &Value) -> Value
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.contains(match_string))
     } else {
-      value_null!("contains")
+      invalid_argument_type!("contains", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("contains")
+    invalid_argument_type!("contains", "string", input_string_value.type_of())
   }
 }
 

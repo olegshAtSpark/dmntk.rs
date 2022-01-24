@@ -33,16 +33,6 @@
 use super::*;
 
 #[test]
-fn test_abs() {
-  let scope = &te_scope("{ Order size: -4.5 }");
-  te_number(false, scope, "abs(1)", 1, 0);
-  te_number(false, scope, "abs(-1)", 1, 0);
-  te_number(false, scope, "abs(n:-34)", 34, 0);
-  te_null(false, scope, "abs(number:-34)", r#"parameter 'n' not found"#);
-  te_number(false, scope, "abs(Order size)", 45, 1);
-}
-
-#[test]
 fn test_date() {
   let scope = &te_scope("{}");
   te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);

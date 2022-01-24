@@ -35,56 +35,57 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(0)", 0, 0);
+  te_bool(false, &scope!(), r#"contains("foobar","ob")"#, true);
 }
 
 #[test]
 fn _0002() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(-0)", 0, 0);
+  te_bool(false, &scope!(), r#"contains(string: "foobar",match: "ob")"#, true);
 }
 
 #[test]
 fn _0003() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(1)", 1, 0);
+  te_bool(false, &scope!(), r#"contains(match: "ob",string: "foobar")"#, true);
 }
 
 #[test]
 fn _0004() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(12.01)", 1201, 2);
+  te_bool(false, &scope!(), r#"contains("foobar","of")"#, false);
 }
 
 #[test]
 fn _0005() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(-12.01)", 1201, 2);
+  te_null(false, &scope!(), r#"contains()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0006() {
-  let scope = scope!();
-  te_number(false, &scope, "abs(-1)", 1, 0);
+  te_null(
+    false,
+    &scope!(),
+    r#"contains("foo")"#,
+    r#"expected 2 parameters, actual number of parameters is 1"#,
+  );
 }
 
 #[test]
 fn _0007() {
-  let scope = &scope!();
-  te_number(false, scope, "abs(n:-34)", 34, 0);
+  te_null(false, &scope!(), r#"contains(string: "foobar", m: "ob")"#, r#"parameter 'match' not found"#);
 }
 
 #[test]
 fn _0008() {
-  let scope = &scope!();
-  te_null(false, scope, "abs(number:-34)", r#"parameter 'n' not found"#);
+  te_null(false, &scope!(), r#"contains(s: "foobar", match: "ob")"#, r#"parameter 'string' not found"#);
 }
 
 #[test]
 fn _0009() {
-  let scope = &te_scope("{ Order size: -4.5 }");
-  te_number(false, scope, "abs(Order size)", 45, 1);
+  te_null(
+    false,
+    &scope!(),
+    r#"contains("foobar", 23)"#,
+    r#"[core::contains] invalid argument type, expected string, actual type is number"#,
+  );
 }
 
 #[test]
@@ -92,47 +93,7 @@ fn _0010() {
   te_null(
     false,
     &scope!(),
-    r#"abs(duration("-P1D"))"#,
-    r#"[core::abs] invalid argument type, expected number, actual type is days and time duration"#,
-  );
-}
-
-#[test]
-fn _0011() {
-  te_null(
-    false,
-    &scope!(),
-    r#"abs(duration("-P1Y"))"#,
-    r#"[core::abs] invalid argument type, expected number, actual type is years and months duration"#,
-  );
-}
-
-#[test]
-fn _0012() {
-  te_null(
-    false,
-    &scope!(),
-    r#"abs(null)"#,
-    r#"[core::abs] invalid argument type, expected number, actual type is Null"#,
-  );
-}
-
-#[test]
-fn _0013() {
-  te_null(
-    false,
-    &scope!(),
-    r#"abs(true)"#,
-    r#"[core::abs] invalid argument type, expected number, actual type is boolean"#,
-  );
-}
-
-#[test]
-fn _0014() {
-  te_null(
-    false,
-    &scope!(),
-    r#"abs("-57")"#,
-    r#"[core::abs] invalid argument type, expected number, actual type is string"#,
+    r#"contains(false, "ob")"#,
+    r#"[core::contains] invalid argument type, expected string, actual type is boolean"#,
   );
 }

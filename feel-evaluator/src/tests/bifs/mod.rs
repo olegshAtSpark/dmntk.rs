@@ -39,6 +39,7 @@ mod bif_append;
 mod bif_before;
 mod bif_ceiling;
 mod bif_concatenate;
+mod bif_contains;
 mod bif_date;
 mod bif_date_time;
 mod bif_decimal;
