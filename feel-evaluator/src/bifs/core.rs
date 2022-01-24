@@ -420,18 +420,19 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
   value_null!()
 }
 
-/// ???
+/// Return ascending list of list positions containing match.
 pub fn index_of(list: &Value, element: &Value) -> Value {
   if let Value::List(items) = list {
     let mut indexes = vec![];
     for (i, item) in items.as_vec().iter().enumerate() {
       if evaluate_equals(item, element) {
-        indexes.push(Value::Number(i.into()));
+        indexes.push(Value::Number((i + 1).into()));
       }
     }
-    return Value::List(Values::new(indexes));
+    Value::List(Values::new(indexes))
+  } else {
+    invalid_argument_type!("index of", "list", list.type_of())
   }
-  value_null!("index_of")
 }
 
 /// ???

@@ -391,8 +391,16 @@ fn bif_includes(_parameters: &NamedParameters) -> Value {
   value_null!("unimplemented bif_includes")
 }
 
-fn bif_index_of(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_index_of")
+fn bif_index_of(parameters: &NamedParameters) -> Value {
+  if let Some((list_value, _)) = get_param(parameters, &NAME_LIST) {
+    if let Some((match_value, _)) = get_param(parameters, &NAME_MATCH) {
+      core::index_of(list_value, match_value)
+    } else {
+      parameter_not_found!(&NAME_MATCH)
+    }
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_insert_before(_parameters: &NamedParameters) -> Value {
