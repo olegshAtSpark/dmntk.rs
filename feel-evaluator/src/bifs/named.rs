@@ -568,8 +568,12 @@ fn bif_replace(parameters: &NamedParameters) -> Value {
 }
 
 ///
-fn bif_reverse(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_reverse")
+fn bif_reverse(parameters: &NamedParameters) -> Value {
+  if let Some((value, _)) = get_param(parameters, &NAME_LIST) {
+    core::reverse(value)
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 ///

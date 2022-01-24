@@ -867,9 +867,10 @@ pub fn replace(input_string_value: &Value, pattern_string_value: &Value, replace
 pub fn reverse(list: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
     items.reverse();
-    return Value::List(items);
+    Value::List(items)
+  } else {
+    invalid_argument_type!("reverse", "list", list.type_of())
   }
-  value_null!("reverse")
 }
 
 ///
