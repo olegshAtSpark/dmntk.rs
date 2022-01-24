@@ -162,7 +162,7 @@ pub fn ceiling(value: &Value) -> Value {
   }
 }
 
-/// ???
+/// Returns new list that is a concatenation of the arguments.
 pub fn concatenate(values: &[Value]) -> Value {
   let mut concatenated = vec![];
   for value in values {
@@ -171,7 +171,7 @@ pub fn concatenate(values: &[Value]) -> Value {
         concatenated.push(item.clone());
       }
     } else {
-      value_null!("concatenate");
+      return value_null!("[core::concatenate] invalid argument type, expected list, actual type is {}", value.type_of());
     }
   }
   Value::List(Values::new(concatenated))

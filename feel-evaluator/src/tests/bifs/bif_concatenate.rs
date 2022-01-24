@@ -30,25 +30,30 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_even;
-mod bif_exp;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_insert_before;
-mod bif_log;
-mod bif_lower_case;
-mod bif_sort;
-mod bif_string;
-mod bif_time;
+#[test]
+fn _0001() {
+  te_be_value(false, &scope!(), r#"concatenate([1],[2],[3])"#, r#"[1,2,3]"#);
+}
+
+#[test]
+fn _0002() {
+  te_be_value(false, &scope!(), r#"concatenate([1,2],[3])"#, r#"[1,2,3]"#);
+}
+
+#[test]
+fn _0003() {
+  te_be_value(false, &scope!(), r#"concatenate([1,2],["A","B","C"])"#, r#"[1,2,"A","B","C"]"#);
+}
+
+#[test]
+fn _0004() {
+  te_null(
+    false,
+    &scope!(),
+    r#"concatenate(1,[2])"#,
+    r#"[core::concatenate] invalid argument type, expected list, actual type is number"#,
+  );
+}
