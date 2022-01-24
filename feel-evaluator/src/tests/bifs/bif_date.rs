@@ -132,19 +132,19 @@ fn _0016() {
 #[test]
 fn _0017() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
+  te_null(false, scope, r#"date("2017-13-10")"#, r#"[core::date] invalid date string '2017-13-10'"#);
 }
 
 #[test]
 fn _0018() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017-13-10")"#, "date_1 1");
+  te_null(false, scope, r#"date("2017/12/10")"#, r#"[core::date] invalid date string '2017/12/10'"#);
 }
 
 #[test]
 fn _0019() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017,13,31")"#, "date_1 1");
+  te_null(false, scope, r#"date("2017,12,31")"#, r#"[core::date] invalid date string '2017,12,31'"#);
 }
 
 #[test]

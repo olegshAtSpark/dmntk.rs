@@ -218,7 +218,7 @@ pub fn date_1(value: &Value) -> Value {
       if let Ok(date) = FeelDate::try_from(text.as_str()) {
         Value::Date(date)
       } else {
-        value_null!("date_1 1")
+        value_null!("[core::date] invalid date string '{}'", text)
       }
     }
     Value::DateTime(date_time) => Value::Date(date_time.date()),
