@@ -30,36 +30,40 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_ends_with;
-mod bif_even;
-mod bif_exp;
-mod bif_flatten;
-mod bif_floor;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_index_of;
-mod bif_insert_before;
-mod bif_list_contains;
-mod bif_log;
-mod bif_lower_case;
-mod bif_mean;
-mod bif_reverse;
-mod bif_sort;
-mod bif_starts_with;
-mod bif_string;
-mod bif_time;
+#[test]
+fn _0001() {
+  te_number(false, &scope!(), r#"mean([1,2,3])"#, 2, 0);
+}
+
+#[test]
+fn _0002() {
+  te_number(false, &scope!(), r#"mean(1,2,3,4,5,6)"#, 35, 1);
+}
+
+#[test]
+fn _0003() {
+  te_number(false, &scope!(), r#"mean(list: [1,2,3,4])"#, 25, 1);
+}
+
+#[test]
+fn _0004() {
+  te_null(false, &scope!(), r#"mean([])"#, r#""#);
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"mean(true)"#,
+    r#"[core::mean] invalid argument type, expected number, actual type is boolean"#,
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(false, &scope!(), r#"mean(l: [1,2,3])"#, r#"parameter 'list' not found"#);
+}

@@ -572,7 +572,7 @@ pub fn mean(values: &[Value]) -> Value {
     if let Value::Number(n) = value {
       sum += *n;
     } else {
-      return value_null!("not a number");
+      return invalid_argument_type!("mean", "number", value.type_of());
     }
   }
   Value::Number(sum / values.len().into())
