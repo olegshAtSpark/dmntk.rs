@@ -385,7 +385,7 @@ pub fn floor(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.floor())
   } else {
-    value_null!("floor")
+    invalid_argument_type!("floor", "number", value.type_of())
   }
 }
 

@@ -61,15 +61,6 @@ fn test_duration() {
 }
 
 #[test]
-fn test_floor() {
-  let scope = &te_scope("{}");
-  te_number(false, scope, "floor(1.5)", 1, 0);
-  te_number(false, scope, "floor(-1.5)", -2, 0);
-  te_number(false, scope, "floor(--1)", 1, 0);
-  te_number(false, scope, "floor(-5/2.3*5)", -11, 0);
-}
-
-#[test]
 fn test_insert_before() {
   let scope = &te_scope(r#"{}"#);
   te_be_value(false, scope, r#"insert before([2,3,4,5],1,1)"#, r#"[1,2,3,4,5]"#);
