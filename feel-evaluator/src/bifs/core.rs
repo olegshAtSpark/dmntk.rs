@@ -414,10 +414,15 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
       let name = Name::from(entry_key.to_owned());
       if let Some(entry_value) = ctx.get_entry(&name) {
         return entry_value.clone();
+      } else {
+        value_null!()
       }
+    } else {
+      invalid_argument_type!("get value", "string", key.type_of())
     }
+  } else {
+    invalid_argument_type!("get value", "context", context.type_of())
   }
-  value_null!()
 }
 
 /// Return ascending list of list positions containing match.
