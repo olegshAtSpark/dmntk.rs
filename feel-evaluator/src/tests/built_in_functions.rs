@@ -43,20 +43,6 @@ fn test_abs() {
 }
 
 #[test]
-fn test_ceiling() {
-  let scope = &te_scope("{ Order size: 23.27 }");
-  te_number(false, scope, "ceiling(1.5)", 2, 0);
-  te_number(false, scope, "ceiling(-1.5)", -1, 0);
-  te_number(false, scope, "ceiling(--1)", 1, 0);
-  te_number(false, scope, "ceiling(-5/2.3*5)", -10, 0);
-  te_number(false, scope, "ceiling(n:5.777)", 6, 0);
-  te_number(false, scope, "ceiling(n:-.33333)", 0, 0);
-  te_number(false, scope, "ceiling(n:.33333)", 1, 0);
-  te_number(false, scope, "ceiling(n:Order size)", 24, 0);
-  te_null(false, scope, "ceiling(number:5.777)", r#"parameter 'n' not found"#);
-}
-
-#[test]
 fn test_date() {
   let scope = &te_scope("{}");
   te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);

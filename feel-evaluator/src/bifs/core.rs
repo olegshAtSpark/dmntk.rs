@@ -153,12 +153,12 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
   value_null!()
 }
 
-/// ???
+/// Returns the smallest integer >= argument.
 pub fn ceiling(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.ceiling())
   } else {
-    value_null!("ceiling")
+    value_null!("[core::ceiling] invalid argument type, expected number, actual type is {}", value.type_of())
   }
 }
 
