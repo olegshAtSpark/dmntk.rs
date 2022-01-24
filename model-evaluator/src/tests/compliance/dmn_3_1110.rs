@@ -41,19 +41,34 @@ lazy_static! {
 #[test]
 fn _0001() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-contains-function_ErrorCase_001_2a4d7448c6", &ctx, r#"null(contains)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "feel-contains-function_ErrorCase_001_2a4d7448c6",
+    &ctx,
+    r#"null([core::contains] invalid argument type, expected string, actual type is Null)"#,
+  );
 }
 
 #[test]
 fn _0002() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-contains-function_ErrorCase_002_d2a1831b5c", &ctx, r#"null(contains)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "feel-contains-function_ErrorCase_002_d2a1831b5c",
+    &ctx,
+    r#"null([core::contains] invalid argument type, expected string, actual type is Null)"#,
+  );
 }
 
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-contains-function_ErrorCase_003_df56e0a1ad", &ctx, r#"null(contains)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "feel-contains-function_ErrorCase_003_df56e0a1ad",
+    &ctx,
+    r#"null([core::contains] invalid argument type, expected string, actual type is Null)"#,
+  );
 }
 
 #[test]

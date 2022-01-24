@@ -72,7 +72,7 @@ fn _0006() {
 #[test]
 fn _0007() {
   let scope = scope!();
-  te_bool(false, &scope, "all(null,true,true)", false);
+  te_null(false, &scope, "all(null,true,true)", "");
 }
 
 #[test]
@@ -126,7 +126,7 @@ fn _0015() {
 #[test]
 fn _0016() {
   let scope = scope!();
-  te_bool(false, &scope, "all([null,true,true])", false);
+  te_null(false, &scope, "all([null,true,true])", "");
 }
 
 #[test]
@@ -150,7 +150,7 @@ fn _0019() {
 #[test]
 fn _0020() {
   let scope = scope!();
-  te_null(false, &scope, "all([false,1])", "");
+  te_bool(false, &scope, "all([false,1])", false);
 }
 
 #[test]

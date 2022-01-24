@@ -97,7 +97,7 @@ fn _0008() {
     &MODEL_EVALUATOR,
     "decision008",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is Null)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is Null)"#,
   );
 }
 
@@ -108,7 +108,7 @@ fn _0009() {
     &MODEL_EVALUATOR,
     "decision009",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is string)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is string)"#,
   );
 }
 
@@ -119,7 +119,7 @@ fn _0010() {
     &MODEL_EVALUATOR,
     "decision010",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is boolean)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is boolean)"#,
   );
 }
 
@@ -130,7 +130,7 @@ fn _0011() {
     &MODEL_EVALUATOR,
     "decision011",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is days and time duration)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is days and time duration)"#,
   );
 }
 
@@ -141,7 +141,7 @@ fn _0012() {
     &MODEL_EVALUATOR,
     "decision012",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is years and months duration)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is years and months duration)"#,
   );
 }
 
@@ -152,7 +152,7 @@ fn _0013() {
     &MODEL_EVALUATOR,
     "decision013",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is date)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is date)"#,
   );
 }
 
@@ -163,7 +163,7 @@ fn _0014() {
     &MODEL_EVALUATOR,
     "decision014",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is time)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is time)"#,
   );
 }
 
@@ -174,6 +174,6 @@ fn _0015() {
     &MODEL_EVALUATOR,
     "decision015",
     &ctx,
-    r#"null(invalid argument type, expected number, actual type is date and time)"#,
+    r#"null([core::abs] invalid argument type, expected number, actual type is date and time)"#,
   );
 }

@@ -68,25 +68,16 @@ pub fn all(values: &[Value]) -> Value {
   if values.is_empty() {
     return VALUE_TRUE;
   }
-  let mut all_true = true;
-  let mut all_boolean = true;
   for value in values {
-    match value {
-      Value::Boolean(v) => {
-        if !v {
-          all_true = false;
-        }
+    if let Value::Boolean(v) = value {
+      if !v {
+        return VALUE_FALSE;
       }
-      Value::Null(_) => all_true = false,
-      _ => all_boolean = false,
+    } else {
+      return value_null!();
     }
   }
-  match (all_true, all_boolean) {
-    (false, false) => value_null!(),
-    (false, true) => VALUE_FALSE,
-    (true, false) => value_null!(),
-    (true, true) => VALUE_TRUE,
-  }
+  VALUE_TRUE
 }
 
 /// Returns `true` if any item is `true`, `false` if empty or all items are `false`, else `null`.
@@ -103,7 +94,7 @@ pub fn any(values: &[Value]) -> Value {
           has_true = true;
         }
       }
-      Value::Null(_) => {}
+      Value::Null(_) => return value_null!(),
       _ => all_boolean = false,
     }
   }
@@ -221,8 +212,9 @@ pub fn date_1(value: &Value) -> Value {
         value_null!("[core::date] invalid date string '{}'", text)
       }
     }
+    Value::Date(date) => Value::Date(date.clone()),
     Value::DateTime(date_time) => Value::Date(date_time.date()),
-    _ => invalid_argument_type!("date", "string or date and time", value.type_of()),
+    _ => invalid_argument_type!("date", "string, date or date and time", value.type_of()),
   }
 }
 
@@ -252,7 +244,7 @@ pub fn date_3(year_value: &Value, month_value: &Value, day_value: &Value) -> Val
   }
 }
 
-/// ???
+/// Returns date and time created from string.
 pub fn date_and_time_1(value: &Value) -> Value {
   if let Value::String(text) = value {
     if let Ok(date_time) = FeelDateTime::try_from(text.as_str()) {
@@ -261,26 +253,29 @@ pub fn date_and_time_1(value: &Value) -> Value {
     if let Ok(date) = FeelDate::try_from(text.as_str()) {
       return Value::DateTime(FeelDateTime::new(date, FeelTime::local(0, 0, 0, 0)));
     }
+    value_null!("[core::date and time] invalid date or date and time '{}'", text)
+  } else {
+    invalid_argument_type!("date and time", "string", value.type_of())
   }
-  value_null!("date_and_time")
 }
 
-/// ???
+/// Returns date and time created from date and time.
 pub fn date_and_time_2(date_value: &Value, time_value: &Value) -> Value {
   match date_value {
     Value::DateTime(date_time) => {
       if let Value::Time(time) = time_value {
         return Value::DateTime(FeelDateTime::new(date_time.date(), time.clone()));
       }
+      invalid_argument_type!("date and time", "time", time_value.type_of())
     }
     Value::Date(date) => {
       if let Value::Time(time) = time_value {
         return Value::DateTime(FeelDateTime::new(date.clone(), time.clone()));
       }
+      invalid_argument_type!("date and time", "time", time_value.type_of())
     }
-    _ => {}
+    _ => invalid_argument_type!("date and time", "date and time or date", date_value.type_of()),
   }
-  value_null!("date_and_time_1")
 }
 
 /// Returns `number` rounded to given `scale`.

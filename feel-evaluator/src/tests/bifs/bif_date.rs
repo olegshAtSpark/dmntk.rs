@@ -171,18 +171,13 @@ fn _0022() {
     false,
     &scope!(),
     r#"date(10)"#,
-    r#"[core::date] invalid argument type, expected string or date and time, actual type is number"#,
+    r#"[core::date] invalid argument type, expected string, date or date and time, actual type is number"#,
   );
 }
 
 #[test]
 fn _0023() {
-  te_null(
-    false,
-    &scope!(),
-    r#"date(date("2012-12-25"))"#,
-    r#"[core::date] invalid argument type, expected string or date and time, actual type is date"#,
-  );
+  te_date(false, &scope!(), r#"date(date("2021-01-06"))"#, 2021, 01, 06);
 }
 
 #[test]

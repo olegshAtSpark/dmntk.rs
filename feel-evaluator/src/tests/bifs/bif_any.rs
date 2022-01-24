@@ -108,7 +108,7 @@ fn _0012() {
 #[test]
 fn _0013() {
   let scope = scope!();
-  te_bool(false, &scope, "any([false,null,true])", true);
+  te_null(false, &scope, "any([false,null,true])", "");
 }
 
 #[test]
