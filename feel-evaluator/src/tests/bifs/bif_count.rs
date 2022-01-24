@@ -44,6 +44,11 @@ fn _0002() {
 }
 
 #[test]
+fn _00021() {
+  te_number(false, &scope!(), r#"count(list: ["A"])"#, 1, 0);
+}
+
+#[test]
 fn _0003() {
   te_number(false, &scope!(), r#"count(["A","B"])"#, 2, 0);
 }
@@ -61,4 +66,24 @@ fn _0005() {
     r#"count(1)"#,
     r#"[core::count] invalid argument type, expected list, actual type is number"#,
   );
+}
+
+#[test]
+fn _0006() {
+  te_null(false, &scope!(), r#"count()"#, r#"expected 1 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"count([1,2,3],4)"#,
+    r#"expected 1 parameters, actual number of parameters is 2"#,
+  );
+}
+
+#[test]
+fn _0008() {
+  te_null(false, &scope!(), r#"count(l: [1,2,3])"#, r#"parameter 'list' not found"#);
 }
