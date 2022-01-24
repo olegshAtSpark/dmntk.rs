@@ -56,16 +56,25 @@ pub fn all(values: &[Value]) -> Value {
   if values.is_empty() {
     return VALUE_TRUE;
   }
+  let mut all_true = true;
+  let mut all_boolean = true;
   for value in values {
-    if let Value::Boolean(v) = value {
-      if !v {
-        return VALUE_FALSE;
+    match value {
+      Value::Boolean(v) => {
+        if !v {
+          all_true = false;
+        }
       }
-    } else {
-      return value_null!();
+      Value::Null(_) => all_true = false,
+      _ => all_boolean = false,
     }
   }
-  VALUE_TRUE
+  match (all_true, all_boolean) {
+    (false, false) => value_null!(),
+    (false, true) => VALUE_FALSE,
+    (true, false) => value_null!(),
+    (true, true) => VALUE_TRUE,
+  }
 }
 
 /// Returns `true` if any item is `true`, `false` if empty or all items are `false`, else `null`.
@@ -74,7 +83,7 @@ pub fn any(values: &[Value]) -> Value {
     return VALUE_FALSE;
   }
   let mut has_true = false;
-  let mut all_false = true;
+  let mut all_boolean = true;
   for value in values {
     match value {
       Value::Boolean(v) => {
@@ -83,10 +92,10 @@ pub fn any(values: &[Value]) -> Value {
         }
       }
       Value::Null(_) => {}
-      _ => all_false = false,
+      _ => all_boolean = false,
     }
   }
-  match (has_true, all_false) {
+  match (has_true, all_boolean) {
     (false, false) => value_null!(),
     (false, true) => VALUE_FALSE,
     (true, false) => value_null!(),
@@ -1272,7 +1281,7 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
 mod tests {
   use crate::bifs::core;
   use crate::bifs::core::substring;
-  use dmntk_feel::values::{Value, VALUE_FALSE, VALUE_TRUE};
+  use dmntk_feel::values::Value;
   use dmntk_feel::{value_null, value_number, FeelDaysAndTimeDuration, FeelNumber, FeelYearsAndMonthsDuration};
 
   #[test]
@@ -1304,20 +1313,6 @@ mod tests {
       Value::Null(Some("invalid argument type, expected number, actual type is string".to_string())),
       core::abs(&Value::String("text".to_string()))
     );
-  }
-
-  #[test]
-  fn bif_all() {
-    assert_eq!(VALUE_TRUE, core::all(&[]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true)]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true), Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(false)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(true), Value::Boolean(false)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(false), Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(value_null!(), core::all(&[value_number!(1)]));
-    assert_eq!(value_null!(), core::all(&[Value::Boolean(true), value_number!(1)]));
-    assert_eq!(value_null!(), core::all(&[value_number!(1), Value::Boolean(true), Value::Boolean(true)]));
   }
 
   #[test]
