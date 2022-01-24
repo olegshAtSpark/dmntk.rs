@@ -403,7 +403,7 @@ pub fn get_entries(context: &Value) -> Value {
     });
     Value::List(Values::new(entries))
   } else {
-    value_null!()
+    invalid_argument_type!("get entries", "context", context.type_of())
   }
 }
 
