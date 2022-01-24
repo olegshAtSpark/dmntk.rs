@@ -103,7 +103,7 @@ pub fn any(values: &[Value]) -> Value {
   }
 }
 
-///
+/// Returns new list with items appended.
 pub fn append(list: &Value, values: &[Value]) -> Value {
   if let Value::List(items) = list {
     let mut appended = items.clone();
@@ -112,7 +112,7 @@ pub fn append(list: &Value, values: &[Value]) -> Value {
     }
     return Value::List(appended);
   }
-  value_null!("append")
+  value_null!("[core::append] invalid argument type, expected list, actual type is {}", list.type_of())
 }
 
 ///

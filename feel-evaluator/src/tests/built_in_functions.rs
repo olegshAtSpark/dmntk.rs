@@ -43,12 +43,6 @@ fn test_abs() {
 }
 
 #[test]
-fn test_append() {
-  let scope = &te_scope("{}");
-  te_be_value(false, scope, r#"append([1],2,3)"#, r#"[1,2,3]"#);
-}
-
-#[test]
 fn test_ceiling() {
   let scope = &te_scope("{ Order size: 23.27 }");
   te_number(false, scope, "ceiling(1.5)", 2, 0);
