@@ -109,7 +109,7 @@ $ curl -s -d '{"Full Name":"John Doe"}' -H "Content-Type: application/json" -X P
 
 ## Documentation
 
-**DMNTK** documentation can be found on [dmntk.io](https://dmntk.io)
+**DMNTK** documentation can be found on [dmntk.io](https://dmntk.io).
 
 ## License
 
