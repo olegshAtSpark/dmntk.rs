@@ -61,18 +61,6 @@ fn test_duration() {
 }
 
 #[test]
-fn test_flatten() {
-  let scope = &te_scope("{}");
-  te_be_value(false, scope, r#"flatten([["w","x"],["y"],["z"]])"#, r#"["w","x","y","z"]"#);
-  te_be_value(
-    false,
-    scope,
-    r#"flatten([["w","x"],["y",["a","b","c"]],["z"]])"#,
-    r#"["w","x","y","a","b","c","z"]"#,
-  );
-}
-
-#[test]
 fn test_floor() {
   let scope = &te_scope("{}");
   te_number(false, scope, "floor(1.5)", 1, 0);

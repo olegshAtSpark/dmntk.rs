@@ -351,8 +351,12 @@ fn bif_finishes(_parameters: &NamedParameters) -> Value {
   value_null!("unimplemented bif_finishes")
 }
 
-fn bif_flatten(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_flatten")
+fn bif_flatten(parameters: &NamedParameters) -> Value {
+  if let Some((value, _)) = get_param(parameters, &NAME_LIST) {
+    core::flatten(value)
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_floor(parameters: &NamedParameters) -> Value {

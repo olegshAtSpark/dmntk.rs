@@ -356,17 +356,18 @@ pub fn exp(value: &Value) -> Value {
   value_null!("exp")
 }
 
-/// ???
+/// Returns new list with flattened nested lists.
 pub fn flatten(value: &Value) -> Value {
   if let Value::List(_) = value {
     let mut flattened = vec![];
     flatten_value(value, &mut flattened);
-    return Value::List(Values::new(flattened));
+    Value::List(Values::new(flattened))
+  } else {
+    invalid_argument_type!("flatten", "list", value.type_of())
   }
-  value_null!("flatten")
 }
 
-/// ???
+/// Flattens nested lists.
 fn flatten_value(value: &Value, flattened: &mut Vec<Value>) {
   if let Value::List(items) = value {
     for item in items.as_vec() {
