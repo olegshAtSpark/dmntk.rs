@@ -30,28 +30,50 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_even;
-mod bif_exp;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_insert_before;
-mod bif_log;
-mod bif_lower_case;
-mod bif_sort;
-mod bif_string;
-mod bif_time;
+#[test]
+fn _0001() {
+  te_be_value(false, &scope!(), r#"distinct values([1,2,3,2,1])"#, r#"[1,2,3]"#);
+}
+
+#[test]
+fn _0002() {
+  te_be_value(false, &scope!(), r#"distinct values([1,"A",true,2,1,"A",true])"#, r#"[1,"A",true,2]"#);
+}
+
+#[test]
+fn _0003() {
+  te_be_value(false, &scope!(), r#"distinct values([])"#, r#"[]"#);
+}
+
+#[test]
+fn _0004() {
+  te_be_value(false, &scope!(), r#"distinct values(list: [1,2,3,2,1])"#, r#"[1,2,3]"#);
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"distinct values(8)"#,
+    r#"[core::distinct_values] invalid argument type, expected list, actual type is number"#,
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(false, &scope!(), r#"distinct values(l:[1])"#, r#"parameter 'list' not found"#);
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"distinct values()"#,
+    r#"expected 1 parameters, actual number of parameters is 0"#,
+  );
+}

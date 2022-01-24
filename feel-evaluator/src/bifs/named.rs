@@ -295,8 +295,12 @@ fn bif_decimal(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_distinct_values(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_distinct_values")
+fn bif_distinct_values(parameters: &NamedParameters) -> Value {
+  if let Some((value, _)) = get_param(parameters, &NAME_LIST) {
+    core::distinct_values(value)
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_duration(parameters: &NamedParameters) -> Value {

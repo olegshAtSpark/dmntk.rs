@@ -296,19 +296,19 @@ pub fn decimal(number_value: &Value, scale_value: &Value) -> Value {
   }
 }
 
-/// ???
+/// Returns new list with removed duplicates.
 pub fn distinct_values(value: &Value) -> Value {
-  let mut result = vec![];
   if let Value::List(items) = value {
+    let mut result = vec![];
     for item in items.as_vec() {
-      if result.iter().all(|a| !evaluate_equals(a, item)) {
+      if result.iter().all(|v| !evaluate_equals(v, item)) {
         result.push(item.clone())
       }
     }
+    Value::List(Values::new(result))
   } else {
-    return value_null!("distinct_values");
+    invalid_argument_type!("distinct_values", "list", value.type_of())
   }
-  Value::List(Values::new(result))
 }
 
 /// Converts string value to a days and time or years and months duration.
