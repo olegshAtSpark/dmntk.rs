@@ -177,7 +177,7 @@ fn _0022() {
 
 #[test]
 fn _0023() {
-  te_date(false, &scope!(), r#"date(date("2021-01-06"))"#, 2021, 01, 06);
+  te_date(false, &scope!(), r#"date(date("2021-01-06"))"#, 2021, 1, 6);
 }
 
 #[test]
