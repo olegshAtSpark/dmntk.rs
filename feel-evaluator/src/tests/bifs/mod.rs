@@ -45,6 +45,7 @@ mod bif_date;
 mod bif_date_time;
 mod bif_decimal;
 mod bif_distinct_values;
+mod bif_ends_with;
 mod bif_even;
 mod bif_exp;
 mod bif_get_entries;

@@ -307,7 +307,7 @@ pub fn distinct_values(value: &Value) -> Value {
     }
     Value::List(Values::new(result))
   } else {
-    invalid_argument_type!("distinct_values", "list", value.type_of())
+    invalid_argument_type!("distinct values", "list", value.type_of())
   }
 }
 
@@ -326,16 +326,16 @@ pub fn duration(value: &Value) -> Value {
   }
 }
 
-/// Returns **true** when the input string ends with specified match string.
+/// Returns `true` when the input string ends with specified match string.
 pub fn ends_with(input_string_value: &Value, match_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.ends_with(match_string))
     } else {
-      value_null!("ends_with")
+      invalid_argument_type!("ends with", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("ends_with")
+    invalid_argument_type!("ends with", "string", input_string_value.type_of())
   }
 }
 
