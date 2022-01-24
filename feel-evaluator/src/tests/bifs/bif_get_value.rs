@@ -97,3 +97,8 @@ fn _0008() {
 fn _0009() {
   te_null(false, &scope!(), r#"get value(m: {a: "foo"}, k: "a")"#, r#"parameter 'key' not found"#);
 }
+
+#[test]
+fn _0010() {
+  te_be_value(false, &scope!(), r#"get value(m: {a: "foo"}, key: "b")"#, r#"null"#);
+}
