@@ -134,28 +134,6 @@ fn test_median() {
 }
 
 #[test]
-fn test_min() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "min()", r#"expected 1+ parameters, actual number of parameters is 0"#);
-  te_null(false, scope, "min([])", r#""#);
-  te_null(false, scope, "min(l:[])", r#"parameter 'list' not found"#);
-  te_null(false, scope, "min(list:[])", r#""#);
-  te_null(false, scope, "min(l:[1,2,3])", r#"parameter 'list' not found"#);
-  te_number(false, scope, "min(list:[1,2,3])", 1, 0);
-  te_number(false, scope, "min([2021])", 2021, 0);
-  te_number(false, scope, "min(2021)", 2021, 0);
-  te_number(false, scope, "min([1,2,3])", 1, 0);
-  te_number(false, scope, "min(1,2,3)", 1, 0);
-  te_number(false, scope, "min([8,4,2.89,3,2.89,5])", 289, 2);
-  te_number(false, scope, "min(8,4,2.89,3,2.89,5)", 289, 2);
-  te_number(false, scope, "min([2837465.9584,-39408573.456749])", -39408573456749, 6);
-  te_number(false, scope, "min(2837465.9584,-39408573.456749)", -39408573456749, 6);
-  te_string(false, scope, r#"min(["a","b","c"])"#, "a");
-  te_string(false, scope, r#"min("a","b","c")"#, "a");
-  te_string(false, scope, r#"min("John","Johnny")"#, "John");
-}
-
-#[test]
 fn test_mode() {
   let scope = &te_scope("{}");
   te_null(false, scope, "mode()", r#"expected 1+ parameters, actual number of parameters is 0"#);

@@ -599,7 +599,7 @@ pub fn min(values: &[Value]) -> Value {
   if values.is_empty() {
     return value_null!();
   }
-  match &values[0] {
+  return match &values[0] {
     Value::Number(n) => {
       let mut min = *n;
       for value in values.iter().skip(1) {
@@ -608,10 +608,10 @@ pub fn min(values: &[Value]) -> Value {
             min = *v;
           }
         } else {
-          return value_null!("min");
+          return invalid_argument_type!("min", "number", value.type_of());
         }
       }
-      return Value::Number(min);
+      Value::Number(min)
     }
     Value::String(s) => {
       let mut min = s.clone();
@@ -621,14 +621,13 @@ pub fn min(values: &[Value]) -> Value {
             min = v.clone();
           }
         } else {
-          return value_null!("min");
+          return invalid_argument_type!("min", "string", value.type_of());
         }
       }
-      return Value::String(min);
+      Value::String(min)
     }
-    _ => {}
-  }
-  value_null!("min")
+    other => invalid_argument_type!("min", "number, string", other.type_of()),
+  };
 }
 
 /// Returns the mode of numbers.
