@@ -681,15 +681,15 @@ pub fn modulo(dividend_value: &Value, divisor_value: &Value) -> Value {
   if let Value::Number(dividend) = *dividend_value {
     if let Value::Number(divisor) = *divisor_value {
       if divisor.abs() == FeelNumber::zero() {
-        value_null!("division by zero")
+        value_null!("[core::modulo] division by zero")
       } else {
         Value::Number(dividend - divisor * (dividend / divisor).floor())
       }
     } else {
-      value_null!("modulo")
+      invalid_argument_type!("modulo", "number", divisor_value.type_of())
     }
   } else {
-    value_null!("modulo")
+    invalid_argument_type!("modulo", "number", dividend_value.type_of())
   }
 }
 

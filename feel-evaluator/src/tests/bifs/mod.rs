@@ -61,6 +61,7 @@ mod bif_max;
 mod bif_mean;
 mod bif_min;
 mod bif_mode;
+mod bif_modulo;
 mod bif_reverse;
 mod bif_sort;
 mod bif_starts_with;

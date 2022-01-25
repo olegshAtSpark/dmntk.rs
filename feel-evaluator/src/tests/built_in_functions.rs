@@ -134,28 +134,6 @@ fn test_median() {
 }
 
 #[test]
-fn test_modulo() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "modulo()", r#"expected 2 parameters, actual number of parameters is 0"#);
-  te_null(false, scope, "modulo(1)", r#"expected 2 parameters, actual number of parameters is 1"#);
-  te_null(false, scope, "modulo(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
-  te_null(false, scope, "modulo(1, true)", r#"modulo"#);
-  te_null(false, scope, "modulo(a:1,b:2)", r#"parameter 'dividend' not found"#);
-  te_number(false, scope, "modulo(1,1)", 0, 0);
-  te_number(false, scope, "modulo(1,2)", 1, 0);
-  te_number(false, scope, "modulo(dividend:1,divisor:2)", 1, 0);
-  te_number(false, scope, "modulo(modulo(10,6),3)", 1, 0);
-  te_number(false, scope, "modulo(-12,5)", 3, 0);
-  te_number(false, scope, "modulo(12,5)", 2, 0);
-  te_number(false, scope, "modulo(12,-5)", -3, 0);
-  te_number(false, scope, "modulo(-12,-5)", -2, 0);
-  te_number(false, scope, "decimal(modulo(10.1,4.5),1)", 11, 1);
-  te_number(false, scope, "decimal(modulo(-10.1,4.5),1)", 34, 1);
-  te_number(false, scope, "decimal(modulo(10.1,-4.5),1)", -34, 1);
-  te_number(false, scope, "decimal(modulo(-10.1,-4.5),1)", -11, 1);
-}
-
-#[test]
 fn test_not() {
   let scope = &te_scope("{ On time: true, Too late: false }");
   te_bool(false, scope, "not(true)", false);
