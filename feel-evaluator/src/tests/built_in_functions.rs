@@ -134,17 +134,6 @@ fn test_median() {
 }
 
 #[test]
-fn test_not() {
-  let scope = &te_scope("{ On time: true, Too late: false }");
-  te_bool(false, scope, "not(true)", false);
-  te_bool(false, scope, " not  (  true  ) ", false);
-  te_bool(false, scope, "not(false)", true);
-  te_bool(false, scope, " not  \n (  \t  false \r  ) \n  ", true);
-  te_bool(false, scope, "not(On time)", false);
-  te_bool(false, scope, "not(Too late)", true);
-}
-
-#[test]
 fn test_odd() {
   let scope = &te_scope("{ even number: 20, odd number: 21 }");
   te_bool(false, scope, "odd(2)", false);
