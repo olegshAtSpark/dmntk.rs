@@ -35,114 +35,105 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(true)", true);
+  te_bool(false, &scope!(), "any(true)", true);
 }
 
 #[test]
 fn _0002() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(false)", false);
+  te_bool(false, &scope!(), "any(false)", false);
 }
 
 #[test]
 fn _0003() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(true,true,true)", true);
+  te_bool(false, &scope!(), "any(true,true,true)", true);
 }
 
 #[test]
 fn _0004() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(false,false,false)", false);
+  te_bool(false, &scope!(), "any(false,false,false)", false);
 }
 
 #[test]
 fn _0005() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(false,true,false,false)", true);
+  te_bool(false, &scope!(), "any(false,true,false,false)", true);
 }
 
 #[test]
 fn _0006() {
-  let scope = scope!();
-  te_bool(false, &scope, "any(false,true,false,true)", true);
+  te_bool(false, &scope!(), "any(false,true,false,true)", true);
 }
 
 #[test]
 fn _0007() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([true])", true);
+  te_bool(false, &scope!(), "any([true])", true);
 }
 
 #[test]
 fn _0008() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([false])", false);
+  te_bool(false, &scope!(), "any(list: [true])", true);
 }
 
 #[test]
 fn _0009() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([true,true,true])", true);
+  te_bool(false, &scope!(), "any([false])", false);
 }
 
 #[test]
 fn _0010() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([false,false,false])", false);
+  te_bool(false, &scope!(), "any([true,true,true])", true);
 }
 
 #[test]
 fn _0011() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([false,true,false,false])", true);
+  te_bool(false, &scope!(), "any([false,false,false])", false);
 }
 
 #[test]
 fn _0012() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([false,true,false,true])", true);
+  te_bool(false, &scope!(), "any([false,true,false,false])", true);
 }
 
 #[test]
 fn _0013() {
-  let scope = scope!();
-  te_null(false, &scope, "any([false,null,true])", "");
+  te_bool(false, &scope!(), "any([false,true,false,true])", true);
 }
 
 #[test]
 fn _0014() {
-  let scope = scope!();
-  te_bool(false, &scope, "any([])", false);
+  te_null(false, &scope!(), "any([false,null,true])", "");
 }
 
 #[test]
 fn _0015() {
-  let scope = scope!();
-  te_null(false, &scope, "any(1)", "");
+  te_bool(false, &scope!(), "any([])", false);
 }
 
 #[test]
 fn _0016() {
-  let scope = scope!();
-  te_null(false, &scope, "any(1,2,3)", "");
+  te_null(false, &scope!(), "any(1)", "");
 }
 
 #[test]
 fn _0017() {
-  let scope = scope!();
-  te_null(false, &scope, "any([123,false])", "");
+  te_null(false, &scope!(), "any(1,2,3)", "");
 }
 
 #[test]
 fn _0018() {
-  let scope = scope!();
-  te_null(false, &scope, "any([true,8,false])", "");
+  te_null(false, &scope!(), "any([123,false])", "");
 }
 
 #[test]
 fn _0019() {
-  let scope = scope!();
-  te_null(false, &scope, "any()", r#"expected 1+ parameters, actual number of parameters is 0"#);
+  te_null(false, &scope!(), "any([true,8,false])", "");
+}
+
+#[test]
+fn _0020() {
+  te_null(false, &scope!(), "any()", r#"expected 1+ parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0021() {
+  te_null(false, &scope!(), "any(l: [true])", r#"parameter 'list' not found"#);
 }
