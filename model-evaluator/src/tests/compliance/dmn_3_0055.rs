@@ -105,47 +105,87 @@ fn _0009() {
 #[test]
 fn _0010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision008",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is Null)"#,
+  );
 }
 
 #[test]
 fn _0011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision009", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision009",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is string)"#,
+  );
 }
 
 #[test]
 fn _0012() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision010", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision010",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is boolean)"#,
+  );
 }
 
 #[test]
 fn _0013() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision011", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision011",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is days and time duration)"#,
+  );
 }
 
 #[test]
 fn _0014() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision012", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision012",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is years and months duration)"#,
+  );
 }
 
 #[test]
 fn _0015() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision013", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision013",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is date)"#,
+  );
 }
 
 #[test]
 fn _0016() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision014", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision014",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is time)"#,
+  );
 }
 
 #[test]
 fn _0017() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision015", &ctx, r#"null(odd)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision015",
+    &ctx,
+    r#"null([core::odd] invalid argument type, expected number, actual type is date and time)"#,
+  );
 }
