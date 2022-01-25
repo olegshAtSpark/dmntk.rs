@@ -64,7 +64,12 @@ fn _0003() {
 #[test]
 fn _0004() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision003_a", &ctx, r#"null(mode)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_a",
+    &ctx,
+    r#"null([core::mode] invalid argument type, expected number, actual type is Null)"#,
+  );
 }
 
 #[test]
@@ -81,7 +86,12 @@ fn _0005() {
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision005", &ctx, r#"null(mode)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision005",
+    &ctx,
+    r#"null([core::mode] invalid argument type, expected number, actual type is string)"#,
+  );
 }
 
 #[test]

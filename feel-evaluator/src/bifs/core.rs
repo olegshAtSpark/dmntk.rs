@@ -635,13 +635,13 @@ pub fn mode(values: &[Value]) -> Value {
   if values.is_empty() {
     return Value::List(Values::default());
   }
-  // make sure all values are numbers and prepare the list of numbers
+  // make sure all values are numbers and prepare the list of them
   let mut list = vec![];
   for value in values {
     if let Value::Number(n) = value {
       list.push(*n);
     } else {
-      return value_null!("mode");
+      return invalid_argument_type!("mode", "number", value.type_of());
     }
   }
   // sort values in ascending order
@@ -665,17 +665,15 @@ pub fn mode(values: &[Value]) -> Value {
     std::cmp::Ordering::Equal => x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal),
     other => other,
   });
-  // there must be minimum one element in the list but to be sure check it
-  if let Some((max, _)) = mode.get(0) {
-    // return items with maximum frequency
-    return Value::List(Values::new(
-      mode
-        .iter()
-        .filter_map(|(c, v)| if *c == *max { Some(Value::Number(*v)) } else { None })
-        .collect(),
-    ));
-  }
-  value_null!("mode")
+  // there is minimum one element in the list, so unwrap is ok
+  let max = mode.get(0).unwrap().0;
+  // return items with maximum frequency
+  Value::List(Values::new(
+    mode
+      .iter()
+      .filter_map(|(c, v)| if *c == max { Some(Value::Number(*v)) } else { None })
+      .collect(),
+  ))
 }
 
 /// Returns the remainder of the division of dividend by divisor.

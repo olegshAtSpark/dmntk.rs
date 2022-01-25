@@ -134,26 +134,6 @@ fn test_median() {
 }
 
 #[test]
-fn test_mode() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "mode()", r#"expected 1+ parameters, actual number of parameters is 0"#);
-  te_null(false, scope, "mode(l:[])", r#"parameter 'list' not found"#);
-  te_null(false, scope, "mode(l:[1,2,3])", r#"parameter 'list' not found"#);
-  te_null(false, scope, "mode([true,false])", r#"mode"#);
-  te_be_value(false, scope, "mode(list:[])", "[]");
-  te_be_value(false, scope, "mode([])", "[]");
-  te_be_value(false, scope, "mode(list:[23])", "[23]");
-  te_be_value(false, scope, "mode([23])", "[23]");
-  te_be_value(false, scope, "mode(23)", "[23]");
-  te_be_value(false, scope, "mode(list:[6,3,9,6,6])", "[6]");
-  te_be_value(false, scope, "mode([6,3,9,6,6])", "[6]");
-  te_be_value(false, scope, "mode(6,3,9,6,6)", "[6]");
-  te_be_value(false, scope, "mode(list:[6,1,9,6,1])", "[1,6]");
-  te_be_value(false, scope, "mode([6,1,9,6,1])", "[1,6]");
-  te_be_value(false, scope, "mode(6,1,9,6,1)", "[1,6]");
-}
-
-#[test]
 fn test_modulo() {
   let scope = &te_scope("{}");
   te_null(false, scope, "modulo()", r#"expected 2 parameters, actual number of parameters is 0"#);
