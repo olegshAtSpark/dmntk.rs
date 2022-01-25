@@ -107,26 +107,6 @@ fn test_matches() {
 }
 
 #[test]
-fn test_max() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "max()", "expected 1+ parameters, actual number of parameters is 0");
-  te_null(false, scope, "max([])", "");
-  te_null(false, scope, "max(l:[])", r#"parameter 'list' not found"#);
-  te_null(false, scope, "max(l:[1,2,3])", r#"parameter 'list' not found"#);
-  te_number(false, scope, "max([2021])", 2021, 0);
-  te_number(false, scope, "max(2021)", 2021, 0);
-  te_number(false, scope, "max([1,2,3])", 3, 0);
-  te_number(false, scope, "max(1,2,3)", 3, 0);
-  te_number(false, scope, "max([8,4,2.89,3,8.0001,2.89,5])", 80001, 4);
-  te_number(false, scope, "max(8,4,2.89,3,8.0001,2.89,5)", 80001, 4);
-  te_number(false, scope, "max([2837465.9584,-39408573.456749])", 28374659584, 4);
-  te_number(false, scope, "max(2837465.9584,-39408573.456749)", 28374659584, 4);
-  te_string(false, scope, r#"max(["a","b","c"])"#, "c");
-  te_string(false, scope, r#"max("a","b","c")"#, "c");
-  te_string(false, scope, r#"max("John","Johnny")"#, "Johnny");
-}
-
-#[test]
 fn test_median() {
   let scope = &te_scope("{}");
   te_null(false, scope, "median()", r#"expected 1+ parameters, actual number of parameters is 0"#);

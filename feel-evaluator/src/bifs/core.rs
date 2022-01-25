@@ -532,9 +532,7 @@ pub fn max(values: &[Value]) -> Value {
             }
           }
           Value::Null(_) => {}
-          other => {
-            return value_null!("max: expected value of type number or Null, but encountered: {:?}", other.type_of());
-          }
+          other => return invalid_argument_type!("max", "number", other.type_of()),
         }
       }
       Value::Number(max)
@@ -549,16 +547,12 @@ pub fn max(values: &[Value]) -> Value {
             }
           }
           Value::Null(_) => {}
-          other => {
-            return value_null!("max: expected value of type string or Null, but encountered: {:?}", other.type_of());
-          }
+          other => return invalid_argument_type!("max", "string", other.type_of()),
         }
       }
       Value::String(max)
     }
-    other => {
-      value_null!("max: unhandled value type: {:?}", other.type_of())
-    }
+    other => return invalid_argument_type!("max", "number, string", other.type_of()),
   };
 }
 

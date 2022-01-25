@@ -57,6 +57,7 @@ mod bif_insert_before;
 mod bif_list_contains;
 mod bif_log;
 mod bif_lower_case;
+mod bif_max;
 mod bif_mean;
 mod bif_reverse;
 mod bif_sort;
