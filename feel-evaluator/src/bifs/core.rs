@@ -1232,7 +1232,7 @@ pub fn time_4(hour_value: &Value, minute_value: &Value, second_value: &Value, du
   value_null!("time_4")
 }
 
-/// ???
+/// Returns new list containing concatenated list with duplicates removed.
 pub fn union(lists: &[Value]) -> Value {
   let mut result = vec![];
   for list in lists {
@@ -1243,7 +1243,7 @@ pub fn union(lists: &[Value]) -> Value {
         }
       }
     } else {
-      return value_null!("union");
+      return invalid_argument_type!("union", "list", list.type_of());
     }
   }
   Value::List(Values::new(result))
