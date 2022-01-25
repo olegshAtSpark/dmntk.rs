@@ -1003,7 +1003,7 @@ pub fn sum(values: &[Value]) -> Value {
         return invalid_argument_type!("sum", "number", value.type_of());
       }
     }
-    return Value::Number(sum);
+    Value::Number(sum)
   } else {
     invalid_argument_type!("sum", "number", values[0].type_of())
   }
@@ -1259,7 +1259,7 @@ pub fn upper_case(input_string_value: &Value) -> Value {
   }
 }
 
-/// ???
+/// Returns years and months duration between `from` and `to`.
 pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value {
   if let Value::Date(from) = from_value {
     if let Value::DateTime(to) = to_value {
@@ -1268,6 +1268,7 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
     if let Value::Date(to) = to_value {
       return YearsAndMonthsDuration(to.ym_duration(from));
     }
+    return invalid_argument_type!("years and months duration", "date, date and time", to_value.type_of());
   }
   if let Value::DateTime(from) = from_value {
     if let Value::DateTime(to) = to_value {
@@ -1276,8 +1277,9 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
     if let Value::Date(to) = to_value {
       return YearsAndMonthsDuration(to.ym_duration(&from.date()));
     }
+    return invalid_argument_type!("years and months duration", "date, date and time", to_value.type_of());
   }
-  value_null!("years_and_months_duration")
+  invalid_argument_type!("years and months duration", "date, date and time", from_value.type_of())
 }
 
 #[cfg(test)]

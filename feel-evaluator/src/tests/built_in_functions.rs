@@ -33,34 +33,6 @@
 use super::*;
 
 #[test]
-fn test_duration() {
-  let scope = &te_scope("{}");
-  te_years_and_months_duration(false, scope, r#"duration("P1Y")"#, 1, 0);
-  te_years_and_months_duration(false, scope, r#"duration("P4Y")"#, 4, 0);
-  te_years_and_months_duration(false, scope, r#"duration("-P999999999Y")"#, -999_999_999, 0);
-  te_years_and_months_duration(false, scope, r#"duration("P999999999Y")"#, 999_999_999, 0);
-  te_years_and_months_duration(false, scope, r#"duration(from:"P26M")"#, 2, 2);
-  te_days_and_time_duration(false, scope, r#"duration("P1D")"#, false, SECONDS_IN_DAY, 0);
-  te_days_and_time_duration(false, scope, r#"duration("P4D")"#, false, 4 * SECONDS_IN_DAY, 0);
-  te_days_and_time_duration(false, scope, r#"duration("PT2H")"#, false, 2 * SECONDS_IN_HOUR, 0);
-  te_days_and_time_duration(false, scope, r#"duration("PT3M")"#, false, 3 * SECONDS_IN_MINUTE, 0);
-  te_days_and_time_duration(false, scope, r#"duration("PT4S")"#, false, 4, 0);
-  te_days_and_time_duration(false, scope, r#"duration(from:"PT24H")"#, false, SECONDS_IN_DAY, 0);
-  te_null(false, scope, "duration(null)", "duration");
-  te_null(false, scope, "duration()", "expected 1 parameters, actual number of parameters is 0");
-  te_null(false, scope, "duration([])", "duration");
-  te_null(false, scope, r#"duration("")"#, "duration");
-  te_null(false, scope, "duration(2017)", "duration");
-  te_null(false, scope, r#"duration("2012T-12-2511:00:00Z")"#, "duration");
-  te_null(false, scope, r#"duration("P")"#, "duration");
-  te_null(false, scope, r#"duration("P0")"#, "duration");
-  te_null(false, scope, r#"duration("1Y")"#, "duration");
-  te_null(false, scope, r#"duration("1D")"#, "duration");
-  te_null(false, scope, r#"duration("P1H")"#, "duration");
-  te_null(false, scope, r#"duration("P1S")"#, "duration");
-}
-
-#[test]
 fn test_insert_before() {
   let scope = &te_scope(r#"{}"#);
   te_be_value(false, scope, r#"insert before([2,3,4,5],1,1)"#, r#"[1,2,3,4,5]"#);
@@ -283,23 +255,4 @@ fn test_substring_before() {
   let scope = &te_scope("{}");
   te_string(false, scope, r#"substring before("foobar","bar")"#, "foo");
   te_string(false, scope, r#"substring before("foobar","xyz")"#, "");
-}
-
-#[test]
-fn test_years_and_months_duration() {
-  let scope = &te_scope("{}");
-  te_years_and_months_duration(
-    false,
-    scope,
-    r#"years and months duration(date("2013-08-24"),date and time("2017-12-15T00:59:59"))"#,
-    4,
-    3,
-  );
-  te_years_and_months_duration(
-    false,
-    scope,
-    r#"years and months duration(date and time("2017-02-28T23:59:59"),date("2019-07-23"))"#,
-    2,
-    4,
-  );
 }

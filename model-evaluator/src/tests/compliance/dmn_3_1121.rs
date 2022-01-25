@@ -56,7 +56,7 @@ fn _0002() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_002_4e7651ae0e",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -67,7 +67,7 @@ fn _0003() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_003_0886738d31",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -78,7 +78,7 @@ fn _0004() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_004_1bdfef922b",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -89,7 +89,7 @@ fn _0005() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_005_d0a077da4e",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -100,7 +100,7 @@ fn _0006() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_006_f20de28d3f",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -241,7 +241,7 @@ fn _0027() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_027_3374dd86c6",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is Null)"#,
   );
 }
 
@@ -274,7 +274,7 @@ fn _0030() {
     &MODEL_EVALUATOR,
     "feel-years-and-months-duration-function_ErrorCase_030_ec16878596",
     &ctx,
-    r#"null(years_and_months_duration)"#,
+    r#"null([core::years and months duration] invalid argument type, expected date, date and time, actual type is list<Null>)"#,
   );
 }
 
