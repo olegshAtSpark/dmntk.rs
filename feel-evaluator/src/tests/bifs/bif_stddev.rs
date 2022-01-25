@@ -62,3 +62,18 @@ fn _0005() {
 fn _0006() {
   te_be_value(false, &scope!(), r#"stddev(5,6,8,9)"#, r#"1.825741858350553711523232609336007"#);
 }
+
+#[test]
+fn _0007() {
+  te_null(false, &scope!(), r#"stddev()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0008() {
+  te_null(
+    false,
+    &scope!(),
+    r#"stddev(true)"#,
+    r#"[positional::stddev] invalid argument type, expected list, actual type is boolean"#,
+  );
+}

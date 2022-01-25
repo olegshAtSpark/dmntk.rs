@@ -229,3 +229,26 @@ fn _0028() {
     r#"[core::date] invalid argument type, expected number (day), actual type is Null"#,
   );
 }
+
+#[test]
+fn _0029() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date()"#, r#"expected 1,3 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0030() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date(2022,01)"#, r#"expected 1,3 parameters, actual number of parameters is 2"#);
+}
+
+#[test]
+fn _0031() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(2022,1,1,1)"#,
+    r#"expected 1,3 parameters, actual number of parameters is 4"#,
+  );
+}

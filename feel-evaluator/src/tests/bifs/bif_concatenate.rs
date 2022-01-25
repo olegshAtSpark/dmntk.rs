@@ -57,3 +57,13 @@ fn _0004() {
     r#"[core::concatenate] invalid argument type, expected list, actual type is number"#,
   );
 }
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"concatenate()"#,
+    r#"expected 1+ parameters, actual number of parameters is 0"#,
+  );
+}

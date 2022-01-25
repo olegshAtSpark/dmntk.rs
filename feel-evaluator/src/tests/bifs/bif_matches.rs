@@ -70,3 +70,28 @@ fn _0007() {
   );
   te_bool(false, scope, r#"matches(poem, "Kaum.*krähen")"#, false);
 }
+
+#[test]
+fn _0008() {
+  te_null(false, &scope!(), r#"matches()"#, r#"expected 2,3 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0009() {
+  te_null(
+    false,
+    &scope!(),
+    r#"matches("abc")"#,
+    r#"expected 2,3 parameters, actual number of parameters is 1"#,
+  );
+}
+
+#[test]
+fn _0010() {
+  te_null(
+    false,
+    &scope!(),
+    r#"matches("abc","a","b","c")"#,
+    r#"expected 2,3 parameters, actual number of parameters is 4"#,
+  );
+}

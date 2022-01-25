@@ -67,3 +67,8 @@ fn _0005() {
 fn _0006() {
   te_null(false, &scope!(), r#"mean(l: [1,2,3])"#, r#"parameter 'list' not found"#);
 }
+
+#[test]
+fn _0007() {
+  te_null(false, &scope!(), r#"mean()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
+}

@@ -57,3 +57,23 @@ fn _0004() {
 fn _0005() {
   te_string(false, &scope!(), r#"substring("\U01F40Eab",2)"#, "ab");
 }
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring()"#,
+    r#"expected 2,3 parameters, actual number of parameters is 0"#,
+  );
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring("abc",1,2,3)"#,
+    r#"expected 2,3 parameters, actual number of parameters is 4"#,
+  );
+}

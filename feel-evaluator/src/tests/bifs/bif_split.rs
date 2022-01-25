@@ -42,3 +42,28 @@ fn _0001() {
 fn _0002() {
   te_be_value(false, &scope!(), r#"split("a;b;c;;",";")"#, r#"["a","b","c","",""]"#);
 }
+
+#[test]
+fn _0003() {
+  te_null(false, &scope!(), r#"split()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0004() {
+  te_null(
+    false,
+    &scope!(),
+    r#"split("abc")"#,
+    r#"expected 2 parameters, actual number of parameters is 1"#,
+  );
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"split("abc","a","b")"#,
+    r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
+}

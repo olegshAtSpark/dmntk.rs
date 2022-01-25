@@ -62,3 +62,23 @@ fn _0003() {
     r#"[core::get entries] invalid argument type, expected context, actual type is number"#,
   );
 }
+
+#[test]
+fn _0004() {
+  te_null(
+    false,
+    &scope!(),
+    r#"get entries()"#,
+    r#"expected 1 parameters, actual number of parameters is 0"#,
+  );
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"get entries(1,2)"#,
+    r#"expected 1 parameters, actual number of parameters is 2"#,
+  );
+}

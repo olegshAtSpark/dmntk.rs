@@ -35,26 +35,31 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_number(false, &scope!(), r#"sum(1,2,3,4,5,6,7,8,9,10)"#, 55, 0);
+  te_number(false, &scope!(), r#"sum(101.5)"#, 1015, 1);
 }
 
 #[test]
 fn _0002() {
-  te_number(false, &scope!(), r#"sum([1,2,3,4,5,6,7,8,9,10])"#, 55, 0);
+  te_number(false, &scope!(), r#"sum(1,2,3,4,5,6,7,8,9,10)"#, 55, 0);
 }
 
 #[test]
 fn _0003() {
-  te_null(false, &scope!(), r#"sum([])"#, r#""#);
+  te_number(false, &scope!(), r#"sum([1,2,3,4,5,6,7,8,9,10])"#, 55, 0);
 }
 
 #[test]
 fn _0004() {
-  te_null(false, &scope!(), r#"sum()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
+  te_null(false, &scope!(), r#"sum([])"#, r#""#);
 }
 
 #[test]
 fn _0005() {
+  te_null(false, &scope!(), r#"sum()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0006() {
   te_null(
     false,
     &scope!(),
@@ -64,7 +69,7 @@ fn _0005() {
 }
 
 #[test]
-fn _0006() {
+fn _0007() {
   te_null(
     false,
     &scope!(),

@@ -140,3 +140,9 @@ fn _0018() {
   let scope = scope!();
   te_null(false, &scope, "any([true,8,false])", "");
 }
+
+#[test]
+fn _0019() {
+  let scope = scope!();
+  te_null(false, &scope, "any()", r#"expected 1+ parameters, actual number of parameters is 0"#);
+}

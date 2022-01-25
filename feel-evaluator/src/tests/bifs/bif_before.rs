@@ -156,3 +156,21 @@ fn _0021() {
   let scope = &te_scope("{}");
   te_bool(false, scope, "before(range:(1..10],point:1)", false);
 }
+
+#[test]
+fn _0022() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "before()", r#"expected 2 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0023() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "before(1)", r#"expected 2 parameters, actual number of parameters is 1"#);
+}
+
+#[test]
+fn _0024() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "before(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+}

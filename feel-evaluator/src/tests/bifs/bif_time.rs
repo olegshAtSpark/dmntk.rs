@@ -31,6 +31,7 @@
  */
 
 use super::super::*;
+use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
@@ -203,4 +204,34 @@ fn _0027() {
 fn _0028() {
   let scope = &te_scope("{}");
   te_null(false, scope, r#"time(12,12,-12,null)"#, "time_4");
+}
+
+#[test]
+fn _0029() {
+  te_time(false, &scope!(), r#"time(11,59,45)"#, FeelTime::local(11, 59, 45, 0));
+}
+
+#[test]
+fn _0030() {
+  te_null(false, &scope!(), r#"time()"#, r#"expected 1,3,4 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0031() {
+  te_null(
+    false,
+    &scope!(),
+    r#"time(12,12)"#,
+    r#"expected 1,3,4 parameters, actual number of parameters is 2"#,
+  );
+}
+
+#[test]
+fn _0032() {
+  te_null(
+    false,
+    &scope!(),
+    r#"time(12,12,12,12,12)"#,
+    r#"expected 1,3,4 parameters, actual number of parameters is 5"#,
+  );
 }

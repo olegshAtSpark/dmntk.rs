@@ -42,3 +42,23 @@ fn _0001() {
 fn _0002() {
   te_string(false, &scope!(), r#"substring before("foobar","xyz")"#, "");
 }
+
+#[test]
+fn _0003() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring before()"#,
+    r#"expected 2 parameters, actual number of parameters is 0"#,
+  );
+}
+
+#[test]
+fn _0004() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring before("a","b","c")"#,
+    r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
+}

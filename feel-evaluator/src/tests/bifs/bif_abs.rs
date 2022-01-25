@@ -136,3 +136,13 @@ fn _0014() {
     r#"[core::abs] invalid argument type, expected number, actual type is string"#,
   );
 }
+
+#[test]
+fn _0015() {
+  te_null(false, &scope!(), r#"abs()"#, r#"expected 1 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0016() {
+  te_null(false, &scope!(), r#"abs(1,2)"#, r#"expected 1 parameters, actual number of parameters is 2"#);
+}

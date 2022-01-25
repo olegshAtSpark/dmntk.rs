@@ -67,3 +67,23 @@ fn _0006() {
 fn _0007() {
   te_number(false, &scope!(), r#"string length("🐎😀")"#, 2, 0);
 }
+
+#[test]
+fn _0008() {
+  te_null(
+    false,
+    &scope!(),
+    r#"string length()"#,
+    r#"expected 1 parameters, actual number of parameters is 0"#,
+  );
+}
+
+#[test]
+fn _0009() {
+  te_null(
+    false,
+    &scope!(),
+    r#"string length("abc","def")"#,
+    r#"expected 1 parameters, actual number of parameters is 2"#,
+  );
+}

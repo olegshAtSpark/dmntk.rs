@@ -137,3 +137,38 @@ fn _0014() {
     r#"[core::number] invalid argument type, expected string, actual type is number"#,
   );
 }
+
+#[test]
+fn _0015() {
+  te_null(false, &scope!(), r#"number()"#, r#"expected 3 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0016() {
+  te_null(
+    false,
+    &scope!(),
+    r#"number(1000)"#,
+    r#"expected 3 parameters, actual number of parameters is 1"#,
+  );
+}
+
+#[test]
+fn _0017() {
+  te_null(
+    false,
+    &scope!(),
+    r#"number(1000,",")"#,
+    r#"expected 3 parameters, actual number of parameters is 2"#,
+  );
+}
+
+#[test]
+fn _0018() {
+  te_null(
+    false,
+    &scope!(),
+    r#"number(1000,",",".",",")"#,
+    r#"expected 3 parameters, actual number of parameters is 4"#,
+  );
+}

@@ -358,3 +358,23 @@ fn _0037() {
     "[core::date and time] invalid argument type, expected time, actual type is boolean",
   );
 }
+
+#[test]
+fn _0038() {
+  te_null(
+    false,
+    &scope!(),
+    r#"date and time()"#,
+    "expected 1,2 parameters, actual number of parameters is 0",
+  );
+}
+
+#[test]
+fn _0039() {
+  te_null(
+    false,
+    &scope!(),
+    r#"date and time("","","","")"#,
+    "expected 1,2 parameters, actual number of parameters is 4",
+  );
+}

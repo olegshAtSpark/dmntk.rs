@@ -217,3 +217,38 @@ fn _0032() {
 fn _0033() {
   te_string(false, &scope!(), r##"replace("a\u000Ab\u000Ac\u000A","[A-Z]\n","u","i")"##, r##"uuu"##);
 }
+
+#[test]
+fn _0034() {
+  te_null(false, &scope!(), r#"replace()"#, r#"expected 3,4 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0035() {
+  te_null(
+    false,
+    &scope!(),
+    r#"replace("abc")"#,
+    r#"expected 3,4 parameters, actual number of parameters is 1"#,
+  );
+}
+
+#[test]
+fn _0036() {
+  te_null(
+    false,
+    &scope!(),
+    r#"replace("abc","b")"#,
+    r#"expected 3,4 parameters, actual number of parameters is 2"#,
+  );
+}
+
+#[test]
+fn _0037() {
+  te_null(
+    false,
+    &scope!(),
+    r#"replace("abc","b","c","d","e")"#,
+    r#"expected 3,4 parameters, actual number of parameters is 5"#,
+  );
+}
