@@ -49,7 +49,7 @@ enum Action {
   /// Test `FEEL` expression.
   TestFeelExpression(String, String, bool),
   /// Export `FEEL` expression to HTML.
-  ExportFeelExpression(String, String),
+  ExportFeelExpression(String, String, String),
   /// Parse decision table.
   ParseDecisionTable(String),
   /// Evaluate decision table.
@@ -61,7 +61,7 @@ enum Action {
   /// Recognize decision table.
   RecognizeDecisionTable(String),
   /// Parse `DMN` model`.
-  ParseDmnModel(String),
+  ParseDmnModel(String, String),
   /// Evaluate `DMN` model`.
   EvaluateDmnModel(String, String, String),
   /// Test `DMN` model`.
@@ -91,8 +91,8 @@ pub async fn do_action() -> std::io::Result<()> {
       test_feel_expression(&test_file_name, &feel_file_name, summary_only);
       Ok(())
     }
-    Action::ExportFeelExpression(feel_file_name, html_file_name) => {
-      export_feel_expression(&feel_file_name, &html_file_name);
+    Action::ExportFeelExpression(input_file_name, feel_file_name, html_file_name) => {
+      export_feel_expression(&input_file_name, &feel_file_name, &html_file_name);
       Ok(())
     }
     Action::ParseDecisionTable(dectab_file_name) => {
@@ -115,20 +115,20 @@ pub async fn do_action() -> std::io::Result<()> {
       recognize_decision_table(&dectab_file_name);
       Ok(())
     }
-    Action::ParseDmnModel(dectab_file_name) => {
-      parse_dmn_model(&dectab_file_name);
+    Action::ParseDmnModel(dmn_file_name, color) => {
+      parse_dmn_model(&dmn_file_name, &color);
       Ok(())
     }
-    Action::EvaluateDmnModel(dectab_file_name, ctx_file_name, invocable_name) => {
-      evaluate_dmn_model(&dectab_file_name, &ctx_file_name, &invocable_name);
+    Action::EvaluateDmnModel(dmn_file_name, ctx_file_name, invocable_name) => {
+      evaluate_dmn_model(&dmn_file_name, &ctx_file_name, &invocable_name);
       Ok(())
     }
-    Action::TestDmnModel(test_file_name, dectab_file_name, invocable_name, summary_only) => {
-      test_dmn_model(&test_file_name, &dectab_file_name, &invocable_name, summary_only);
+    Action::TestDmnModel(test_file_name, dmn_file_name, invocable_name, summary_only) => {
+      test_dmn_model(&test_file_name, &dmn_file_name, &invocable_name, summary_only);
       Ok(())
     }
-    Action::ExportDmnModel(dectab_file_name, html_file_name) => {
-      export_dmn_model(&dectab_file_name, &html_file_name);
+    Action::ExportDmnModel(dmn_file_name, html_file_name) => {
+      export_dmn_model(&dmn_file_name, &html_file_name);
       Ok(())
     }
     Action::StartService(opt_host, opt_port, opt_dir) => dmntk_server::start_server(opt_host, opt_port, opt_dir).await,
@@ -155,9 +155,11 @@ fn get_matches() -> ArgMatches {
       .arg(arg!(<TEST_FILE>).help("File containing test cases for tested FEEL expression").required(true).index(1))
       .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be tested").required(true).index(2)))
     .subcommand(App::new("xfe").about("eXport FEEL Expression").display_order(13)
-      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be exported to HTML").required(true).index(1))
-      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for expression to be exported to HTML").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be exported to HTML").required(true).index(2))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(3)))
     .subcommand(App::new("pdm").about("Parse DMN Model").display_order(5)
+      .arg(arg!(-c --color).help("Control when colored output is used").takes_value(true).display_order(1))
       .arg(arg!(<DMN_FILE>).help("File containing DMN model to be parsed").required(true).index(1)))
     .subcommand(App::new("edm").about("Evaluate DMN Model").display_order(2)
       .arg(arg!(-i --invocable).help("Name of the invocable (decision, bkm, decision service) to be evaluated").required(true).takes_value(true).display_order(1))
@@ -169,7 +171,7 @@ fn get_matches() -> ArgMatches {
       .arg(arg!(<TEST_FILE>).help("File containing test cases for tested DMN model").required(true).index(1))
       .arg(arg!(<DMN_FILE>).help("File containing DMN model to be tested").required(true).index(2)))
     .subcommand(App::new("xdm").about("eXport DMN Model").display_order(11)
-      .arg(arg!(<FEEL_FILE>).help("File containing DMN model to be exported to HTML").required(true).index(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be exported to HTML").required(true).index(1))
       .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
     .subcommand(App::new("pdt").about("Parse Decision Table").display_order(6)
       .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be parsed").required(true).index(1)))
@@ -222,6 +224,7 @@ fn get_cli_action() -> Action {
   // export FEEL expression subcommand
   if let Some(matches) = matches.subcommand_matches("xfe") {
     return Action::ExportFeelExpression(
+      matches.value_of("INPUT_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("FEEL_FILE").unwrap_or("unknown.feel").to_string(),
       matches.value_of("HTML_FILE").unwrap_or("unknown.html").to_string(),
     );
@@ -258,7 +261,10 @@ fn get_cli_action() -> Action {
   }
   // parse DMN model subcommand
   if let Some(matches) = matches.subcommand_matches("pdm") {
-    return Action::ParseDmnModel(matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string());
+    return Action::ParseDmnModel(
+      matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
+      matches.value_of("color").unwrap_or("auto").to_string(),
+    );
   }
   // evaluate DMN model subcommand
   if let Some(matches) = matches.subcommand_matches("edm") {
@@ -373,8 +379,8 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str, summary_only
 }
 
 /// Exports `FEEL` expression loaded from file to HTML output file.
-fn export_feel_expression(_feel_file_name: &str, _html_file_name: &str) {
-  println!("xfe command is not implemented yet")
+fn export_feel_expression(_input_file_name: &str, _feel_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Parses decision table loaded from text file.
@@ -487,8 +493,8 @@ fn test_decision_table(test_file_name: &str, dectab_file_name: &str, summary_onl
 }
 
 /// Exports decision table loaded from text file to HTML output file.
-fn export_decision_table(_dectab_file_name: &str, _html_file_name: &str) {
-  println!("xdt command is not implemented yet")
+fn export_decision_table(_dectab_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Recognizes the decision table loaded from text file.
@@ -505,57 +511,60 @@ fn recognize_decision_table(dtb_file_name: &str) {
 }
 
 /// Parses `DMN` model loaded from XML file.
-fn parse_dmn_model(dmn_file_name: &str) {
-  let c_a = ascii256!(255);
-  let c_b = ascii256!(82);
-  let c_c = ascii256!(184);
-  let c_d = ascii256!(208);
+fn parse_dmn_model(dmn_file_name: &str, color: &str) {
+  let use_color = color.to_lowercase() != "never";
+  let color_a = if use_color { ascii256!(255) } else { "".to_string() };
+  let color_b = if use_color { ascii256!(82) } else { "".to_string() };
+  let color_c = if use_color { ascii256!(184) } else { "".to_string() };
+  let color_d = if use_color { ascii256!(208) } else { "".to_string() };
+  let color_e = if use_color { ASCII_RED } else { "" };
+  let color_r = if use_color { ASCII_RESET } else { "" };
   let none = "(none)".to_string();
   match std::fs::read_to_string(dmn_file_name) {
     Ok(dmn_file_content) => match dmntk_model::parse(&dmn_file_content) {
       Ok(definitions) => {
-        println!("\n{}Model{}", c_a, ASCII_RESET);
-        println!("{} ├─ name:{} {}{}", c_a, c_b, definitions.name(), ASCII_RESET);
-        println!("{} ├─ namespace:{} {}{}", c_a, c_b, definitions.namespace(), ASCII_RESET);
-        println!("{} └─ id:{} {}{}", c_a, c_b, definitions.id().as_ref().unwrap_or(&none), ASCII_RESET);
+        println!("\n{}Model{}", color_a, color_r);
+        println!("{} ├─ name:{} {}{}", color_a, color_b, definitions.name(), color_r);
+        println!("{} ├─ namespace:{} {}{}", color_a, color_b, definitions.namespace(), color_r);
+        println!("{} └─ id:{} {}{}", color_a, color_b, definitions.id().as_ref().unwrap_or(&none), color_r);
         // definitions
         if definitions.decisions().is_empty() {
-          println!("\n{}Decisions{} {}{}", c_a, c_c, none, ASCII_RESET);
+          println!("\n{}Decisions{} {}{}", color_a, color_c, none, color_r);
         } else {
-          println!("\n{}Decisions{}", c_a, ASCII_RESET);
+          println!("\n{}Decisions{}", color_a, color_r);
           let decision_count = definitions.decisions().len();
           for (i, decision) in definitions.decisions().iter().enumerate() {
             if i < decision_count - 1 {
-              print!(" {}├─{}", c_a, ASCII_RESET);
+              print!(" {}├─{}", color_a, color_r);
             } else {
-              print!(" {}└─{}", c_a, ASCII_RESET);
+              print!(" {}└─{}", color_a, color_r);
             }
-            println!(" {}{}{}", c_c, decision.name(), ASCII_RESET);
+            println!(" {}{}{}", color_c, decision.name(), color_r);
           }
         }
         // item data
         if definitions.input_data().is_empty() {
-          println!("\n{}Input data{} {}{}", c_a, c_c, none, ASCII_RESET);
+          println!("\n{}Input data{} {}{}", color_a, color_c, none, color_r);
         } else {
-          println!("\n{}Input data{}", c_a, ASCII_RESET);
+          println!("\n{}Input data{}", color_a, color_r);
           let input_data_count = definitions.input_data().len();
           for (i, input_data) in definitions.input_data().iter().enumerate() {
             if i < input_data_count - 1 {
-              print!(" {}├─{}", c_a, ASCII_RESET);
+              print!(" {}├─{}", color_a, color_r);
             } else {
-              print!(" {}└─{}", c_a, ASCII_RESET);
+              print!(" {}└─{}", color_a, color_r);
             }
             println!(
               " {}{} ({}){}",
-              c_d,
+              color_d,
               input_data.name(),
               input_data.variable().type_ref().as_ref().unwrap_or(&none),
-              ASCII_RESET
+              color_r
             );
           }
         }
         // more...
-        print!("\n{}MORE DETAILS WILL BE IMPLEMENTED...{}\n\n", ASCII_RED, ASCII_RESET);
+        print!("\n{}MORE DETAILS WILL BE IMPLEMENTED...{}\n\n", color_e, color_r);
       }
       Err(reason) => println!("parsing model file failed with reason: {}", reason),
     },
@@ -633,8 +642,8 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
 }
 
 /// Exports `DMN` model loaded from XML file to HTML output file.
-fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
-  println!("xdm command is not implemented yet")
+fn export_dmn_model(_dmn_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Generates examples in current directory.
