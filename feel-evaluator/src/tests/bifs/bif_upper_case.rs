@@ -30,44 +30,55 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_ends_with;
-mod bif_even;
-mod bif_exp;
-mod bif_flatten;
-mod bif_floor;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_index_of;
-mod bif_insert_before;
-mod bif_list_contains;
-mod bif_log;
-mod bif_lower_case;
-mod bif_max;
-mod bif_mean;
-mod bif_min;
-mod bif_mode;
-mod bif_modulo;
-mod bif_not;
-mod bif_number;
-mod bif_odd;
-mod bif_reverse;
-mod bif_sort;
-mod bif_starts_with;
-mod bif_string;
-mod bif_time;
-mod bif_upper_case;
+#[test]
+fn _0001() {
+  te_string(false, &scope!(), r#"upper case("xyZ ")"#, r#"XYZ"#);
+}
+
+#[test]
+fn _0002() {
+  te_string(false, &scope!(), r#"upper case(string:"xyZ ")"#, r#"XYZ"#);
+}
+
+#[test]
+fn _0003() {
+  te_string(false, &scope!(), r#"upper case("")"#, r#""#);
+}
+
+#[test]
+fn _0004() {
+  te_null(
+    false,
+    &scope!(),
+    r#"upper case()"#,
+    r#"expected 1 parameters, actual number of parameters is 0"#,
+  );
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"upper case("ABC",4)"#,
+    r#"expected 1 parameters, actual number of parameters is 2"#,
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"upper case(date("2021-01-24"))"#,
+    r#"[core::upper case] invalid argument type, expected string, actual type is date"#,
+  );
+}
+
+#[test]
+fn _0007() {
+  te_null(false, &scope!(), r#"upper case(s: "ABc")"#, r#"parameter 'string' not found"#);
+}

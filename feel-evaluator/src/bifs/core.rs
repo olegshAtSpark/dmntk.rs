@@ -1254,7 +1254,7 @@ pub fn upper_case(input_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     Value::String(input_string.to_uppercase().trim().to_string())
   } else {
-    value_null!("upper_case")
+    invalid_argument_type!("upper case", "string", input_string_value.type_of())
   }
 }
 
