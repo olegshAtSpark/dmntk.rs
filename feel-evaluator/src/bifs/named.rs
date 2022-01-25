@@ -670,8 +670,20 @@ fn bif_string_length(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_sublist(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_sublist")
+fn bif_sublist(parameters: &NamedParameters) -> Value {
+  if let Some((list_value, _)) = get_param(parameters, &NAME_LIST) {
+    if let Some((start_position_value, _)) = get_param(parameters, &NAME_START_POSITION) {
+      if let Some((length_value, _)) = get_param(parameters, &NAME_LENGTH) {
+        core::sublist3(list_value, start_position_value, length_value)
+      } else {
+        core::sublist2(list_value, start_position_value)
+      }
+    } else {
+      parameter_not_found!(&NAME_START_POSITION)
+    }
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_substring(parameters: &NamedParameters) -> Value {

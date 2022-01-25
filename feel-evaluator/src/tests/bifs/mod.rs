@@ -78,6 +78,7 @@ mod bif_starts_with;
 mod bif_stddev;
 mod bif_string;
 mod bif_string_length;
+mod bif_sublist;
 mod bif_substring;
 mod bif_substring_after;
 mod bif_substring_before;
