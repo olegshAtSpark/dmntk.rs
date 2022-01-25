@@ -30,46 +30,45 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_ends_with;
-mod bif_even;
-mod bif_exp;
-mod bif_flatten;
-mod bif_floor;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_index_of;
-mod bif_insert_before;
-mod bif_list_contains;
-mod bif_log;
-mod bif_lower_case;
-mod bif_max;
-mod bif_mean;
-mod bif_min;
-mod bif_mode;
-mod bif_modulo;
-mod bif_not;
-mod bif_number;
-mod bif_odd;
-mod bif_reverse;
-mod bif_sort;
-mod bif_starts_with;
-mod bif_string;
-mod bif_sum;
-mod bif_time;
-mod bif_union;
-mod bif_upper_case;
+#[test]
+fn _0001() {
+  te_number(false, &scope!(), r#"sum(1,2,3,4,5,6,7,8,9,10)"#, 55, 0);
+}
+
+#[test]
+fn _0002() {
+  te_number(false, &scope!(), r#"sum([1,2,3,4,5,6,7,8,9,10])"#, 55, 0);
+}
+
+#[test]
+fn _0003() {
+  te_null(false, &scope!(), r#"sum([])"#, r#""#);
+}
+
+#[test]
+fn _0004() {
+  te_null(false, &scope!(), r#"sum()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"sum(1,"a")"#,
+    r#"[core::sum] invalid argument type, expected number, actual type is string"#,
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"sum(true,1,"a")"#,
+    r#"[core::sum] invalid argument type, expected number, actual type is boolean"#,
+  );
+}

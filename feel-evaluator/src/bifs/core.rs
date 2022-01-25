@@ -1000,12 +1000,13 @@ pub fn sum(values: &[Value]) -> Value {
       if let Value::Number(v) = *value {
         sum += v;
       } else {
-        return value_null!("sum");
+        return invalid_argument_type!("sum", "number", value.type_of());
       }
     }
     return Value::Number(sum);
+  } else {
+    invalid_argument_type!("sum", "number", values[0].type_of())
   }
-  value_null!("sum")
 }
 
 /// ???
