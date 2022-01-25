@@ -77,3 +77,13 @@ fn _0007() {
     r#"expected 2+ parameters, actual number of parameters is 1"#,
   );
 }
+
+#[test]
+fn _0008() {
+  te_null(
+    false,
+    &scope!(),
+    r#"append(list: [1])"#,
+    r#"[named::append] this function has no version with named parameters"#,
+  );
+}

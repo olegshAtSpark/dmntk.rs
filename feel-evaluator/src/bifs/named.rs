@@ -194,7 +194,7 @@ fn bif_any(parameters: &NamedParameters) -> Value {
 }
 
 fn bif_append(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_append")
+  value_null!("[named::append] this function has no version with named parameters")
 }
 
 fn bif_before(parameters: &NamedParameters) -> Value {
