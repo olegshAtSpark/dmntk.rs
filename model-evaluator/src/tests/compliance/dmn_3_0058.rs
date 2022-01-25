@@ -63,32 +63,52 @@ fn _0004() {
     &MODEL_EVALUATOR,
     "decision003_a",
     &ctx,
-    r#"null(number: FeelNumberError: invalid number literal '1,000,000.01')"#,
+    r#"null([core::number] FeelNumberError: invalid number literal '1,000,000.01')"#,
   );
 }
 
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision004", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision004",
+    &ctx,
+    r#"null([core::number] grouping separator must be space, period, comma or null)"#,
+  );
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision004_a", &ctx, r#"null(number)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision004_a",
+    &ctx,
+    r#"null([core::number] grouping separator must be space, period, comma or null)"#,
+  );
 }
 
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision004_b", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision004_b",
+    &ctx,
+    r#"null([core::number] decimal separator must be period, comma or null)"#,
+  );
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision004_c", &ctx, r#"null(number)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision004_c",
+    &ctx,
+    r#"null([core::number] decimal separator must be period, comma or null)"#,
+  );
 }
 
 #[test]
@@ -118,25 +138,45 @@ fn _0012() {
 #[test]
 fn _0013() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision009", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision009",
+    &ctx,
+    r#"null([core::number] decimal separator must be different from grouping separator)"#,
+  );
 }
 
 #[test]
 fn _0014() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision010", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision010",
+    &ctx,
+    r#"null([core::number] decimal separator must be different from grouping separator)"#,
+  );
 }
 
 #[test]
 fn _0015() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision011", &ctx, r#"null(number)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision011",
+    &ctx,
+    r#"null([core::number] invalid argument type, expected string, actual type is Null)"#,
+  );
 }
 
 #[test]
 fn _0016() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision012", &ctx, r#"null(number)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision012",
+    &ctx,
+    r#"null([core::number] invalid argument type, expected string, actual type is number)"#,
+  );
 }
 
 #[test]
@@ -158,7 +198,7 @@ fn _0019() {
     &MODEL_EVALUATOR,
     "decision015",
     &ctx,
-    r#"null(number: FeelNumberError: invalid number literal 'foo.bar001')"#,
+    r#"null([core::number] FeelNumberError: invalid number literal 'foo.bar001')"#,
   );
 }
 

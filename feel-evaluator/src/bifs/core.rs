@@ -708,7 +708,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
   // function for converting string to Value::Number
   let convert = |value: String| match value.parse::<FeelNumber>() {
     Ok(number) => Value::Number(number),
-    Err(reason) => value_null!("number: {}", reason),
+    Err(reason) => value_null!("[core::number] {}", reason),
   };
   match from {
     Value::String(value) => {
@@ -716,27 +716,19 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
       let grouping_sep = match grouping_separator {
         Value::String(s) => match s.as_str() {
           " " | "." | "," => Some((*s).clone()),
-          _ => {
-            return value_null!();
-          }
+          _ => return value_null!("[core::number] grouping separator must be space, period, comma or null"),
         },
         Value::Null(_) => None,
-        _ => {
-          return value_null!("number");
-        }
+        _ => return value_null!("[core::number] grouping separator must be space, period, comma or null"),
       };
       // prepare decimal separator from Value::String ot VALUE_NULL
       let decimal_sep = match decimal_separator {
         Value::String(s) => match s.as_str() {
           "." | "," => Some((*s).clone()),
-          _ => {
-            return value_null!();
-          }
+          _ => return value_null!("[core::number] decimal separator must be period, comma or null"),
         },
         Value::Null(_) => None,
-        _ => {
-          return value_null!("number");
-        }
+        _ => return value_null!("[core::number] decimal separator must be period, comma or null"),
       };
       // replace both separators and try to convert
       if let Some(grp_sep) = &grouping_sep {
@@ -744,7 +736,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
           return if *grp_sep != *dec_sep {
             convert(value.replace(grp_sep, "").replace(dec_sep, "."))
           } else {
-            value_null!()
+            value_null!("[core::number] decimal separator must be different from grouping separator")
           };
         }
       }
@@ -763,9 +755,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
       // try to convert an input parameter without replacing
       convert(value.clone())
     }
-    _ => {
-      value_null!("number")
-    }
+    _ => invalid_argument_type!("number", "string", from.type_of()),
   }
 }
 
