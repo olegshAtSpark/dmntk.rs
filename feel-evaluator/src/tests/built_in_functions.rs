@@ -134,23 +134,6 @@ fn test_median() {
 }
 
 #[test]
-fn test_odd() {
-  let scope = &te_scope("{ even number: 20, odd number: 21 }");
-  te_bool(false, scope, "odd(2)", false);
-  te_bool(false, scope, "odd(-2)", false);
-  te_bool(false, scope, "odd(1)", true);
-  te_bool(false, scope, "odd(-1)", true);
-  te_bool(false, scope, "odd(0)", false);
-  te_bool(false, scope, "odd(-0)", false);
-  te_null(false, scope, "odd()", r#"expected 1 parameters, actual number of parameters is 0"#);
-  te_null(false, scope, "odd(4,4)", r#"expected 1 parameters, actual number of parameters is 2"#);
-  te_bool(false, scope, "odd(number:4)", false);
-  te_null(false, scope, "odd(n:4)", r#"parameter 'number' not found"#);
-  te_bool(false, scope, "odd(even number)", false);
-  te_bool(false, scope, "odd(odd number)", true);
-}
-
-#[test]
 fn test_remove() {
   let scope = &te_scope("{}");
   te_null(false, scope, "remove([1,2,3,4,5],0)", r#"probably index is out of range"#);

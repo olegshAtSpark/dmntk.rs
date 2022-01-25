@@ -764,7 +764,7 @@ pub fn odd(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Boolean(v.odd())
   } else {
-    value_null!("odd")
+    invalid_argument_type!("odd", "number", value.type_of())
   }
 }
 

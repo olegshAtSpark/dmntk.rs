@@ -35,87 +35,64 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_number(false, &scope!(), r#"number("1",",",".")"#, 1, 0);
+  te_bool(false, &scope!(), "odd(2)", false);
 }
 
 #[test]
 fn _0002() {
-  te_number(false, &scope!(), r#"number("1,000.21",",",".")"#, 100021, 2);
+  te_bool(false, &scope!(), "odd(-2)", false);
 }
 
 #[test]
 fn _0003() {
-  te_number(false, &scope!(), r#"number("1 000.21"," ",".")"#, 100021, 2);
+  te_bool(false, &scope!(), "odd(1)", true);
 }
 
 #[test]
 fn _0004() {
-  te_number(false, &scope!(), r#"number("1.000,21",".",",")"#, 100021, 2);
+  te_bool(false, &scope!(), "odd(-1)", true);
 }
 
 #[test]
 fn _0005() {
-  te_number(false, &scope!(), r#"number("12345",null,null)"#, 12345, 0);
+  te_bool(false, &scope!(), "odd(0)", false);
 }
 
 #[test]
 fn _0006() {
-  te_number(false, &scope!(), r#"number("12,345",",",null)"#, 12345, 0);
+  te_bool(false, &scope!(), "odd(-0)", false);
 }
 
 #[test]
 fn _0007() {
-  te_number(false, &scope!(), r#"number("123,45",null,",")"#, 12345, 2);
+  te_null(false, &scope!(), "odd()", r#"expected 1 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0008() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number("1,000.21",".",".")"#,
-    r#"[core::number] decimal separator must be different from grouping separator"#,
-  );
+  te_null(false, &scope!(), "odd(4,4)", r#"expected 1 parameters, actual number of parameters is 2"#);
 }
 
 #[test]
 fn _0009() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number("1$000.21","$",".")"#,
-    r#"[core::number] grouping separator must be space, period, comma or null"#,
-  );
+  te_bool(false, &scope!(), "odd(number:4)", false);
 }
 
 #[test]
 fn _0010() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number("1,000$21",",","$")"#,
-    r#"[core::number] decimal separator must be period, comma or null"#,
-  );
+  te_null(false, &scope!(), "odd(n:4)", r#"parameter 'number' not found"#);
 }
 
 #[test]
 fn _0011() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number("123a56",null,null)"#,
-    r#"[core::number] FeelNumberError: invalid number literal '123a56'"#,
-  );
+  let scope = &te_scope("{ even number: 20, odd number: 21 }");
+  te_bool(false, scope, "odd(even number)", false);
 }
 
 #[test]
 fn _0012() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number("1,000.21",2,".")"#,
-    r#"[core::number] grouping separator must be space, period, comma or null"#,
-  );
+  let scope = &te_scope("{ even number: 20, odd number: 21 }");
+  te_bool(false, scope, "odd(odd number)", true);
 }
 
 #[test]
@@ -123,17 +100,7 @@ fn _0013() {
   te_null(
     false,
     &scope!(),
-    r#"number("1,000.21",",",true)"#,
-    r#"[core::number] decimal separator must be period, comma or null"#,
-  );
-}
-
-#[test]
-fn _0014() {
-  te_null(
-    false,
-    &scope!(),
-    r#"number(1000,null,null)"#,
-    r#"[core::number] invalid argument type, expected string, actual type is number"#,
+    r#"odd("2")"#,
+    r#"[core::odd] invalid argument type, expected number, actual type is string"#,
   );
 }

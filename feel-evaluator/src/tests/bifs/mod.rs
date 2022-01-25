@@ -64,6 +64,7 @@ mod bif_mode;
 mod bif_modulo;
 mod bif_not;
 mod bif_number;
+mod bif_odd;
 mod bif_reverse;
 mod bif_sort;
 mod bif_starts_with;
