@@ -40,36 +40,46 @@ fn _0001() {
 
 #[test]
 fn _0002() {
-  te_number(false, &scope!(), "decimal(1/3,2)", 330, 3);
+  te_number(false, &scope!(), "decimal(n: 1, scale: 2)", 100, 2);
 }
 
 #[test]
 fn _0003() {
-  te_number(false, &scope!(), "decimal(0.505,2)", 50, 2);
+  te_number(false, &scope!(), "decimal(scale: 2, n: 1)", 100, 2);
 }
 
 #[test]
 fn _0004() {
-  te_number(false, &scope!(), "decimal(0.515,2)", 52, 2);
+  te_number(false, &scope!(), "decimal(1/3,2)", 330, 3);
 }
 
 #[test]
 fn _0005() {
-  te_number(false, &scope!(), "decimal(1/3, 2.5)", 33, 2);
+  te_number(false, &scope!(), "decimal(0.505,2)", 50, 2);
 }
 
 #[test]
 fn _0006() {
-  te_null(false, &scope!(), "decimal(1/3, 6177)", "[core::decimal] scale is out of range: 6177");
+  te_number(false, &scope!(), "decimal(0.515,2)", 52, 2);
 }
 
 #[test]
 fn _0007() {
-  te_null(false, &scope!(), "decimal(1/3, -6112)", "[core::decimal] scale is out of range: -6112");
+  te_number(false, &scope!(), "decimal(1/3, 2.5)", 33, 2);
 }
 
 #[test]
 fn _0008() {
+  te_null(false, &scope!(), "decimal(1/3, 6177)", "[core::decimal] scale is out of range: 6177");
+}
+
+#[test]
+fn _0009() {
+  te_null(false, &scope!(), "decimal(1/3, -6112)", "[core::decimal] scale is out of range: -6112");
+}
+
+#[test]
+fn _0010() {
   te_null(
     false,
     &scope!(),
@@ -79,7 +89,7 @@ fn _0008() {
 }
 
 #[test]
-fn _0009() {
+fn _0011() {
   te_null(
     false,
     &scope!(),
@@ -89,12 +99,12 @@ fn _0009() {
 }
 
 #[test]
-fn _0010() {
+fn _0012() {
   te_null(false, &scope!(), r#"decimal()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
-fn _0011() {
+fn _0013() {
   te_null(
     false,
     &scope!(),
@@ -104,11 +114,21 @@ fn _0011() {
 }
 
 #[test]
-fn _0012() {
+fn _0014() {
   te_null(
     false,
     &scope!(),
     r#"decimal("1234",1,2)"#,
     r#"expected 2 parameters, actual number of parameters is 3"#,
   );
+}
+
+#[test]
+fn _0015() {
+  te_null(false, &scope!(), "decimal(n: 1, s: 2)", r#"parameter 'scale' not found"#);
+}
+
+#[test]
+fn _0016() {
+  te_null(false, &scope!(), "decimal(number: 1, scale: 2)", r#"parameter 'n' not found"#);
 }
