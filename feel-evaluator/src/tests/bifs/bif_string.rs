@@ -127,3 +127,8 @@ fn _0018() {
 fn _0019() {
   te_null(false, &scope!(), "string(1,2)", r#"expected 1 parameters, actual number of parameters is 2"#);
 }
+
+#[test]
+fn _0020() {
+  te_null(false, &scope!(), "string(f:1.1)", r#"parameter 'from' not found"#);
+}

@@ -67,3 +67,13 @@ fn _0005() {
 fn _0006() {
   te_null(false, &scope!(), r#"union()"#, r#"expected 1+ parameters, actual number of parameters is 0"#);
 }
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"union(list: [1,2])"#,
+    r#"[named::union] this function has no version with named parameters"#,
+  );
+}

@@ -252,3 +252,33 @@ fn _0037() {
     r#"expected 3,4 parameters, actual number of parameters is 5"#,
   );
 }
+
+#[test]
+fn _0038() {
+  te_null(
+    false,
+    &scope!(),
+    r##"replace(i:"abc",pattern:".^[d-z]*",replacement:"#",flags:"smix")"##,
+    r#"parameter 'input' not found"#,
+  );
+}
+
+#[test]
+fn _0039() {
+  te_null(
+    false,
+    &scope!(),
+    r##"replace(input:"abc",p:".^[d-z]*",replacement:"#",flags:"smix")"##,
+    r#"parameter 'pattern' not found"#,
+  );
+}
+
+#[test]
+fn _0040() {
+  te_null(
+    false,
+    &scope!(),
+    r##"replace(input:"abc",pattern:".^[d-z]*",r:"#",flags:"smix")"##,
+    r#"parameter 'replacement' not found"#,
+  );
+}

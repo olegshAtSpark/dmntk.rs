@@ -40,26 +40,36 @@ fn _0001() {
 
 #[test]
 fn _0002() {
-  te_string(false, &scope!(), r#"substring("foobar",3,3)"#, "oba");
+  te_string(false, &scope!(), r#"substring(string: "foobar", start position: 3)"#, "obar");
 }
 
 #[test]
 fn _0003() {
-  te_string(false, &scope!(), r#"substring("foobar",-2,1)"#, "a");
+  te_string(false, &scope!(), r#"substring("foobar",3,3)"#, "oba");
 }
 
 #[test]
 fn _0004() {
-  te_string(false, &scope!(), r#"substring("foob r",-2,1)"#, " ");
+  te_string(false, &scope!(), r#"substring(string: "foobar", start position: 3, length: 3)"#, "oba");
 }
 
 #[test]
 fn _0005() {
-  te_string(false, &scope!(), r#"substring("\U01F40Eab",2)"#, "ab");
+  te_string(false, &scope!(), r#"substring("foobar",-2,1)"#, "a");
 }
 
 #[test]
 fn _0006() {
+  te_string(false, &scope!(), r#"substring("foob r",-2,1)"#, " ");
+}
+
+#[test]
+fn _0007() {
+  te_string(false, &scope!(), r#"substring("\U01F40Eab",2)"#, "ab");
+}
+
+#[test]
+fn _0008() {
   te_null(
     false,
     &scope!(),
@@ -69,11 +79,31 @@ fn _0006() {
 }
 
 #[test]
-fn _0007() {
+fn _0009() {
   te_null(
     false,
     &scope!(),
     r#"substring("abc",1,2,3)"#,
     r#"expected 2,3 parameters, actual number of parameters is 4"#,
+  );
+}
+
+#[test]
+fn _0010() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring(s: "foobar", start position: 3, length: 3)"#,
+    r#"parameter 'string' not found"#,
+  );
+}
+
+#[test]
+fn _0011() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring(string: "foobar", start: 3, length: 3)"#,
+    r#"parameter 'start position' not found"#,
   );
 }

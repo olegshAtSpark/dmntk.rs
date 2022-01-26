@@ -56,6 +56,7 @@ lazy_static! {
   static ref NAME_N: Name = Name::from("n");
   static ref NAME_M: Name = Name::from("m");
   static ref NAME_NEGAND: Name = Name::from("negand");
+  static ref NAME_NEW_ITEM: Name = Name::from("newItem");
   static ref NAME_NUMBER: Name = Name::from("number");
   static ref NAME_OFFSET: Name = Name::from("offset");
   static ref NAME_PATTERN: Name = Name::from("pattern");
@@ -416,8 +417,20 @@ fn bif_index_of(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_insert_before(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_insert_before")
+fn bif_insert_before(parameters: &NamedParameters) -> Value {
+  if let Some((list_value, _)) = get_param(parameters, &NAME_LIST) {
+    if let Some((position_value, _)) = get_param(parameters, &NAME_POSITION) {
+      if let Some((new_item_value, _)) = get_param(parameters, &NAME_NEW_ITEM) {
+        core::insert_before(list_value, position_value, new_item_value)
+      } else {
+        parameter_not_found!(&NAME_NEW_ITEM)
+      }
+    } else {
+      parameter_not_found!(&NAME_POSITION)
+    }
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_is(_parameters: &NamedParameters) -> Value {
@@ -452,8 +465,20 @@ fn bif_lower_case(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_matches(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_matches")
+fn bif_matches(parameters: &NamedParameters) -> Value {
+  if let Some((input_string_value, _)) = get_param(parameters, &NAME_INPUT) {
+    if let Some((pattern_string_value, _)) = get_param(parameters, &NAME_PATTERN) {
+      if let Some((flags_string_value, _)) = get_param(parameters, &NAME_FLAGS) {
+        core::matches(input_string_value, pattern_string_value, flags_string_value)
+      } else {
+        core::matches(input_string_value, pattern_string_value, &value_null!())
+      }
+    } else {
+      parameter_not_found!(&NAME_PATTERN)
+    }
+  } else {
+    parameter_not_found!(&NAME_INPUT)
+  }
 }
 
 fn bif_max(parameters: &NamedParameters) -> Value {
@@ -739,8 +764,12 @@ fn bif_substring_before(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_sum(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_sum")
+fn bif_sum(parameters: &NamedParameters) -> Value {
+  if let Some((Value::List(list), _)) = get_param(parameters, &NAME_LIST) {
+    core::sum(list.as_vec())
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_time(parameters: &NamedParameters) -> Value {
@@ -762,7 +791,7 @@ fn bif_time(parameters: &NamedParameters) -> Value {
 }
 
 fn bif_union(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_union")
+  value_null!("[named::union] this function has no version with named parameters")
 }
 
 fn bif_upper_case(parameters: &NamedParameters) -> Value {

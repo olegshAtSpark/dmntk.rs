@@ -451,13 +451,13 @@ pub fn index_of(list: &Value, element: &Value) -> Value {
 }
 
 /// ???
-pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> Value {
+pub fn insert_before(list: &Value, position_value: &Value, new_item_value: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
     if let Value::Number(position) = position_value {
       if position.is_positive() {
         if let Some(i) = position.to_usize() {
           if i <= items.len() {
-            items.insert(i - 1, new_item.clone());
+            items.insert(i - 1, new_item_value.clone());
             return Value::List(items);
           }
         }
@@ -465,7 +465,7 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> 
       if position.is_negative() {
         if let Some(i) = position.abs().to_usize() {
           if i <= items.as_vec().len() {
-            items.insert(items.len() - i, new_item.clone());
+            items.insert(items.len() - i, new_item_value.clone());
             return Value::List(items);
           }
         }

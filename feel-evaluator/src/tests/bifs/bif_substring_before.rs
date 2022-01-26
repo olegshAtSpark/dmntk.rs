@@ -40,11 +40,16 @@ fn _0001() {
 
 #[test]
 fn _0002() {
-  te_string(false, &scope!(), r#"substring before("foobar","xyz")"#, "");
+  te_string(false, &scope!(), r#"substring before(string: "foobar", match: "bar")"#, "foo");
 }
 
 #[test]
 fn _0003() {
+  te_string(false, &scope!(), r#"substring before("foobar","xyz")"#, "");
+}
+
+#[test]
+fn _0004() {
   te_null(
     false,
     &scope!(),
@@ -54,11 +59,31 @@ fn _0003() {
 }
 
 #[test]
-fn _0004() {
+fn _0005() {
   te_null(
     false,
     &scope!(),
     r#"substring before("a","b","c")"#,
     r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring before(s: "foobar", match: "bar")"#,
+    r#"parameter 'string' not found"#,
+  );
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"substring before(string: "foobar", m: "bar")"#,
+    r#"parameter 'match' not found"#,
   );
 }
