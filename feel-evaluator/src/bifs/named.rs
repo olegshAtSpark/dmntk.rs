@@ -181,7 +181,7 @@ fn bif_after(parameters: &NamedParameters) -> Value {
   } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
     core::after(value1, value2)
   } else {
-    value_null!("invalid named parameters")
+    value_null!("[named::after] invalid named parameters")
   }
 }
 
@@ -213,7 +213,7 @@ fn bif_before(parameters: &NamedParameters) -> Value {
   } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
     core::before(value1, value2)
   } else {
-    value_null!("invalid named parameters")
+    value_null!("[named::before] invalid named parameters")
   }
 }
 
@@ -225,8 +225,15 @@ fn bif_ceiling(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_coincides(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_coincides")
+/// `coincides` built-in function, named parameters.
+fn bif_coincides(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT_1).zip(get_param(parameters, &NAME_POINT_2)) {
+    core::coincides(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::coincides(value1, value2)
+  } else {
+    value_null!("[named::coincides] invalid named parameters")
+  }
 }
 
 fn bif_concatenate(_parameters: &NamedParameters) -> Value {

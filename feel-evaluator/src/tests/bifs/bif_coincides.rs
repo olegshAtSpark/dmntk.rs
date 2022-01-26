@@ -35,17 +35,22 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_null(false, &scope!(), "after(10,1)", r#"[core::after] under construction: 10 | 1"#);
+  te_null(false, &scope!(), r#"coincides(10,10)"#, r#"[core::coincides] under construction: 10 | 10"#);
 }
 
 #[test]
 fn _0002() {
-  te_null(false, &scope!(), "after(point1: 10, point2: 1)", r#"[core::after] under construction: 10 | 1"#);
+  te_null(false, &scope!(), r#"coincides(10,11)"#, r#"[core::coincides] under construction: 10 | 11"#);
 }
 
 #[test]
 fn _0003() {
-  te_null(false, &scope!(), "after(point2: 1, point1: 10)", r#"[core::after] under construction: 10 | 1"#);
+  te_null(
+    false,
+    &scope!(),
+    r#"coincides(point1: 1, point2: 2)"#,
+    r#"[core::coincides] under construction: 1 | 2"#,
+  );
 }
 
 #[test]
@@ -53,8 +58,8 @@ fn _0004() {
   te_null(
     false,
     &scope!(),
-    "after(point: 11, range: [1..10])",
-    r#"[core::after] under construction: 11 | [1..10]"#,
+    r#"coincides(point2: 2, point1: 1)"#,
+    r#"[core::coincides] under construction: 1 | 2"#,
   );
 }
 
@@ -63,14 +68,19 @@ fn _0005() {
   te_null(
     false,
     &scope!(),
-    "after(range: [1..10], point: 11)",
-    r#"[core::after] under construction: 11 | [1..10]"#,
+    r#"coincides(p1: 10, point2: 1)"#,
+    r#"[named::coincides] invalid named parameters"#,
   );
 }
 
 #[test]
 fn _0006() {
-  te_null(false, &scope!(), "after(p1: 10, point2: 1)", r#"[named::after] invalid named parameters"#);
+  te_null(
+    false,
+    &scope!(),
+    r#"coincides(range1: [1..10], range2: [11..20])"#,
+    r#"[core::coincides] under construction: [1..10] | [11..20]"#,
+  );
 }
 
 #[test]
@@ -78,27 +88,22 @@ fn _0007() {
   te_null(
     false,
     &scope!(),
-    "after(range1: [1..10], range2: [11..20])",
-    r#"[core::after] under construction: [1..10] | [11..20]"#,
+    r#"coincides(range2: [11..20], range1: [1..10])"#,
+    r#"[core::coincides] under construction: [1..10] | [11..20]"#,
   );
 }
 
 #[test]
 fn _0008() {
-  te_null(
-    false,
-    &scope!(),
-    "after(range2: [11..20], range1: [1..10])",
-    r#"[core::after] under construction: [1..10] | [11..20]"#,
-  );
+  te_null(false, &scope!(), r#"coincides()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0009() {
-  te_null(false, &scope!(), "after()", r#"expected 2 parameters, actual number of parameters is 0"#);
-}
-
-#[test]
-fn _0010() {
-  te_null(false, &scope!(), "after(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+  te_null(
+    false,
+    &scope!(),
+    r#"coincides(1,2,3)"#,
+    r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
 }

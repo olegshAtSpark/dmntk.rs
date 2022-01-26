@@ -159,7 +159,7 @@ fn _0024() {
 
 #[test]
 fn _0025() {
-  te_null(false, &scope!(), r#"before(p1: 1, point2: 2)"#, r#"invalid named parameters"#);
+  te_null(false, &scope!(), r#"before(p1: 1, point2: 2)"#, r#"[named::before] invalid named parameters"#);
 }
 
 #[test]

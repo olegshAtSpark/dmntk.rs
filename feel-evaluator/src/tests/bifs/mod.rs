@@ -39,6 +39,7 @@ mod bif_any;
 mod bif_append;
 mod bif_before;
 mod bif_ceiling;
+mod bif_coincides;
 mod bif_concatenate;
 mod bif_contains;
 mod bif_count;

@@ -63,9 +63,9 @@ pub fn abs(value: &Value) -> Value {
   }
 }
 
-///
+/// TBD
 pub fn after(value1: &Value, value2: &Value) -> Value {
-  value_null!("under construction: {} | {}", value1, value2)
+  value_null!("[core::after] under construction: {} | {}", value1, value2)
 }
 
 /// Returns `false` if any item is `false`, `true` if empty or all items are true, else `null`.
@@ -123,7 +123,7 @@ pub fn append(list: &Value, values: &[Value]) -> Value {
   invalid_argument_type!("append", "list", list.type_of())
 }
 
-///
+/// TBD
 pub fn before(value1: &Value, value2: &Value) -> Value {
   match value1 {
     Value::Number(point1) => match value2 {
@@ -168,6 +168,11 @@ pub fn ceiling(value: &Value) -> Value {
   } else {
     invalid_argument_type!("ceiling", "number", value.type_of())
   }
+}
+
+/// TBD
+pub fn coincides(value1: &Value, value2: &Value) -> Value {
+  value_null!("[core::coincides] under construction: {} | {}", value1, value2)
 }
 
 /// Returns new list that is a concatenation of the arguments.

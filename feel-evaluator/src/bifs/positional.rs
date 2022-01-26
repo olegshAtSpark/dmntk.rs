@@ -186,8 +186,12 @@ fn bif_concatenate(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_coincides(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'coincides'")
+/// `coincides` built-in function, positional parameters.
+fn bif_coincides(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::coincides(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_contains(parameters: &[Value]) -> Value {
