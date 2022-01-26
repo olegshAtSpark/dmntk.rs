@@ -55,7 +55,7 @@ fn _04() {
 
 #[test]
 fn _05() {
-  te_null(false, &scope!(), "after(range: [1..10], point: 11)", r#"under construction: [1..10] | 11"#);
+  te_null(false, &scope!(), "after(range: [1..10], point: 11)", r#"under construction: 11 | [1..10]"#);
 }
 
 #[test]

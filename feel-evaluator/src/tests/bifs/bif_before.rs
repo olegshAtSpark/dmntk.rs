@@ -154,7 +154,7 @@ fn _0020() {
 #[test]
 fn _0021() {
   let scope = &te_scope("{}");
-  te_bool(false, scope, "before(range:(1..10],point:1)", false);
+  te_bool(false, scope, "before(range:(1..10],point:1)", true);
 }
 
 #[test]
@@ -173,4 +173,10 @@ fn _0023() {
 fn _0024() {
   let scope = &te_scope("{}");
   te_null(false, scope, "before(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+}
+
+#[test]
+fn _0025() {
+  let scope = &te_scope("{}");
+  te_null(false, scope, "before(p1: 1, point2: 2)", r#"invalid named parameters"#);
 }
