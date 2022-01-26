@@ -158,7 +158,7 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
     },
     _ => {}
   }
-  value_null!()
+  invalid_argument_type!("before", "scalar or range of scalars", value1.type_of())
 }
 
 /// Returns the smallest integer >= argument.

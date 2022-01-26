@@ -35,27 +35,27 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_bool(false, &scope!(), "before(1,10)", true);
+  te_bool(false, &scope!(), r#"before(1,10)"#, true);
 }
 
 #[test]
 fn _0002() {
-  te_bool(false, &scope!(), "before(10,1)", false);
+  te_bool(false, &scope!(), r#"before(10,1)"#, false);
 }
 
 #[test]
 fn _0003() {
-  te_bool(false, &scope!(), "before(10,10)", false);
+  te_bool(false, &scope!(), r#"before(10,10)"#, false);
 }
 
 #[test]
 fn _0004() {
-  te_bool(false, &scope!(), "before(1,[1..10])", false);
+  te_bool(false, &scope!(), r#"before(1,[1..10])"#, false);
 }
 
 #[test]
 fn _0005() {
-  te_bool(false, &scope!(), "before(1,(1..10])", true);
+  te_bool(false, &scope!(), r#"before(1,(1..10])"#, true);
 }
 
 #[test]
@@ -65,94 +65,109 @@ fn _0006() {
 
 #[test]
 fn _0007() {
-  te_bool(false, &scope!(), "before([1..10],10)", false);
+  te_bool(false, &scope!(), r#"before([1..10],10)"#, false);
 }
 
 #[test]
 fn _0008() {
-  te_bool(false, &scope!(), "before([1..10),10)", true);
+  te_bool(false, &scope!(), r#"before([1..10),10)"#, true);
 }
 
 #[test]
 fn _0009() {
-  te_bool(false, &scope!(), "before([1..10],15)", true);
+  te_bool(false, &scope!(), r#"before([1..10],15)"#, true);
 }
 
 #[test]
 fn _0010() {
-  te_bool(false, &scope!(), "before([1..10],[15..20])", true);
+  te_bool(false, &scope!(), r#"before([1..10],[15..20])"#, true);
 }
 
 #[test]
 fn _0011() {
-  te_bool(false, &scope!(), "before([1..10],[10..20])", false);
+  te_bool(false, &scope!(), r#"before([1..10],[10..20])"#, false);
 }
 
 #[test]
 fn _0012() {
-  te_bool(false, &scope!(), "before([1..10),[10..20])", true);
+  te_bool(false, &scope!(), r#"before([1..10),[10..20])"#, true);
 }
 
 #[test]
 fn _0013() {
-  te_bool(false, &scope!(), "before([1..10],(10..20])", true);
+  te_bool(false, &scope!(), r#"before([1..10],(10..20])"#, true);
 }
 
 #[test]
 fn _0014() {
-  te_bool(false, &scope!(), "before([1..10),(10..20])", true);
+  te_bool(false, &scope!(), r#"before([1..10),(10..20])"#, true);
 }
 
 #[test]
 fn _0015() {
-  te_bool(false, &scope!(), "before(point1:1,point2:10)", true);
+  te_bool(false, &scope!(), r#"before(point1:1,point2:10)"#, true);
 }
 #[test]
 fn _0016() {
-  te_bool(false, &scope!(), "before(point2:10,point1:1)", true);
+  te_bool(false, &scope!(), r#"before(point2:10,point1:1)"#, true);
 }
 
 #[test]
 fn _0017() {
-  te_bool(false, &scope!(), "before(point1:10,point2:1)", false);
+  te_bool(false, &scope!(), r#"before(point1:10,point2:1)"#, false);
 }
 
 #[test]
 fn _0018() {
-  te_bool(false, &scope!(), "before(point1:10,point2:10)", false);
+  te_bool(false, &scope!(), r#"before(point1:10,point2:10)"#, false);
 }
 
 #[test]
 fn _0019() {
-  te_bool(false, &scope!(), "before(range1:[1..10),range2:(10..20])", true);
+  te_bool(false, &scope!(), r#"before(range1:[1..10),range2:(10..20])"#, true);
 }
 
 #[test]
 fn _0020() {
-  te_bool(false, &scope!(), "before(point:1,range:(1..10])", true);
+  te_bool(false, &scope!(), r#"before(point:1,range:(1..10])"#, true);
 }
 
 #[test]
 fn _0021() {
-  te_bool(false, &scope!(), "before(range:(1..10],point:1)", true);
+  te_bool(false, &scope!(), r#"before(range:(1..10],point:1)"#, true);
 }
 
 #[test]
 fn _0022() {
-  te_null(false, &scope!(), "before()", r#"expected 2 parameters, actual number of parameters is 0"#);
+  te_null(false, &scope!(), r#"before()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0023() {
-  te_null(false, &scope!(), "before(1)", r#"expected 2 parameters, actual number of parameters is 1"#);
+  te_null(false, &scope!(), r#"before(1)"#, r#"expected 2 parameters, actual number of parameters is 1"#);
 }
 
 #[test]
 fn _0024() {
-  te_null(false, &scope!(), "before(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+  te_null(
+    false,
+    &scope!(),
+    r#"before(1,2,3)"#,
+    r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
 }
 
 #[test]
 fn _0025() {
-  te_null(false, &scope!(), "before(p1: 1, point2: 2)", r#"invalid named parameters"#);
+  te_null(false, &scope!(), r#"before(p1: 1, point2: 2)"#, r#"invalid named parameters"#);
+}
+
+#[test]
+fn _0026() {
+  te_null(
+    false,
+    &scope!(),
+    r#"before("abc","bcd")"#,
+    r#"[core::before] invalid argument type, expected scalar or range of scalars, actual type is string"#,
+  );
 }
