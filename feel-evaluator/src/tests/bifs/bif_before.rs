@@ -31,152 +31,128 @@
  */
 
 use super::super::*;
+use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(1,10)", true);
+  te_bool(false, &scope!(), "before(1,10)", true);
 }
 
 #[test]
 fn _0002() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(10,1)", false);
+  te_bool(false, &scope!(), "before(10,1)", false);
 }
 
 #[test]
 fn _0003() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(10,10)", false);
+  te_bool(false, &scope!(), "before(10,10)", false);
 }
 
 #[test]
 fn _0004() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(1,[1..10])", false);
+  te_bool(false, &scope!(), "before(1,[1..10])", false);
 }
 
 #[test]
 fn _0005() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(1,(1..10])", true);
+  te_bool(false, &scope!(), "before(1,(1..10])", true);
 }
 
 #[test]
 fn _0006() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(1,[5..10])", true);
+  te_bool(false, &scope!(), "before(1,[5..10])", true);
 }
 
 #[test]
 fn _0007() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10],10)", false);
+  te_bool(false, &scope!(), "before([1..10],10)", false);
 }
 
 #[test]
 fn _0008() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10),10)", true);
+  te_bool(false, &scope!(), "before([1..10),10)", true);
 }
 
 #[test]
 fn _0009() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10],15)", true);
+  te_bool(false, &scope!(), "before([1..10],15)", true);
 }
 
 #[test]
 fn _0010() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10],[15..20])", true);
+  te_bool(false, &scope!(), "before([1..10],[15..20])", true);
 }
 
 #[test]
 fn _0011() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10],[10..20])", false);
+  te_bool(false, &scope!(), "before([1..10],[10..20])", false);
 }
 
 #[test]
 fn _0012() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10),[10..20])", true);
+  te_bool(false, &scope!(), "before([1..10),[10..20])", true);
 }
 
 #[test]
 fn _0013() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10],(10..20])", true);
+  te_bool(false, &scope!(), "before([1..10],(10..20])", true);
 }
 
 #[test]
 fn _0014() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before([1..10),(10..20])", true);
+  te_bool(false, &scope!(), "before([1..10),(10..20])", true);
 }
 
 #[test]
 fn _0015() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(point1:1,point2:10)", true);
+  te_bool(false, &scope!(), "before(point1:1,point2:10)", true);
 }
 #[test]
 fn _0016() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(point2:10,point1:1)", true);
+  te_bool(false, &scope!(), "before(point2:10,point1:1)", true);
 }
 
 #[test]
 fn _0017() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(point1:10,point2:1)", false);
+  te_bool(false, &scope!(), "before(point1:10,point2:1)", false);
 }
 
 #[test]
 fn _0018() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(point1:10,point2:10)", false);
+  te_bool(false, &scope!(), "before(point1:10,point2:10)", false);
 }
 
 #[test]
 fn _0019() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(range1:[1..10),range2:(10..20])", true);
+  te_bool(false, &scope!(), "before(range1:[1..10),range2:(10..20])", true);
 }
 
 #[test]
 fn _0020() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(point:1,range:(1..10])", true);
+  te_bool(false, &scope!(), "before(point:1,range:(1..10])", true);
 }
 
 #[test]
 fn _0021() {
-  let scope = &te_scope("{}");
-  te_bool(false, scope, "before(range:(1..10],point:1)", true);
+  te_bool(false, &scope!(), "before(range:(1..10],point:1)", true);
 }
 
 #[test]
 fn _0022() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "before()", r#"expected 2 parameters, actual number of parameters is 0"#);
+  te_null(false, &scope!(), "before()", r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0023() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "before(1)", r#"expected 2 parameters, actual number of parameters is 1"#);
+  te_null(false, &scope!(), "before(1)", r#"expected 2 parameters, actual number of parameters is 1"#);
 }
 
 #[test]
 fn _0024() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "before(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+  te_null(false, &scope!(), "before(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
 }
 
 #[test]
 fn _0025() {
-  let scope = &te_scope("{}");
-  te_null(false, scope, "before(p1: 1, point2: 2)", r#"invalid named parameters"#);
+  te_null(false, &scope!(), "before(p1: 1, point2: 2)", r#"invalid named parameters"#);
 }
