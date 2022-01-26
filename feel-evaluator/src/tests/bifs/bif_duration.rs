@@ -147,3 +147,8 @@ fn _0022() {
 fn _0023() {
   te_null(false, &scope!(), r#"duration("P1S")"#, "duration");
 }
+
+#[test]
+fn _0024() {
+  te_null(false, &scope!(), r#"duration(f: "PT24H")"#, r#"parameter 'from' not found"#);
+}

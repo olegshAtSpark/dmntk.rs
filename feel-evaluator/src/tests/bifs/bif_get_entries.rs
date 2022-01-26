@@ -82,3 +82,13 @@ fn _0005() {
     r#"expected 1 parameters, actual number of parameters is 2"#,
   );
 }
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"get entries(entries: {key1: "value1", key2: "value2"})"#,
+    r#"parameter 'm' not found"#,
+  );
+}

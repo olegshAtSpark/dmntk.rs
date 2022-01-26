@@ -152,3 +152,13 @@ fn _0020() {
     r#"[core::modulo] invalid argument type, expected number, actual type is string"#,
   );
 }
+
+#[test]
+fn _0021() {
+  te_null(false, &scope!(), r#"modulo(dividend: 12, d: 6)"#, r#"parameter 'divisor' not found"#);
+}
+
+#[test]
+fn _0022() {
+  te_null(false, &scope!(), r#"modulo(d: 12, divisor: 6)"#, r#"parameter 'dividend' not found"#);
+}

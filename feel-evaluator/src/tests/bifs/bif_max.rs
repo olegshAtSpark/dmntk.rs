@@ -75,51 +75,56 @@ fn _0008() {
 
 #[test]
 fn _0009() {
-  te_number(false, &scope!(), "max(1,2,3)", 3, 0);
+  te_number(false, &scope!(), "max(list: [2,3,1])", 3, 0);
 }
 
 #[test]
 fn _0010() {
-  te_number(false, &scope!(), "max([8,4,2.89,3,8.0001,2.89,5])", 80001, 4);
+  te_number(false, &scope!(), "max(1,2,3)", 3, 0);
 }
 
 #[test]
 fn _0011() {
-  te_number(false, &scope!(), "max(8,4,2.89,3,8.0001,2.89,5)", 80001, 4);
+  te_number(false, &scope!(), "max([8,4,2.89,3,8.0001,2.89,5])", 80001, 4);
 }
 
 #[test]
 fn _0012() {
-  te_number(false, &scope!(), "max([2837465.9584,-39408573.456749])", 28374659584, 4);
+  te_number(false, &scope!(), "max(8,4,2.89,3,8.0001,2.89,5)", 80001, 4);
 }
 
 #[test]
 fn _0013() {
-  te_number(false, &scope!(), "max(2837465.9584,-39408573.456749)", 28374659584, 4);
+  te_number(false, &scope!(), "max([2837465.9584,-39408573.456749])", 28374659584, 4);
 }
 
 #[test]
 fn _0014() {
-  te_string(false, &scope!(), r#"max(["a","b","c"])"#, r#"c"#);
+  te_number(false, &scope!(), "max(2837465.9584,-39408573.456749)", 28374659584, 4);
 }
 
 #[test]
 fn _0015() {
-  te_string(false, &scope!(), r#"max("a","b","c")"#, r#"c"#);
+  te_string(false, &scope!(), r#"max(["a","b","c"])"#, r#"c"#);
 }
 
 #[test]
 fn _0016() {
-  te_string(false, &scope!(), r#"max(["John","Johnny"])"#, r#"Johnny"#);
+  te_string(false, &scope!(), r#"max("a","b","c")"#, r#"c"#);
 }
 
 #[test]
 fn _0017() {
-  te_string(false, &scope!(), r#"max("John","Johnny")"#, r#"Johnny"#);
+  te_string(false, &scope!(), r#"max(["John","Johnny"])"#, r#"Johnny"#);
 }
 
 #[test]
 fn _0018() {
+  te_string(false, &scope!(), r#"max("John","Johnny")"#, r#"Johnny"#);
+}
+
+#[test]
+fn _0019() {
   te_null(
     false,
     &scope!(),
@@ -129,7 +134,7 @@ fn _0018() {
 }
 
 #[test]
-fn _0019() {
+fn _0020() {
   te_null(
     false,
     &scope!(),
@@ -139,7 +144,7 @@ fn _0019() {
 }
 
 #[test]
-fn _0020() {
+fn _0021() {
   te_null(
     false,
     &scope!(),
