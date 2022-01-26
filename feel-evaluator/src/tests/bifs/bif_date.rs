@@ -42,113 +42,125 @@ fn _0001() {
 #[test]
 fn _0002() {
   let scope = &scope!();
-  te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
+  te_date(false, scope, r#"date(from: "2012-12-25")"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0003() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(2012,12,25)"#, 2012, 12, 25);
+  te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0004() {
   let scope = &scope!();
-  te_date(false, scope, r#"date("262143-12-31")"#, 262143, 12, 31);
+  te_date(false, scope, r#"date(2012,12,25)"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0005() {
   let scope = &scope!();
-  te_date(false, scope, r#"date("999999999-12-31")"#, 999_999_999, 12, 31);
+  te_date(false, scope, r#"date("262143-12-31")"#, 262143, 12, 31);
 }
 
 #[test]
 fn _0006() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(999999999,12,31)"#, 999_999_999, 12, 31);
+  te_date(false, scope, r#"date("999999999-12-31")"#, 999_999_999, 12, 31);
 }
 
 #[test]
 fn _0007() {
   let scope = &scope!();
-  te_date(false, scope, r#"date("-262144-01-01")"#, -262144, 1, 1);
+  te_date(false, scope, r#"date(999999999,12,31)"#, 999_999_999, 12, 31);
 }
 
 #[test]
 fn _0008() {
   let scope = &scope!();
-  te_date(false, scope, r#"date("-999999999-01-01")"#, -999_999_999, 1, 1);
+  te_date(false, scope, r#"date("-262144-01-01")"#, -262144, 1, 1);
 }
 
 #[test]
 fn _0009() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(-999999999,01,01)"#, -999_999_999, 1, 1);
+  te_date(false, scope, r#"date("-999999999-01-01")"#, -999_999_999, 1, 1);
 }
 
 #[test]
 fn _0010() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18"))"#, 2012, 12, 25);
+  te_date(false, scope, r#"date(-999999999,01,01)"#, -999_999_999, 1, 1);
 }
 
 #[test]
 fn _0011() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18Z"))"#, 2012, 12, 25);
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18"))"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0012() {
   let scope = &scope!();
-  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18z"))"#, 2012, 12, 25);
+  te_date(false, scope, r#"date(from: date and time("2012-12-25T12:23:18"))"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0013() {
   let scope = &scope!();
-  te_bool(false, scope, r#"date("2012-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, true);
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18Z"))"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0014() {
   let scope = &scope!();
-  te_bool(false, scope, r#"date("2000-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
+  te_date(false, scope, r#"date(date and time("2012-12-25T12:23:18z"))"#, 2012, 12, 25);
 }
 
 #[test]
 fn _0015() {
   let scope = &scope!();
-  te_bool(false, scope, r#"date("2020-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
+  te_bool(false, scope, r#"date("2012-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, true);
 }
 
 #[test]
 fn _0016() {
   let scope = &scope!();
-  te_bool(false, scope, r#"date("2012-12-31") in (date("2012-12-25")..date("2013-02-14"))"#, true);
+  te_bool(false, scope, r#"date("2000-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
 }
 
 #[test]
 fn _0017() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017-13-10")"#, r#"[core::date] invalid date string '2017-13-10'"#);
+  te_bool(false, scope, r#"date("2020-12-25") in [date("2012-12-24")..date("2012-12-26")]"#, false);
 }
 
 #[test]
 fn _0018() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017/12/10")"#, r#"[core::date] invalid date string '2017/12/10'"#);
+  te_bool(false, scope, r#"date("2012-12-31") in (date("2012-12-25")..date("2013-02-14"))"#, true);
 }
 
 #[test]
 fn _0019() {
   let scope = &scope!();
-  te_null(false, scope, r#"date("2017,12,31")"#, r#"[core::date] invalid date string '2017,12,31'"#);
+  te_null(false, scope, r#"date("2017-13-10")"#, r#"[core::date] invalid date string '2017-13-10'"#);
 }
 
 #[test]
 fn _0020() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date("2017/12/10")"#, r#"[core::date] invalid date string '2017/12/10'"#);
+}
+
+#[test]
+fn _0021() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date("2017,12,31")"#, r#"[core::date] invalid date string '2017,12,31'"#);
+}
+
+#[test]
+fn _0022() {
   let scope = &scope!();
   te_date(false, scope, r#"date("2012-12-25")"#, 2012, 12, 25);
   te_number(false, scope, r#"date("2012-12-25").day"#, 25, 0);
@@ -157,7 +169,7 @@ fn _0020() {
 }
 
 #[test]
-fn _0021() {
+fn _0023() {
   let scope = &te_scope(r#"{fromString: "2012-12-25"}"#);
   te_date(false, scope, r#"date(fromString)"#, 2012, 12, 25);
   te_number(false, scope, r#"date(fromString).day"#, 25, 0);
@@ -166,7 +178,7 @@ fn _0021() {
 }
 
 #[test]
-fn _0022() {
+fn _0024() {
   te_null(
     false,
     &scope!(),
@@ -176,18 +188,18 @@ fn _0022() {
 }
 
 #[test]
-fn _0023() {
+fn _0025() {
   te_date(false, &scope!(), r#"date(date("2021-01-06"))"#, 2021, 1, 6);
 }
 
 #[test]
-fn _0024() {
+fn _0026() {
   let scope = &scope!();
   te_null(false, scope, r#"date(2020,2,30)"#, r#"[core::date] invalid date '2020-02-30'"#);
 }
 
 #[test]
-fn _0025() {
+fn _0027() {
   let scope = &scope!();
   te_null(
     false,
@@ -198,7 +210,7 @@ fn _0025() {
 }
 
 #[test]
-fn _0026() {
+fn _0028() {
   let scope = &scope!();
   te_null(
     false,
@@ -209,7 +221,7 @@ fn _0026() {
 }
 
 #[test]
-fn _0027() {
+fn _0029() {
   let scope = &scope!();
   te_null(
     false,
@@ -220,7 +232,7 @@ fn _0027() {
 }
 
 #[test]
-fn _0028() {
+fn _0030() {
   let scope = &scope!();
   te_null(
     false,
@@ -231,24 +243,41 @@ fn _0028() {
 }
 
 #[test]
-fn _0029() {
+fn _0031() {
   let scope = &scope!();
   te_null(false, scope, r#"date()"#, r#"expected 1,3 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
-fn _0030() {
+fn _0032() {
   let scope = &scope!();
   te_null(false, scope, r#"date(2022,01)"#, r#"expected 1,3 parameters, actual number of parameters is 2"#);
 }
 
 #[test]
-fn _0031() {
+fn _0033() {
   let scope = &scope!();
   te_null(
     false,
     scope,
     r#"date(2022,1,1,1)"#,
     r#"expected 1,3 parameters, actual number of parameters is 4"#,
+  );
+}
+
+#[test]
+fn _0034() {
+  let scope = &scope!();
+  te_null(false, scope, r#"date(f: "2021-01-26")"#, r#"invalid parameters in named::bif_date"#);
+}
+
+#[test]
+fn _0035() {
+  let scope = &scope!();
+  te_null(
+    false,
+    scope,
+    r#"date(f: date and time("2012-12-25T12:23:18"))"#,
+    r#"invalid parameters in named::bif_date"#,
   );
 }
