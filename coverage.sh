@@ -40,7 +40,7 @@ mkdir ./target/coverage
 # generate coverage info
 grcov . --llvm -s . -t lcov --branch --ignore-not-existing --ignore "*cargo*" --ignore "*chrono-tz*" --ignore "*tests*" -o ./target/lcov/lcov.info
 # generate coverage report
-genhtml -q -o ./target/coverage ./target/lcov/lcov.info
+genhtml -t "Decision Model and Notation Toolkit" -q -o ./target/coverage ./target/lcov/lcov.info
 # display final message
 echo ""
 echo "open coverage report: file://$WORKING_DIRECTORY/target/coverage/index.html"
