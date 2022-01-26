@@ -201,6 +201,7 @@ fn bif_any(parameters: &NamedParameters) -> Value {
   }
 }
 
+/// `append` built-in function, currently no version with named parameters, always returns `null`.
 fn bif_append(_parameters: &NamedParameters) -> Value {
   value_null!("[named::append] this function has no version with named parameters")
 }
@@ -236,8 +237,9 @@ fn bif_coincides(parameters: &NamedParameters) -> Value {
   }
 }
 
+/// `concatenate` built-in function, currently no version with named parameters, always returns `null`.
 fn bif_concatenate(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_concatenate")
+  value_null!("[named::concatenate] this function has no version with named parameters")
 }
 
 fn bif_contains(parameters: &NamedParameters) -> Value {

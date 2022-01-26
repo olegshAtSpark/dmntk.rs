@@ -67,3 +67,13 @@ fn _0005() {
     r#"expected 1+ parameters, actual number of parameters is 0"#,
   );
 }
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"concatenate(list: [1,2,3])"#,
+    r#"[named::concatenate] this function has no version with named parameters"#,
+  );
+}
