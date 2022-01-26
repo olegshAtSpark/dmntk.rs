@@ -63,6 +63,11 @@ pub fn abs(value: &Value) -> Value {
   }
 }
 
+///
+pub fn after(value1: &Value, value2: &Value) -> Value {
+  value_null!("under construction: {} | {}", value1, value2)
+}
+
 /// Returns `false` if any item is `false`, `true` if empty or all items are true, else `null`.
 pub fn all(values: &[Value]) -> Value {
   if values.is_empty() {

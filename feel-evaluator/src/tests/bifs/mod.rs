@@ -33,6 +33,7 @@
 //! Test cases for built-in functions.  
 
 mod bif_abs;
+mod bif_after;
 mod bif_all;
 mod bif_any;
 mod bif_append;
