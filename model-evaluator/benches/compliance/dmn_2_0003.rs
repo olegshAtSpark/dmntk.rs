@@ -44,7 +44,7 @@ lazy_static! {
 fn _0001(b: &mut Bencher) {
   let input_data = &context(r#"{Employment Status: "EMPLOYED"}"#);
   let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &input_data, r#""You are EMPLOYED""#);
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#""You are EMPLOYED""#);
   b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }
 
@@ -52,6 +52,6 @@ fn _0001(b: &mut Bencher) {
 fn _0002(b: &mut Bencher) {
   let input_data = &context(r#"{Employment Status: "RETIRED"}"#);
   let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &input_data, r#"null(addition err 2)"#);
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#"null(addition err 2)"#);
   b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }

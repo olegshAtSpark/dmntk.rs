@@ -39,6 +39,7 @@ use std::sync::Arc;
 mod dmn_2_0001;
 mod dmn_2_0002;
 mod dmn_2_0003;
+mod dmn_3_0014;
 
 /// Utility function that builds a model evaluator from XML model definitions.
 fn build_model_evaluator(model_content: &str) -> Arc<ModelEvaluator> {
@@ -66,6 +67,16 @@ fn assert_decision(model_evaluator: &ModelEvaluator, name: &str, input_data: &Fe
   assert_eq!(
     expected, actual,
     "Assertion error, actual value of the decision does not match the expected value:\n  expected: {}\n    actual: {}\n",
+    expected, actual
+  );
+}
+
+/// Utility function that evaluates a `BusinessKnowledgeModel` specified by name and compares the result.
+fn assert_business_knowledge_model(model_evaluator: &ModelEvaluator, name: &str, input_data: &FeelContext, expected: &str) {
+  let actual = model_evaluator.evaluate_invocable(name, input_data).to_string();
+  assert_eq!(
+    expected, actual,
+    "Assertion error, actual value of the business knowledge model does not match the expected value:\n  expected: {}\n    actual: {}\n",
     expected, actual
   );
 }
