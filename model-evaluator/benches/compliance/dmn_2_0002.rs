@@ -37,21 +37,29 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0001);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0002);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let input_data = &context(r#"{Full Name: "John Doe"}"#);
-  let invocable_name = "Greeting Message";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#""Hello John Doe""#);
+  let input_data = &context(r#"{Monthly Salary: 10000}"#);
+  let invocable_name = "Yearly Salary";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#"120000"#);
   b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let input_data = &context(r#"{Full Name: "George Gerschwin!"}"#);
-  let invocable_name = "Greeting Message";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#""Hello George Gerschwin!""#);
+  let input_data = &context(r#"{Monthly Salary: 8375.00}"#);
+  let invocable_name = "Yearly Salary";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#"100500"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let input_data = &context(r#"{Monthly Salary: 8375.13}"#);
+  let invocable_name = "Yearly Salary";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#"100501.56"#);
   b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }

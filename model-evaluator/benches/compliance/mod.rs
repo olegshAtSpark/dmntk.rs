@@ -37,6 +37,7 @@ use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
 
 mod dmn_2_0001;
+mod dmn_2_0002;
 
 /// Utility function that builds a model evaluator from XML model definitions.
 fn build_model_evaluator(model_content: &str) -> Arc<ModelEvaluator> {
