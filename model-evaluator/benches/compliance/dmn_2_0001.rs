@@ -30,22 +30,30 @@
  * limitations under the License.
  */
 
-use super::super::*;
-use crate::model_evaluator::ModelEvaluator;
+use super::build_model_evaluator;
+use crate::compliance::{assert_decision, context};
+use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
+use test::Bencher;
 
 lazy_static! {
   static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0001);
 }
 
-#[test]
-fn _0001() {
-  let ctx = context(r#"{Full Name: "John Doe"}"#);
-  assert_decision(&MODEL_EVALUATOR, "Greeting Message", &ctx, r#""Hello John Doe""#);
+#[bench]
+fn _0001(b: &mut Bencher) {
+  let input_data = &context(r#"{Full Name: "John Doe"}"#);
+  let invocable_name = "Greeting Message";
+  let expected = r#""Hello John Doe""#;
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, expected);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }
 
-#[test]
-fn _0002() {
-  let ctx = context(r#"{"Full Name": "George Gershwin"}"#);
-  assert_decision(&MODEL_EVALUATOR, "Greeting Message", &ctx, r#""Hello George Gershwin""#);
+#[bench]
+fn _0002(b: &mut Bencher) {
+  let input_data = &context(r#"{Full Name: "George Gerschwin!"}"#);
+  let invocable_name = "Greeting Message";
+  let expected = r#""Hello George Gerschwin!""#;
+  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, expected);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
 }
