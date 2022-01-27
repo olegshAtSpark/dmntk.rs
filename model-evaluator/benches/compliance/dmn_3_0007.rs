@@ -30,9 +30,11 @@
  * limitations under the License.
  */
 
-use super::super::*;
-use crate::model_evaluator::ModelEvaluator;
+use super::build_model_evaluator;
+use crate::compliance::{assert_decision, context};
+use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
+use test::Bencher;
 
 lazy_static! {
   static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0007);
@@ -40,14 +42,14 @@ lazy_static! {
 
 const INPUT_DATA: &str = r#"{Day: 22, Hours: 12, Minutes: 59, Month: 11, Seconds: 1.3, Timezone: @"-PT1H", Year: 1999, dateString: "2015-12-24", dateTimeString: "2016-12-24T23:59:00-08:00", durationString: "P13DT2H14S", oneHour: PT1H, timeString: "00:00:01-01:00"}"#;
 
-#[test]
-fn _0001() {
+#[bench]
+fn _0001(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "Date-Time", &ctx, r#"2016-12-24T23:59:00-08:00"#);
 }
 
-#[test]
-fn _0002() {
+#[bench]
+fn _0002(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -57,107 +59,107 @@ fn _0002() {
   );
 }
 
-#[test]
-fn _0003() {
+#[bench]
+fn _0003(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "Time", &ctx, r#"00:00:01-01:00"#);
 }
 
-#[test]
-fn _0004() {
+#[bench]
+fn _0004(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "Date-Time2", &ctx, r#"2015-12-24T00:00:01-01:00"#);
 }
 
-#[test]
-fn _0005() {
+#[bench]
+fn _0005(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "Time2", &ctx, r#"00:00:01-01:00"#);
 }
 
-#[test]
-fn _0006() {
+#[bench]
+fn _0006(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "Time3", &ctx, r#"12:59:01.3-01:00"#);
 }
 
-#[test]
-fn _0007() {
+#[bench]
+fn _0007(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "dtDuration1", &ctx, r#"P13DT2H14S"#);
 }
 
-#[test]
-fn _0008() {
+#[bench]
+fn _0008(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "dtDuration2", &ctx, r#"P367DT6H58M59S"#);
 }
 
-#[test]
-fn _0009() {
+#[bench]
+fn _0009(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "sumDurations", &ctx, r#"P380DT8H59M13S"#);
 }
 
-#[test]
-fn _0010() {
+#[bench]
+fn _0010(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "ymDuration2", &ctx, r#"P1Y"#);
 }
 
-#[test]
+#[bench]
 #[ignore]
-fn _0011() {
+fn _0011(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cDay", &ctx, r#"24"#);
 }
 
-#[test]
+#[bench]
 #[ignore]
-fn _0012() {
+fn _0012(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cYear", &ctx, r#"2015"#);
 }
 
-#[test]
+#[bench]
 #[ignore]
-fn _0013() {
+fn _0013(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cMonth", &ctx, r#"12"#);
 }
 
-#[test]
-fn _0014() {
+#[bench]
+fn _0014(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cHour", &ctx, r#"0"#);
 }
 
-#[test]
-fn _0015() {
+#[bench]
+fn _0015(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cMinute", &ctx, r#"0"#);
 }
 
-#[test]
-fn _0016() {
+#[bench]
+fn _0016(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cSecond", &ctx, r#"1"#);
 }
 
-#[test]
-fn _0017() {
+#[bench]
+fn _0017(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cOffset", &ctx, r#"-PT1H"#);
 }
 
-#[test]
-fn _0018() {
+#[bench]
+fn _0018(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "years", &ctx, r#"1"#);
 }
 
-#[test]
-fn _0019() {
+#[bench]
+fn _0019(b: &mut Bencher) {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "seconds", &ctx, r#"14"#);
 }

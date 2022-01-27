@@ -37,21 +37,13 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0001);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
-}
-
-#[bench]
-fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(
+    r#"{Employees: [{dept: 10, id: 7792, name: "Clark"}, {dept: 10, id: 7934, name: "Miller"}, {dept: 20, id: 7976, name: "Adams"}, {dept: 20, id: 7902, name: "Ford"}, {dept: 30, id: 7900, name: "James"}]}"#,
+  );
+  assert_decision(&MODEL_EVALUATOR, "Filter0001", &ctx, r#"["Adams", "Ford"]"#);
 }

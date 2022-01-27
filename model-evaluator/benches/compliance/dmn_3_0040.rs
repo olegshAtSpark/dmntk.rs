@@ -37,21 +37,23 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0040);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Principal: 600000,Term: 360}"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2878.693549432766768088520383236299"#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Principal: 30000,Term: 60}"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"649.117549836400293492700014885945"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{Principal: 600000,Term: 365}"#);
+  assert_decision(&MODEL_EVALUATOR, "Boxed Context", &ctx, r#"2858.116099896591400871418893289041"#);
 }

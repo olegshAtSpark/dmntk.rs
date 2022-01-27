@@ -31,27 +31,68 @@
  */
 
 use super::build_model_evaluator;
-use crate::compliance::{assert_decision, context};
+use crate::compliance::{assert_decision, assert_decision_service, context};
 use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0085);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_001", r#"{}"#, r#""foo""#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_002", r#"{decision_002_input: "baz"}"#, r#""foo baz""#);
+}
+
+#[bench]
+fn _0002_a(b: &mut Bencher) {
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_002", r#"{}"#, r#"null(addition err 2)"#);
+}
+
+#[bench]
+fn _0002_b(b: &mut Bencher) {
+  assert_decision_service(
+    &MODEL_EVALUATOR,
+    "decisionService_002",
+    r#"{decision_002_input: null}"#,
+    r#"null(addition err 2)"#,
+  );
+}
+
+#[bench]
+fn _0002_c(b: &mut Bencher) {
+  assert_decision_service(
+    &MODEL_EVALUATOR,
+    "decisionService_002",
+    r#"{decision_002_input: 1234}"#,
+    r#"null(addition err 2)"#,
+  );
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  assert_decision_service(
+    &MODEL_EVALUATOR,
+    "decisionService_003",
+    r#"{decision_003_input_1: "B", decision_003_input_2: "C", inputData_003: "D"}"#,
+    r#""A B C D""#,
+  );
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_004_1", &ctx, r#""foo""#);
+}
+
+#[bench]
+#[ignore]
+fn _0005(b: &mut Bencher) {
+  assert_decision_service(&MODEL_EVALUATOR, "decisionService_005", r#"{}"#, r#"null"#);
 }

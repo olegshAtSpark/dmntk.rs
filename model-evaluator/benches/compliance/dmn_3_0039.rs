@@ -37,21 +37,22 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0039);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Flu Symtoms:  ["fever", "cough", "sore throat", "runny nose"], Symptom:  "cough"}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Symptom Analysis",
+    &ctx,
+    r#"["cough is in the list of Cold symptoms", "cough is in the list of Flu symptoms"]"#,
+  );
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Flu Symtoms: ["fever","cough","sore throat","runny nose"],Symptom: "fever"}"#);
+  assert_decision(&MODEL_EVALUATOR, "Symptom Analysis", &ctx, r#"["fever is in the list of Flu symptoms"]"#);
 }

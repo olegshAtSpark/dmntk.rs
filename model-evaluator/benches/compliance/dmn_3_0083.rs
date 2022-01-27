@@ -37,29 +37,71 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0002);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0083);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 10000}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"120000"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_001", &ctx, r#"1"#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 8375.00}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"100500"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_002", &ctx, r#"6"#);
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 8375.13}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"100501.56"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_003", &ctx, r#"1"#);
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_003_a", &ctx, r#"1"#);
+}
+
+#[bench]
+fn _0005(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_004", &ctx, r#"2"#);
+}
+
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_004_a", &ctx, r#"2"#);
+}
+
+#[bench]
+fn _0007(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_005", &ctx, r#"true"#);
+}
+
+#[bench]
+fn _0008(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_005_a", &ctx, r#"true"#);
+}
+
+#[bench]
+fn _0009(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_006", &ctx, r#"{🐎: "bar"}"#);
+}
+
+#[bench]
+fn _0010(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#"{🐎: "😀"}"#);
+}
+
+#[bench]
+fn _0011(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "endswith_001", &ctx, r#"true"#);
 }

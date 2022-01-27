@@ -37,21 +37,59 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0057);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"{a: "foo", b: "bar"}"#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"{a: "foo", b: {c: "bar", d: {e: "baz"}}}"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003", &ctx, r#"{a: 3, b: 6}"#);
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision003_a", &ctx, r#"{a: 3, b: 3, c: {d: 6}}"#);
+}
+
+#[bench]
+fn _0005(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision004", &ctx, r#"{foo bar: "foo"}"#);
+}
+
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision005", &ctx, r#"{foo+bar: "foo"}"#);
+}
+
+#[bench]
+fn _0007(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision006", &ctx, r#"{foo+bar((!!],foo: "foo"}"#);
+}
+
+#[bench]
+fn _0008(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision007", &ctx, r#"{: "foo"}"#);
+}
+
+#[bench]
+fn _0009(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"{foo: "baz"}"#);
 }

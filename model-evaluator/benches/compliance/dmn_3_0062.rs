@@ -30,122 +30,110 @@
  * limitations under the License.
  */
 
-use super::super::*;
-use crate::model_evaluator::ModelEvaluator;
+use super::build_model_evaluator;
+use crate::compliance::{assert_decision, context};
+use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
+use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0080);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0062);
 }
 
-#[test]
-fn _0001() {
+#[bench]
+fn _0001(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"[6]"#);
+}
+
+#[bench]
+fn _0002(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"[1, 3, 6]"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_001",
+    "decision003",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 0)"#,
+    r#"null(expected 1+ parameters, actual number of parameters is 0)"#,
   );
 }
 
-#[test]
-fn _0002() {
+#[bench]
+fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_002",
+    "decision003_a",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 1)"#,
+    r#"null([core::mode] invalid argument type, expected number, actual type is Null)"#,
   );
 }
 
-#[test]
-fn _0003() {
+#[bench]
+fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_003",
+    "decision004",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 3)"#,
+    r#"null(expected 1+ parameters, actual number of parameters is 0)"#,
   );
 }
 
-#[test]
-fn _0004() {
-  let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_004", &ctx, r#""foo""#);
-}
-
-#[test]
-fn _0005() {
+#[bench]
+fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_005",
+    "decision005",
     &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is string)"#,
+    r#"null([core::mode] invalid argument type, expected number, actual type is string)"#,
   );
 }
 
-#[test]
-fn _0006() {
+#[bench]
+fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_006",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected string, actual type is number)"#,
-  );
+  assert_decision(&MODEL_EVALUATOR, "decision006", &ctx, r#"[2.5]"#);
 }
 
-#[test]
-fn _0007() {
+#[bench]
+fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#""foo""#);
+  assert_decision(&MODEL_EVALUATOR, "decision007", &ctx, r#"[]"#);
 }
 
-#[test]
-fn _0008() {
+#[bench]
+fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_008", &ctx, r#"null(parameter 'key' not found)"#);
+  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"[6]"#);
 }
 
-#[test]
-fn _0009() {
+#[bench]
+fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_009",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
-  );
+  assert_decision(&MODEL_EVALUATOR, "decision009", &ctx, r#"[6]"#);
 }
 
-#[test]
-fn _0010() {
+#[bench]
+fn _0011(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_010",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected string, actual type is Null)"#,
-  );
+  assert_decision(&MODEL_EVALUATOR, "decision011", &ctx, r#"[6]"#);
 }
 
-#[test]
-fn _0011() {
+#[bench]
+fn _0012(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_011",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
-  );
+  assert_decision(&MODEL_EVALUATOR, "decision012", &ctx, r#"null(parameter 'list' not found)"#);
 }
 
-#[test]
-fn _0012() {
+#[bench]
+fn _0013(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_012", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision013", &ctx, r#"null(parameter 'list' not found)"#);
 }

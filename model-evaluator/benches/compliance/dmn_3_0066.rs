@@ -37,21 +37,61 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0066);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"false"#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"true"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_a",
+    &ctx,
+    r#"null([core::not] invalid argument type, expected boolean, actual type is Null)"#,
+  );
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_b",
+    &ctx,
+    r#"null([core::not] invalid argument type, expected boolean, actual type is number)"#,
+  );
+}
+
+#[bench]
+fn _0005(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_c",
+    &ctx,
+    r#"null([core::not] invalid argument type, expected boolean, actual type is number)"#,
+  );
+}
+
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_d",
+    &ctx,
+    r#"null([core::not] invalid argument type, expected boolean, actual type is string)"#,
+  );
 }

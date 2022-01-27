@@ -37,29 +37,59 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0002);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_1106);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 10000}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"120000"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_001_f6ff05bcfa", &ctx, r#""a""#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 8375.00}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"100500"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_002_0ecb21e1d8", &ctx, r#""abc""#);
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
-  let ctx = context(r#"{Monthly Salary: 8375.13}"#);
-  let invocable_name = "Yearly Salary";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"100501.56"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_003_af9f3a8dab", &ctx, r#""abc""#);
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_004_2dbf99e8c0", &ctx, r#""abc4""#);
+}
+
+#[bench]
+fn _0005(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_005_ad33325968", &ctx, r#""""#);
+}
+
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_006_d8257b3b92", &ctx, r#""?@{""#);
+}
+
+#[bench]
+fn _0007(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_007_a2ce59499a", &ctx, r#""abdcf""#);
+}
+
+#[bench]
+fn _0008(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_008_9913ad454f", &ctx, r#""xyz""#);
+}
+
+#[bench]
+fn _0009(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "feel-lower-case-function_009_78e6b2969b", &ctx, r#""123abc""#);
 }

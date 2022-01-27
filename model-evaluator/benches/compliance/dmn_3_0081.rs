@@ -30,122 +30,101 @@
  * limitations under the License.
  */
 
-use super::super::*;
-use crate::model_evaluator::ModelEvaluator;
+use super::build_model_evaluator;
+use crate::compliance::{assert_decision, context};
+use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
+use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0080);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0081);
 }
 
-#[test]
-fn _0001() {
+#[bench]
+fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
     "decision_001",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 0)"#,
+    r#"null(expected 1 parameters, actual number of parameters is 0)"#,
   );
 }
 
-#[test]
-fn _0002() {
+#[bench]
+fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
     "decision_002",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 1)"#,
+    r#"null(expected 1 parameters, actual number of parameters is 2)"#,
   );
 }
 
-#[test]
-fn _0003() {
+#[bench]
+fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
     "decision_003",
     &ctx,
-    r#"null(expected 2 parameters, actual number of parameters is 3)"#,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is Null)"#,
   );
 }
 
-#[test]
-fn _0004() {
+#[bench]
+fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_004", &ctx, r#""foo""#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_004",
+    &ctx,
+    r#"[{key: "a", value: "foo"}, {key: "b", value: "bar"}]"#,
+  );
 }
 
-#[test]
-fn _0005() {
+#[bench]
+fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
     "decision_005",
     &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is string)"#,
+    r#"[{key: "a", value: "foo"}, {key: "b", value: "bar"}]"#,
   );
 }
 
-#[test]
-fn _0006() {
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{}"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_006", &ctx, r#"null(parameter 'm' not found)"#);
+}
+
+#[bench]
+fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_006",
+    "decision_007",
     &ctx,
-    r#"null([core::get value] invalid argument type, expected string, actual type is number)"#,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is number)"#,
   );
 }
 
-#[test]
-fn _0007() {
-  let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#""foo""#);
-}
-
-#[test]
-fn _0008() {
-  let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_008", &ctx, r#"null(parameter 'key' not found)"#);
-}
-
-#[test]
-fn _0009() {
+#[bench]
+fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision_009",
+    "decision_008",
     &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is list<number>)"#,
   );
 }
 
-#[test]
-fn _0010() {
+#[bench]
+fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_010",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected string, actual type is Null)"#,
-  );
-}
-
-#[test]
-fn _0011() {
-  let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "decision_011",
-    &ctx,
-    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
-  );
-}
-
-#[test]
-fn _0012() {
-  let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_012", &ctx, r#"null"#);
+  assert_decision(&MODEL_EVALUATOR, "decision_009", &ctx, r#"[]"#);
 }

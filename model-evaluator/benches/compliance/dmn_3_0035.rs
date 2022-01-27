@@ -37,21 +37,38 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0035);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{B Value: 83,G Value: 65,R Value: 0}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Profile of Color",
+    &ctx,
+    r##"{CMYK notation: {C: 100, K: 67, M: 22, Y: 0}, Hex notation: "#004153", RGB notation: {B: 83, G: 65, R: 0}}"##,
+  );
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{B Value: 0,G Value: 0,R Value: 0}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Profile of Color",
+    &ctx,
+    r##"{CMYK notation: {C: 0, K: 100, M: 0, Y: 0}, Hex notation: "#000000", RGB notation: {B: 0, G: 0, R: 0}}"##,
+  );
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{B Value: 0,G Value: 0,R Value: 204}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Profile of Color",
+    &ctx,
+    r##"{CMYK notation: {C: 0, K: 20, M: 100, Y: 100}, Hex notation: "#CC0000", RGB notation: {B: 0, G: 0, R: 204}}"##,
+  );
 }

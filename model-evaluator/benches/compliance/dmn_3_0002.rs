@@ -37,21 +37,39 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0002);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{A: "banana", B: "a", NumC: 2}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Basic",
+    &ctx,
+    r#"{containsB: true, containsX: false, endsWithB: true, endsWithX: false, lowercase: "a", startsWithB: false, startsWithX: false, stringlength: 6, substringAfterB: "nana", substringBeforeB: "b", substringC1: "a", uppercase: "BANANA"}"#,
+  );
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{A: "banana"}"#);
+  assert_decision(&MODEL_EVALUATOR, "Matches", &ctx, r#"true"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{A: "banana"}"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "Replace",
+    &ctx,
+    r#"{AanplusStarstar: "b**a", Aao: "bonono", encloseVowels: "b[a]n[a]n[a]"}"#,
+  );
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{NumC: 2}"#);
+  assert_decision(&MODEL_EVALUATOR, "Constructor", &ctx, r#""2""#);
 }

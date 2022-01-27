@@ -37,21 +37,47 @@ use std::sync::Arc;
 use test::Bencher;
 
 lazy_static! {
-  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_2_0003);
+  static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0020);
 }
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "EMPLOYED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""You are EMPLOYED""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Age: 16,Years of Service: 1}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"27"#);
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let ctx = context(r#"{Employment Status: "RETIRED"}"#);
-  let invocable_name = "Employment Status Statement";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(addition err 2)"#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
+  let ctx = context(r#"{Age: 25,Years of Service: 5}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"22"#);
+}
+
+#[bench]
+fn _0003(b: &mut Bencher) {
+  let ctx = context(r#"{Age: 25,Years of Service: 20}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"24"#);
+}
+
+#[bench]
+fn _0004(b: &mut Bencher) {
+  let ctx = context(r#"{Age: 44,Years of Service: 30}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
+}
+
+#[bench]
+fn _0005(b: &mut Bencher) {
+  let ctx = context(r#"{Age: 50,Years of Service: 20}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"24"#);
+}
+
+#[bench]
+fn _0006(b: &mut Bencher) {
+  let ctx = context(r#"{Age: 50,Years of Service: 30}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
+}
+
+#[bench]
+fn _0007(b: &mut Bencher) {
+  let ctx = context(r#"{Age: 60,Years of Service: 20}"#);
+  assert_decision(&MODEL_EVALUATOR, "Total Vacation Days", &ctx, r#"30"#);
 }

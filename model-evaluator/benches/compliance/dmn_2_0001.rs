@@ -42,16 +42,16 @@ lazy_static! {
 
 #[bench]
 fn _0001(b: &mut Bencher) {
-  let input_data = &context(r#"{Full Name: "John Doe"}"#);
+  let ctx = context(r#"{Full Name: "John Doe"}"#);
   let invocable_name = "Greeting Message";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#""Hello John Doe""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""Hello John Doe""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
-  let input_data = &context(r#"{Full Name: "George Gerschwin!"}"#);
+  let ctx = context(r#"{Full Name: "George Gerschwin!"}"#);
   let invocable_name = "Greeting Message";
-  assert_decision(&MODEL_EVALUATOR, invocable_name, input_data, r#""Hello George Gerschwin!""#);
-  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, input_data));
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""Hello George Gerschwin!""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

@@ -30,16 +30,18 @@
  * limitations under the License.
  */
 
-use super::super::*;
-use crate::model_evaluator::ModelEvaluator;
+use super::build_model_evaluator;
+use crate::compliance::{assert_decision, context};
+use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
+use test::Bencher;
 
 lazy_static! {
   static ref MODEL_EVALUATOR: Arc<ModelEvaluator> = build_model_evaluator(dmntk_examples::DMN_3_0080);
 }
 
-#[test]
-fn _0001() {
+#[bench]
+fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -49,8 +51,8 @@ fn _0001() {
   );
 }
 
-#[test]
-fn _0002() {
+#[bench]
+fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -60,8 +62,8 @@ fn _0002() {
   );
 }
 
-#[test]
-fn _0003() {
+#[bench]
+fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -71,14 +73,14 @@ fn _0003() {
   );
 }
 
-#[test]
-fn _0004() {
+#[bench]
+fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(&MODEL_EVALUATOR, "decision_004", &ctx, r#""foo""#);
 }
 
-#[test]
-fn _0005() {
+#[bench]
+fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -88,8 +90,8 @@ fn _0005() {
   );
 }
 
-#[test]
-fn _0006() {
+#[bench]
+fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -99,20 +101,20 @@ fn _0006() {
   );
 }
 
-#[test]
-fn _0007() {
+#[bench]
+fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#""foo""#);
 }
 
-#[test]
-fn _0008() {
+#[bench]
+fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(&MODEL_EVALUATOR, "decision_008", &ctx, r#"null(parameter 'key' not found)"#);
 }
 
-#[test]
-fn _0009() {
+#[bench]
+fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -122,8 +124,8 @@ fn _0009() {
   );
 }
 
-#[test]
-fn _0010() {
+#[bench]
+fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -133,8 +135,8 @@ fn _0010() {
   );
 }
 
-#[test]
-fn _0011() {
+#[bench]
+fn _0011(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(
     &MODEL_EVALUATOR,
@@ -144,8 +146,8 @@ fn _0011() {
   );
 }
 
-#[test]
-fn _0012() {
+#[bench]
+fn _0012(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
   assert_decision(&MODEL_EVALUATOR, "decision_012", &ctx, r#"null"#);
 }
