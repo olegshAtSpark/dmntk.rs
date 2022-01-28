@@ -43,59 +43,79 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "literalSimpleList", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "literalSimpleList";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "literalNestedList", &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
+  let invocable_name = "literalNestedList";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "append1", &ctx, r#"[["w", "x"], ["y"], ["z"], ["t"]]"#);
+  let invocable_name = "append1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"], ["t"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "append2", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  let invocable_name = "append2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "append3", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  let invocable_name = "append3";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "append4", &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  let invocable_name = "append4";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"], ["a", "b", "c"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "flatten1", &ctx, r#"["w", "x", "y", "z", "t"]"#);
+  let invocable_name = "flatten1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z", "t"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "flatten2", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  let invocable_name = "flatten2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "flatten3", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  let invocable_name = "flatten3";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "flatten4", &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  let invocable_name = "flatten4";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z", "a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

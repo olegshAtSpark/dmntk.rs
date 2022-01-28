@@ -43,22 +43,28 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{A: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionNot", &ctx, r#"false"#);
+  let invocable_name = "DecisionNot";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{A: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionNot", &ctx, r#"true"#);
+  let invocable_name = "DecisionNot";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{A: null}"#);
+  let invocable_name = "DecisionNot";
   assert_decision(
     &MODEL_EVALUATOR,
-    "DecisionNot",
+    invocable_name,
     &ctx,
     r#"null([core::not] invalid argument type, expected boolean, actual type is Null)"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

@@ -43,17 +43,23 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{Loan: {amount: 600000,rate: 0.0375,term: 360},fee: 100}"#);
-  assert_decision(&MODEL_EVALUATOR, "MonthlyPayment", &ctx, r#"2878.693549432766768088520383236299"#);
+  let invocable_name = "MonthlyPayment";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2878.693549432766768088520383236299"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{Loan: {amount: 30000,rate: 0.0475,term: 60},fee: 100}"#);
-  assert_decision(&MODEL_EVALUATOR, "MonthlyPayment", &ctx, r#"662.7073593732659271562143285576524"#);
+  let invocable_name = "MonthlyPayment";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"662.7073593732659271562143285576524"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{Loan: {amount: 600000,rate: 0.0399,term: 360},fee: 100}"#);
-  assert_decision(&MODEL_EVALUATOR, "MonthlyPayment", &ctx, r#"2961.033777003901636716262779605767"#);
+  let invocable_name = "MonthlyPayment";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2961.033777003901636716262779605767"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

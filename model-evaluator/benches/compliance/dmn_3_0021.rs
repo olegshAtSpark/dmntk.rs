@@ -43,31 +43,41 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{Employees: ["Jack","John","Bob","Zack"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision1", &ctx, r#"["John"]"#);
+  let invocable_name = "decision1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["John"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 #[ignore]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{Employees: ["Jack","John","Bob","Zack"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision2", &ctx, r#""John""#);
+  let invocable_name = "decision2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""John""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 #[ignore]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{Employees: ["Jack","John","Bob","Zack"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision3", &ctx, r#"["Bob"]"#);
+  let invocable_name = "decision3";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["Bob"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{Employees: ["Jack","John","Bob","Zack"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision4", &ctx, r#""Bob""#);
+  let invocable_name = "decision4";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""Bob""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{Employees: ["Jack","John","Bob","Zack"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision5", &ctx, r#""BOB""#);
+  let invocable_name = "decision5";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""BOB""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

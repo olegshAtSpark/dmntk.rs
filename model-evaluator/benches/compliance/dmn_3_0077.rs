@@ -43,5 +43,7 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_001", &ctx, r#"null([division] division by zero)"#);
+  let invocable_name = "decision_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null([division] division by zero)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

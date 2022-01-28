@@ -31,7 +31,7 @@
  */
 
 use super::build_model_evaluator;
-use crate::compliance::assert_decision_service;
+use crate::compliance::{assert_decision_service, context};
 use dmntk_model_evaluator::ModelEvaluator;
 use std::sync::Arc;
 use test::Bencher;
@@ -43,10 +43,9 @@ lazy_static! {
 #[bench]
 #[ignore]
 fn _0001(b: &mut Bencher) {
-  assert_decision_service(
-    &MODEL_EVALUATOR,
-    "Evaluation DS",
-    r#"{Grade: "A",Student's name: "John Doe",Teacher's Evaluation: "A very motivated, hard-working student!"}"#,
-    r#"null"#,
-  );
+  let input_data = r#"{Grade: "A",Student's name: "John Doe",Teacher's Evaluation: "A very motivated, hard-working student!"}"#;
+  let ctx = context(input_data);
+  let invocable_name = "Evaluation DS";
+  assert_decision_service(&MODEL_EVALUATOR, invocable_name, input_data, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

@@ -43,35 +43,47 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "literalSimpleList", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "literalSimpleList";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "literalNestedList", &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
+  let invocable_name = "literalNestedList";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["w", "x"], ["y"], ["z"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "concatenate1", &ctx, r#"["a", "b", "c", "a", "b", "c"]"#);
+  let invocable_name = "concatenate1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c", "a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "concatenate2", &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  let invocable_name = "concatenate2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "concatenate3", &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  let invocable_name = "concatenate3";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{nestedList: [["w", "x"], ["y"], ["z"]], simpleList: ["a", "b", "c"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "concatenate4", &ctx, r#"[["a", "b", "c"], ["w", "x"], ["y"], ["z"]]"#);
+  let invocable_name = "concatenate4";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[["a", "b", "c"], ["w", "x"], ["y"], ["z"]]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

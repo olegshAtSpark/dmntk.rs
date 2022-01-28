@@ -43,47 +43,63 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_001_2395aaad55", &ctx, r#""A""#);
+  let invocable_name = "feel-upper-case-function_001_2395aaad55";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""A""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_002_991789dded", &ctx, r#""ABC""#);
+  let invocable_name = "feel-upper-case-function_002_991789dded";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""ABC""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_003_d8306d8d00", &ctx, r#""""#);
+  let invocable_name = "feel-upper-case-function_003_d8306d8d00";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_004_310caf7262", &ctx, r#""1""#);
+  let invocable_name = "feel-upper-case-function_004_310caf7262";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""1""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_005_b316d773ac", &ctx, r#""?@{""#);
+  let invocable_name = "feel-upper-case-function_005_b316d773ac";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""?@{""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_006_d9bd3c14bc", &ctx, r#""ABDCF""#);
+  let invocable_name = "feel-upper-case-function_006_d9bd3c14bc";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""ABDCF""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_007_31fc6c1967", &ctx, r#""XYZ""#);
+  let invocable_name = "feel-upper-case-function_007_31fc6c1967";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""XYZ""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-upper-case-function_008_26e369a9d9", &ctx, r#""123ABC""#);
+  let invocable_name = "feel-upper-case-function_008_26e369a9d9";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""123ABC""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

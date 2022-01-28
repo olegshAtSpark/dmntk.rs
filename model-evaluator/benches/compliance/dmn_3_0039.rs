@@ -43,16 +43,20 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{Flu Symtoms:  ["fever", "cough", "sore throat", "runny nose"], Symptom:  "cough"}"#);
+  let invocable_name = "Symptom Analysis";
   assert_decision(
     &MODEL_EVALUATOR,
-    "Symptom Analysis",
+    invocable_name,
     &ctx,
     r#"["cough is in the list of Cold symptoms", "cough is in the list of Flu symptoms"]"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{Flu Symtoms: ["fever","cough","sore throat","runny nose"],Symptom: "fever"}"#);
-  assert_decision(&MODEL_EVALUATOR, "Symptom Analysis", &ctx, r#"["fever is in the list of Flu symptoms"]"#);
+  let invocable_name = "Symptom Analysis";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["fever is in the list of Flu symptoms"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

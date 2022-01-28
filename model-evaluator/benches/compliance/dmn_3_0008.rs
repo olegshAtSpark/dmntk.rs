@@ -43,59 +43,79 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen1", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "listGen1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{a: "a", b: "b", c: "c"}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen2", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "listGen2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{b: "b", c: "c"}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen3", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "listGen3";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{c: "c"}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen4", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "listGen4";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{a: "a", b: "b", c: "c"}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen5", &ctx, r#"["a", "b", "c"]"#);
+  let invocable_name = "listGen5";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen6", &ctx, r#"["w", "x", "y", "z"]"#);
+  let invocable_name = "listGen6";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{wx: ["w", "x"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen7", &ctx, r#"["w", "x", "y", "z"]"#);
+  let invocable_name = "listGen7";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{a: "a", b: "b"}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen8", &ctx, r#"["a", "b", "w", "x", "y", "z"]"#);
+  let invocable_name = "listGen8";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{a: "a", b: "b", wx: ["w", "x"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen9", &ctx, r#"["a", "b", "w", "x", "y", "z"]"#);
+  let invocable_name = "listGen9";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{c: "c", wx: ["w", "x"]}"#);
-  assert_decision(&MODEL_EVALUATOR, "listGen10", &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  let invocable_name = "listGen10";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"["a", "b", "c", "w", "x", "y", "z"]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

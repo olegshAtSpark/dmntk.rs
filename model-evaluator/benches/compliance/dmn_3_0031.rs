@@ -44,19 +44,25 @@ lazy_static! {
 #[ignore]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "fn invocation positional parameters", &ctx, r#""#);
+  let invocable_name = "fn invocation positional parameters";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 #[ignore]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "fn invocation named parameters", &ctx, r#""#);
+  let invocable_name = "fn invocation named parameters";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 #[ignore]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "fn invocation complex parameters", &ctx, r#""#);
+  let invocable_name = "fn invocation complex parameters";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

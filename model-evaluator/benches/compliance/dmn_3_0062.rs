@@ -43,97 +43,123 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision001", &ctx, r#"[6]"#);
+  let invocable_name = "decision001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[6]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision002", &ctx, r#"[1, 3, 6]"#);
+  let invocable_name = "decision002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[1, 3, 6]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
+  let invocable_name = "decision003";
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision003",
+    invocable_name,
     &ctx,
     r#"null(expected 1+ parameters, actual number of parameters is 0)"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
+  let invocable_name = "decision003_a";
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision003_a",
+    invocable_name,
     &ctx,
     r#"null([core::mode] invalid argument type, expected number, actual type is Null)"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
+  let invocable_name = "decision004";
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision004",
+    invocable_name,
     &ctx,
     r#"null(expected 1+ parameters, actual number of parameters is 0)"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
+  let invocable_name = "decision005";
   assert_decision(
     &MODEL_EVALUATOR,
-    "decision005",
+    invocable_name,
     &ctx,
     r#"null([core::mode] invalid argument type, expected number, actual type is string)"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision006", &ctx, r#"[2.5]"#);
+  let invocable_name = "decision006";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[2.5]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision007", &ctx, r#"[]"#);
+  let invocable_name = "decision007";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"[6]"#);
+  let invocable_name = "decision008";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[6]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision009", &ctx, r#"[6]"#);
+  let invocable_name = "decision009";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[6]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0011(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision011", &ctx, r#"[6]"#);
+  let invocable_name = "decision011";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[6]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0012(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision012", &ctx, r#"null(parameter 'list' not found)"#);
+  let invocable_name = "decision012";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(parameter 'list' not found)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0013(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision013", &ctx, r#"null(parameter 'list' not found)"#);
+  let invocable_name = "decision013";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(parameter 'list' not found)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

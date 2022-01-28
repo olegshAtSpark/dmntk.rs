@@ -43,107 +43,143 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"true"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"true"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"false"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"true"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"null"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"true"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"false"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"true"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"false"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"false"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0011(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"false"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0012(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: false}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"null"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0013(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"null"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0014(b: &mut Bencher) {
   let ctx = context(r#"{A: true,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"true"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0015(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"false"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0016(b: &mut Bencher) {
   let ctx = context(r#"{A: false,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"null"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0017(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionAnd", &ctx, r#"null"#);
+  let invocable_name = "DecisionAnd";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0018(b: &mut Bencher) {
   let ctx = context(r#"{A: null,B: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionOr", &ctx, r#"null"#);
+  let invocable_name = "DecisionOr";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

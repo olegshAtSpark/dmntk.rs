@@ -43,27 +43,28 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{Age: 17,RiskCategory: "High",isAffordable: true}"#);
+  let invocable_name = "Approval Status";
   assert_decision(
     &MODEL_EVALUATOR,
-    "Approval Status",
+    invocable_name,
     &ctx,
     r#"[{Approved/Declined: "Approved", Rate: "Standard"}, {Approved/Declined: "Declined", Rate: "Standard"}]"#,
   );
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{Age: 19,RiskCategory: "Low",isAffordable: true}"#);
-  assert_decision(&MODEL_EVALUATOR, "Approval Status", &ctx, r#"[{Approved/Declined: "Approved", Rate: "Basic"}]"#);
+  let invocable_name = "Approval Status";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[{Approved/Declined: "Approved", Rate: "Basic"}]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{Age: 10,RiskCategory: "Low",isAffordable: true}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "Approval Status",
-    &ctx,
-    r#"[{Approved/Declined: "Declined", Rate: "Standard"}]"#,
-  );
+  let invocable_name = "Approval Status";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"[{Approved/Declined: "Declined", Rate: "Standard"}]"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

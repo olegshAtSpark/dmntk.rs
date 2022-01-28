@@ -43,23 +43,31 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{structA: {name: "widget",price: 20}}"#);
-  assert_decision(&MODEL_EVALUATOR, "priceGt10", &ctx, r#"true"#);
+  let invocable_name = "priceGt10";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{numB: 9,numC: 10,structA: {name: "widget",price: 20}}"#);
-  assert_decision(&MODEL_EVALUATOR, "priceInRange", &ctx, r#""Not in range""#);
+  let invocable_name = "priceInRange";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""Not in range""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{dateD: @"2016-11-01"}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateCompare1", &ctx, r#"true"#);
+  let invocable_name = "dateCompare1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"true"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{dateD: @"2016-11-01",dateE: @"2016-11-02"}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateCompare2", &ctx, r#"false"#);
+  let invocable_name = "dateCompare2";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"false"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

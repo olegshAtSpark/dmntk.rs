@@ -46,7 +46,9 @@ fn _0001(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate:  .08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Strategy", &ctx, r#"null"#);
+  let invocable_name = "Strategy";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -55,7 +57,9 @@ fn _0002(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Routing", &ctx, r#"null"#);
+  let invocable_name = "Routing";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -64,7 +68,9 @@ fn _0003(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Application risk score", &ctx, r#"null"#);
+  let invocable_name = "Application risk score";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -73,7 +79,9 @@ fn _0004(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Pre-bureau risk category", &ctx, r#"null"#);
+  let invocable_name = "Pre-bureau risk category";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -82,7 +90,9 @@ fn _0005(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Bureau call type", &ctx, r#"null"#);
+  let invocable_name = "Bureau call type";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -91,7 +101,9 @@ fn _0006(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Eligibility", &ctx, r#"null"#);
+  let invocable_name = "Eligibility";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -100,7 +112,9 @@ fn _0007(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 10000,Income: 100000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Post-bureau affordability", &ctx, r#"null"#);
+  let invocable_name = "Post-bureau affordability";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -109,7 +123,9 @@ fn _0008(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 3000,Income: 10000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Strategy", &ctx, r#"null"#);
+  let invocable_name = "Strategy";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
@@ -118,5 +134,7 @@ fn _0009(b: &mut Bencher) {
   let ctx = context(
     r#"{Applicant data: {Age: 51,EmploymentStatus: "EMPLOYED",ExistingCustomer: false,MartitalStatus: "M",Monthly: {Expenses: 3000,Income: 10000,Repayments: 2500}},Bureau data: {Bankrupt: false,CreditScore: 600},Requested product: {Amount: 100000,ProductType: "STANDARD LOAN",Rate: 0.08,Term: 36}}"#,
   );
-  assert_decision(&MODEL_EVALUATOR, "Routing", &ctx, r#"null"#);
+  let invocable_name = "Routing";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

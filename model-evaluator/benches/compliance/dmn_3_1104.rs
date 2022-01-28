@@ -43,35 +43,47 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_001_1afe6930d1", &ctx, r#"0"#);
+  let invocable_name = "feel-string-length-function_001_1afe6930d1";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_002_249c23050d", &ctx, r#"1"#);
+  let invocable_name = "feel-string-length-function_002_249c23050d";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_003_e1df507dee", &ctx, r#"3"#);
+  let invocable_name = "feel-string-length-function_003_e1df507dee";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"3"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_004_f4c02fac3d", &ctx, r#"6"#);
+  let invocable_name = "feel-string-length-function_004_f4c02fac3d";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"6"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_005_ca834dabac", &ctx, r#"10"#);
+  let invocable_name = "feel-string-length-function_005_ca834dabac";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"10"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "feel-string-length-function_006_6c4930a0eb", &ctx, r#"11"#);
+  let invocable_name = "feel-string-length-function_006_6c4930a0eb";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"11"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

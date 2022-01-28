@@ -44,5 +44,7 @@ lazy_static! {
 #[ignore]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{Model B: {modelA: {Person name: "B.A.John"}},Model B2: {modelA: {Person name: "B2.A.John2"}}}"#);
-  assert_decision(&MODEL_EVALUATOR, "Evaluation DS", &ctx, r#"null"#);
+  let invocable_name = "Evaluation DS";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

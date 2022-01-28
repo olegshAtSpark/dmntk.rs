@@ -44,12 +44,16 @@ lazy_static! {
 #[ignore]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{A Person: {age: 21,name: "John Doe"}}"#);
-  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
+  let invocable_name = "A Decision Ctx with DT";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 #[ignore]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{A Person: {age: 47,name: "John Doe"}}"#);
-  assert_decision(&MODEL_EVALUATOR, "A Decision Ctx with DT", &ctx, r#"null"#);
+  let invocable_name = "A Decision Ctx with DT";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }

@@ -43,277 +43,343 @@ lazy_static! {
 #[bench]
 fn _0001(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "context_001", &ctx, r#""foo""#);
+  let invocable_name = "context_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""foo""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0002(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "date_001", &ctx, r#"2018"#);
+  let invocable_name = "date_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2018"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0003(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "date_002", &ctx, r#"12"#);
+  let invocable_name = "date_002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"12"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0004(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "date_003", &ctx, r#"10"#);
+  let invocable_name = "date_003";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"10"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0005(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "date_004", &ctx, r#"1"#);
+  let invocable_name = "date_004";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0006(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_001", &ctx, r#"2018"#);
+  let invocable_name = "dateTime_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2018"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0007(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_002", &ctx, r#"12"#);
+  let invocable_name = "dateTime_002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"12"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0008(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_003", &ctx, r#"10"#);
+  let invocable_name = "dateTime_003";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"10"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0009(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_004", &ctx, r#"1"#);
+  let invocable_name = "dateTime_004";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0010(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_005", &ctx, r#"10"#);
+  let invocable_name = "dateTime_005";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"10"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0011(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_005_a", &ctx, r#"0"#);
+  let invocable_name = "dateTime_005_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0012(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_006", &ctx, r#"30"#);
+  let invocable_name = "dateTime_006";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"30"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0013(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_006_a", &ctx, r#"0"#);
+  let invocable_name = "dateTime_006_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0014(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_007", &ctx, r#"1"#);
+  let invocable_name = "dateTime_007";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0015(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_007_a", &ctx, r#"0"#);
+  let invocable_name = "dateTime_007_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0016(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_008", &ctx, r#"PT5H"#);
+  let invocable_name = "dateTime_008";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"PT5H"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0017(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_008_a", &ctx, r#"null(aaaa)"#);
+  let invocable_name = "dateTime_008_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(aaaa)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0018(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_009", &ctx, r#""Etc/UTC""#);
+  let invocable_name = "dateTime_009";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#""Etc/UTC""#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0019(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dateTime_009_a", &ctx, r#"null(bbb)"#);
+  let invocable_name = "dateTime_009_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(bbb)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0020(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_001", &ctx, r#"10"#);
+  let invocable_name = "time_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"10"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0021(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_002", &ctx, r#"30"#);
+  let invocable_name = "time_002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"30"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0022(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_003", &ctx, r#"1"#);
+  let invocable_name = "time_003";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0023(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_004", &ctx, r#"PT5H"#);
+  let invocable_name = "time_004";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"PT5H"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0024(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_004_a", &ctx, r#"null(ccc)"#);
+  let invocable_name = "time_004_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(ccc)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0025(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "time_005_a", &ctx, r#"null(ddd)"#);
+  let invocable_name = "time_005_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(ddd)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0026(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "ym_duration_001", &ctx, r#"1"#);
+  let invocable_name = "ym_duration_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0027(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "ym_duration_001_a", &ctx, r#"0"#);
+  let invocable_name = "ym_duration_001_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0028(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "ym_duration_002", &ctx, r#"2"#);
+  let invocable_name = "ym_duration_002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0029(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "ym_duration_002_a", &ctx, r#"0"#);
+  let invocable_name = "ym_duration_002_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0030(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "ym_duration_003",
-    &ctx,
-    r#"null(no such property in years and months duration)"#,
-  );
+  let invocable_name = "ym_duration_003";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in years and months duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0031(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "ym_duration_004",
-    &ctx,
-    r#"null(no such property in years and months duration)"#,
-  );
+  let invocable_name = "ym_duration_004";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in years and months duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0032(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "ym_duration_005",
-    &ctx,
-    r#"null(no such property in years and months duration)"#,
-  );
+  let invocable_name = "ym_duration_005";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in years and months duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0033(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(
-    &MODEL_EVALUATOR,
-    "ym_duration_006",
-    &ctx,
-    r#"null(no such property in years and months duration)"#,
-  );
+  let invocable_name = "ym_duration_006";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in years and months duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0034(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_001", &ctx, r#"null(no such property in days and time duration)"#);
+  let invocable_name = "dt_duration_001";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in days and time duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0035(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_002", &ctx, r#"null(no such property in days and time duration)"#);
+  let invocable_name = "dt_duration_002";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"null(no such property in days and time duration)"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0036(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_003", &ctx, r#"1"#);
+  let invocable_name = "dt_duration_003";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"1"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0037(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_003_a", &ctx, r#"0"#);
+  let invocable_name = "dt_duration_003_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0038(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_004", &ctx, r#"2"#);
+  let invocable_name = "dt_duration_004";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0039(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_004_a", &ctx, r#"0"#);
+  let invocable_name = "dt_duration_004_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0040(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_005", &ctx, r#"2"#);
+  let invocable_name = "dt_duration_005";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0041(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_005_a", &ctx, r#"0"#);
+  let invocable_name = "dt_duration_005_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0042(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_006", &ctx, r#"2"#);
+  let invocable_name = "dt_duration_006";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"2"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
 
 #[bench]
 fn _0043(b: &mut Bencher) {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "dt_duration_006_a", &ctx, r#"0"#);
+  let invocable_name = "dt_duration_006_a";
+  assert_decision(&MODEL_EVALUATOR, invocable_name, &ctx, r#"0"#);
+  b.iter(|| MODEL_EVALUATOR.evaluate_invocable(invocable_name, &ctx));
 }
