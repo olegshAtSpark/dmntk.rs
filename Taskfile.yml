@@ -9,10 +9,10 @@ tasks:
     cmds:
       - cmd: cargo bench -q | grep 'bench'
 
-  benches:
+  benchmarks:
     desc: Runs all compliance benchmarks
     cmds:
-      - cmd: cargo bench -q compliance | grep 'bench'
+      - cmd: cargo bench -q compliance | grep 'bench' > benchmarks.txt
 
   build:
     desc: Builds in debug mode
