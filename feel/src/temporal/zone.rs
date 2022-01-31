@@ -30,24 +30,26 @@
  * limitations under the License.
  */
 
+//! Implementation of FEEL timezone.
+
 use regex::Captures;
 use std::ops::{Div, Rem};
 
-/// FEEL time zones.
+/// FEEL time zone.
 #[derive(Debug, Clone, PartialEq)]
 pub enum FeelZone {
   /// UTC time zone.
   Utc,
   /// Local time zone.
   Local,
-  /// Time zone defined as an offset from UTC.
+  /// Time zone defined as an offset from UTC in seconds.
   Offset(i32),
   /// Time zone defined as a value from IANA database.
   Zone(String),
 }
 
 impl std::fmt::Display for FeelZone {
-  ///
+  /// Converts [FeelZone] into its text representation.
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
       FeelZone::Utc => write!(f, "Z"),
@@ -68,7 +70,7 @@ impl std::fmt::Display for FeelZone {
 }
 
 impl FeelZone {
-  ///
+  /// Creates [FeelZone] based on offset from UTC in seconds.
   pub fn new(offset: i32) -> Self {
     if offset != 0 {
       Self::Offset(offset)
@@ -76,7 +78,7 @@ impl FeelZone {
       Self::Utc
     }
   }
-  ///
+  /// Creates [FeelZone] from timezone captures taken from regular expression.
   pub fn from_captures(captures: &Captures) -> Option<Self> {
     if captures.name("zulu").is_some() {
       return Some(FeelZone::Utc);
@@ -92,12 +94,11 @@ impl FeelZone {
                   offset += seconds;
                 }
               }
+              if offset > 50_400 {
+                return None;
+              }
               if sign_match.as_str() == "-" {
                 offset = -offset;
-              }
-              if hours > 14 {
-                // the hour magnitude is limited to at most 14
-                return None;
               }
               return Some(FeelZone::new(offset));
             }
@@ -119,6 +120,13 @@ impl FeelZone {
 #[cfg(test)]
 mod tests {
   use crate::temporal::zone::FeelZone;
+  use crate::temporal::RE_TIME;
+
+  macro_rules! assert_zone {
+    ($zone:expr, $time:expr) => {
+      assert_eq!($zone, FeelZone::from_captures(&RE_TIME.captures($time).unwrap()));
+    };
+  }
 
   #[test]
   fn test_format_offset() {
@@ -141,5 +149,53 @@ mod tests {
   #[test]
   fn test_format_local() {
     assert_eq!("", FeelZone::Local.to_string());
+  }
+
+  #[test]
+  fn test_from_captures() {
+    assert_zone!(Some(FeelZone::Local), "00:00:00");
+    assert_zone!(Some(FeelZone::Utc), "00:00:00Z");
+    assert_zone!(Some(FeelZone::Utc), "00:00:00z");
+    assert_zone!(Some(FeelZone::Utc), "00:00:00+00:00");
+    assert_zone!(Some(FeelZone::Utc), "00:00:00-00:00");
+    assert_zone!(Some(FeelZone::Utc), "00:00:00-00:00");
+    assert_zone!(Some(FeelZone::Offset(18_000)), "00:00:00+05:00");
+    assert_zone!(Some(FeelZone::Offset(18_001)), "00:00:00+05:00:01");
+    assert_zone!(Some(FeelZone::Offset(18_060)), "00:00:00+05:01:00");
+    assert_zone!(Some(FeelZone::Offset(-18_000)), "00:00:00-05:00");
+    assert_zone!(Some(FeelZone::Offset(-18_001)), "00:00:00-05:00:01");
+    assert_zone!(Some(FeelZone::Offset(-18_060)), "00:00:00-05:01:00");
+    assert_zone!(Some(FeelZone::Offset(50_400)), "00:00:00+14:00");
+    assert_zone!(Some(FeelZone::Offset(-50_400)), "00:00:00-14:00");
+    assert_zone!(None, "00:00:00+14:01");
+    assert_zone!(None, "00:00:00+14:00:01");
+    assert_zone!(None, "00:00:00-14:01");
+    assert_zone!(None, "00:00:00-14:00:01");
+    assert_zone!(Some(FeelZone::Zone("Europe/Warsaw".to_string())), "00:00:00@Europe/Warsaw");
+    assert_zone!(None, "00:00:00@abc/xyz");
+  }
+
+  #[test]
+  fn test_eq() {
+    assert!((FeelZone::Local == FeelZone::Local));
+    assert!((FeelZone::Local != FeelZone::Utc));
+    assert!((FeelZone::Local != FeelZone::Offset(18_400)));
+    assert!((FeelZone::Local != FeelZone::Zone("Europe/Warsaw".to_string())));
+    assert!((FeelZone::Utc == FeelZone::Utc));
+    assert!((FeelZone::Utc != FeelZone::Offset(18_400)));
+    assert!((FeelZone::Utc != FeelZone::Zone("Europe/Warsaw".to_string())));
+    assert!((FeelZone::Offset(1) == FeelZone::Offset(1)));
+    assert!((FeelZone::Offset(1) != FeelZone::Zone("Europe/Warsaw".to_string())));
+    assert!((FeelZone::Offset(1) != FeelZone::Offset(2)));
+    assert!((FeelZone::Zone("Europe/Warsaw".to_string()) == FeelZone::Zone("Europe/Warsaw".to_string())));
+    assert!((FeelZone::Zone("Europe/Warsaw".to_string()) != FeelZone::Zone("Australia/Sydney".to_string())));
+  }
+
+  #[test]
+  fn test_debug() {
+    assert_eq!(r#"Local"#, format!("{:?}", FeelZone::Local));
+    assert_eq!(r#"Utc"#, format!("{:?}", FeelZone::Utc));
+    assert_eq!(r#"Offset(18000)"#, format!("{:?}", FeelZone::Offset(18_000)));
+    assert_eq!(r#"Zone("Europe/Warsaw")"#, format!("{:?}", FeelZone::Zone("Europe/Warsaw".to_string())));
   }
 }

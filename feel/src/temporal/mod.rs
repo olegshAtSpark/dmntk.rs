@@ -53,22 +53,25 @@ pub mod zone;
 
 /// Regular expression pattern for parsing dates.
 const DATE_PATTERN: &str = r#"(?P<sign>-)?(?P<year>[1-9][0-9]{3,8})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})"#;
-
 /// Regular expression pattern for parsing time.
 const TIME_PATTERN: &str = r#"(?P<hours>[0-9]{2}):(?P<minutes>[0-9]{2}):(?P<seconds>[0-9]{2})(?P<fractional>\.[0-9]+)?"#;
-
-/// Regular expression patterns for parsing time zones.
+/// Regular expression pattern for parsing time zones given as UTC.
 const ZULU_PATTERN: &str = r#"(?P<zulu>[zZ])"#;
+/// Regular expression pattern for parsing time zones given as zone name.
 const ZONE_PATTERN: &str = r#"@(?P<zone>[a-zA-Z_/]+)"#;
+/// Regular expression pattern for parsing time zones given as offset.
 const OFFSET_PATTERN: &str = r#"(?P<offSign>[+-])(?P<offHours>[0-9]{2}):(?P<offMinutes>[0-9]{2})(:(?P<offSeconds>[0-9]{2}))?"#;
-
 /// Number of nanoseconds in a second.
 const NANOS_IN_SECOND: u64 = 1_000_000_000;
 
 lazy_static! {
+  /// Regular expression pattern for parsing time zone.
   static ref TIME_ZONE_PATTERN: String = format!("{}|{}|{}", ZULU_PATTERN, ZONE_PATTERN, OFFSET_PATTERN);
+  /// Regular expression for parsing date.
   static ref RE_DATE: Regex = Regex::new(format!("^{}$", DATE_PATTERN).as_str()).unwrap();
+  /// Regular expression for parsing time.
   static ref RE_TIME: Regex = Regex::new(format!("^{}({})?$", TIME_PATTERN, TIME_ZONE_PATTERN.as_str()).as_str()).unwrap();
+  /// Regular expression for parsing date and time.
   static ref RE_DATE_AND_TIME: Regex = Regex::new(format!("^{}T{}({})?$", DATE_PATTERN, TIME_PATTERN, TIME_ZONE_PATTERN.as_str()).as_str()).unwrap();
 }
 

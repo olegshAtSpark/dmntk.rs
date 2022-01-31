@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! `FEEL` date.
+//! Implementation of FEEL date.
 
 use self::errors::*;
 use crate::temporal::ym_duration::FeelYearsAndMonthsDuration;
