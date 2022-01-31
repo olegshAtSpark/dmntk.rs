@@ -30,34 +30,4 @@
  * limitations under the License.
  */
 
-/// Definitions of time errors.
-pub mod errors {
-  use dmntk_common::DmntkError;
-
-  /// Time errors.
-  #[derive(Debug, PartialEq)]
-  enum FeelTimeError {
-    InvalidTimeLiteral(String),
-  }
-
-  //TODO https://github.com/EngosSoftware/dmntk/issues/1
-  impl From<FeelTimeError> for DmntkError {
-    fn from(e: FeelTimeError) -> Self {
-      DmntkError::new("FeelTimeError", &format!("{}", e))
-    }
-  }
-
-  impl std::fmt::Display for FeelTimeError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      match self {
-        FeelTimeError::InvalidTimeLiteral(literal) => {
-          write!(f, "invalid time literal: {}", literal)
-        }
-      }
-    }
-  }
-
-  pub fn invalid_time_literal(literal: String) -> DmntkError {
-    FeelTimeError::InvalidTimeLiteral(literal).into()
-  }
-}
+//! Implementation of FEEL time.

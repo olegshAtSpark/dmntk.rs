@@ -34,6 +34,7 @@
 
 use crate::temporal::date::FeelDate;
 use crate::temporal::date_time::FeelDateTime;
+use crate::temporal::errors::*;
 use crate::temporal::zone::FeelZone;
 use chrono::{DateTime, Datelike, FixedOffset, Local, LocalResult, NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
 use dmntk_common::{DmntkError, Result};
@@ -242,7 +243,7 @@ fn parse_time_literal(s: &str) -> Result<FeelTime> {
       }
     }
   }
-  Err(crate::temporal::time::errors::invalid_time_literal(s.to_string()))
+  Err(err_invalid_time_literal(s))
 }
 
 fn equal(v1: &FeelDateTime, v2: &FeelDateTime) -> Option<bool> {

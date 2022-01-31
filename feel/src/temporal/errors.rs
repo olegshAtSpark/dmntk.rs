@@ -44,6 +44,10 @@ impl From<TemporalError> for DmntkError {
   }
 }
 
+pub fn err_invalid_time_literal(s: &str) -> DmntkError {
+  TemporalError(format!("invalid time literal '{}'", s)).into()
+}
+
 pub fn err_invalid_date_time_literal(s: &str) -> DmntkError {
   TemporalError(format!("invalid date and time literal '{}'", s)).into()
 }
