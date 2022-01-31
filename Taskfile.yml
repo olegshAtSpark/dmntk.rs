@@ -34,6 +34,11 @@ tasks:
     cmds:
       - cmd: ./coverage.sh dmntk-common
 
+  cov-feel:
+    desc: Runs code coverage using grcov for dmntk-feel
+    cmds:
+      - cmd: ./coverage.sh dmntk-feel
+
   cov-feel-parser:
     desc: Runs code coverage using grcov for dmntk-feel-parser
     cmds:
@@ -90,7 +95,7 @@ tasks:
   musl:
     desc: Builds the Linux MUSL target
     cmds:
-      - cmd: cargo build --release --target=x86_64-unknown-linux-musl
+      - cmd: cargo +stable build --release --target=x86_64-unknown-linux-musl
 
   release:
     desc: Builds in release mode
