@@ -52,9 +52,10 @@ pub use qualified_names::QualifiedName;
 pub use scope::Scope;
 pub use strings::ToFeelString;
 pub use temporal::date::FeelDate;
+pub use temporal::date_time::FeelDateTime;
 pub use temporal::dt_duration::FeelDaysAndTimeDuration;
 pub use temporal::ym_duration::FeelYearsAndMonthsDuration;
-pub use temporal::{subtract, FeelDateTime, FeelTime};
+pub use temporal::{subtract, FeelTime};
 pub use types::{is_built_in_type_name, FeelType};
 
 mod ast;
