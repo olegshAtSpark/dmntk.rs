@@ -30,33 +30,4 @@
  * limitations under the License.
  */
 
-/// Definitions of date and time errors.
-pub mod errors {
-  use dmntk_common::DmntkError;
-
-  /// Date and time errors.
-  #[derive(Debug, PartialEq)]
-  enum FeelDateTimeError {
-    InvalidDateTimeLiteral(String),
-  }
-
-  impl From<FeelDateTimeError> for DmntkError {
-    fn from(e: FeelDateTimeError) -> Self {
-      DmntkError::new("FeelDateTimeError", &format!("{}", e))
-    }
-  }
-
-  impl std::fmt::Display for FeelDateTimeError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      match self {
-        FeelDateTimeError::InvalidDateTimeLiteral(literal) => {
-          write!(f, "invalid date and time literal: {}", literal)
-        }
-      }
-    }
-  }
-
-  pub fn invalid_date_time_literal(literal: String) -> DmntkError {
-    FeelDateTimeError::InvalidDateTimeLiteral(literal).into()
-  }
-}
+//! Implementation of FEEL date and time.

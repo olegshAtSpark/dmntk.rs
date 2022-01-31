@@ -314,7 +314,7 @@ impl TryFrom<FeelDateTime> for DateTime<FixedOffset> {
         return Ok(me_date);
       }
     }
-    Err(crate::temporal::date_time::errors::invalid_date_time_literal("TDB".to_string()))
+    Err(err_invalid_date_time_literal("TDB"))
   }
 }
 

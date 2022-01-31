@@ -42,8 +42,6 @@ extern crate dmntk_feel_number;
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
-#[macro_use]
-extern crate thiserror;
 
 pub use ast::{AstNode, OptAstNode};
 pub use dmntk_feel_number::FeelNumber;

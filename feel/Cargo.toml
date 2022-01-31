@@ -17,4 +17,3 @@ dmntk-common = { path = "../common" }
 dmntk-feel-number = { path = "../feel-number" }
 lazy_static = "1.4.0"
 regex = "1.5.4"
-thiserror = "1.0.30"
