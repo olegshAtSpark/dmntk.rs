@@ -250,19 +250,28 @@ fn get_zone_offset(zone_name: &str, date: (i32, u32, u32), time: (u32, u32, u32,
   None
 }
 
-/// Converts the number of nanoseconds into textual form, the trailing zeros a stripped.
-fn nanoseconds_to_string(nano: u64) -> String {
-  let mut nanos = String::new();
+/// Converts the nanoseconds into text appearing after decimal separator with trailing zeros trimmed.
+pub fn nanos_to_string(nano: u64) -> String {
+  let chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  let mut buffer = ['0', '0', '0', '0', '0', '0', '0', '0', '0'];
+  let mut index = 9_usize;
+  let mut count = 9_usize;
+  let mut value = nano % NANOS_IN_SECOND;
   let mut non_zero = false;
-  for ch in format!("{:09}", nano % NANOS_IN_SECOND).chars().rev() {
-    if ch != '0' {
+  while value > 0 {
+    let remainder = (value % 10) as usize;
+    value /= 10;
+    if remainder > 0 {
       non_zero = true;
     }
-    if non_zero {
-      nanos.push(ch);
+    if remainder == 0 && !non_zero {
+      count -= 1;
     }
+    index -= 1;
+    buffer[index] = chars[remainder];
   }
-  nanos.chars().rev().collect()
+  println!("{}", count);
+  buffer.iter().take(count).collect()
 }
 
 fn is_valid_time(hour: u8, minute: u8, second: u8) -> bool {
@@ -272,6 +281,7 @@ fn is_valid_time(hour: u8, minute: u8, second: u8) -> bool {
 #[cfg(test)]
 mod tests {
   use super::{get_local_offset, get_zone_offset, FeelDateTime, FeelTime, FeelZone};
+  use crate::temporal::nanos_to_string;
   use crate::FeelDate;
   use std::convert::TryFrom;
 
@@ -404,5 +414,18 @@ mod tests {
     assert_eq!(Some(-10 * SECONDS_IN_HOUR), get_zone_offset("Pacific/Honolulu", (2020, 11, 12), (18, 4, 33, 0)));
     // no time change in Honolulu in summer, offset = -10:00
     assert_eq!(Some(-10 * SECONDS_IN_HOUR), get_zone_offset("Pacific/Honolulu", (2020, 6, 8), (8, 0, 0, 0)));
+  }
+
+  #[test]
+  fn test_nanos_to_string() {
+    assert_eq!("000000012", nanos_to_string(12));
+    assert_eq!("00000012", nanos_to_string(120));
+    assert_eq!("0000012", nanos_to_string(1200));
+    assert_eq!("000012", nanos_to_string(12000));
+    assert_eq!("00012", nanos_to_string(120000));
+    assert_eq!("0012", nanos_to_string(1200000));
+    assert_eq!("012", nanos_to_string(12000000));
+    assert_eq!("12", nanos_to_string(120000000));
+    assert_eq!("", nanos_to_string(0));
   }
 }

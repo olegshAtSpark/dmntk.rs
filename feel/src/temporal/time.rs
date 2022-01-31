@@ -32,7 +32,7 @@
 
 //! Implementation of FEEL time.
 
-use super::nanoseconds_to_string;
+use super::nanos_to_string;
 use super::zone::FeelZone;
 use crate::temporal::errors::err_invalid_time_literal;
 use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
@@ -47,7 +47,7 @@ pub struct FeelTime(pub u8, pub u8, pub u8, pub u64, pub FeelZone); //TODO make 
 impl std::fmt::Display for FeelTime {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     if self.3 > 0 {
-      write!(f, "{:02}:{:02}:{:02}.{}{}", self.0, self.1, self.2, nanoseconds_to_string(self.3), self.4)
+      write!(f, "{:02}:{:02}:{:02}.{}{}", self.0, self.1, self.2, nanos_to_string(self.3), self.4)
     } else {
       write!(f, "{:02}:{:02}:{:02}{}", self.0, self.1, self.2, self.4)
     }

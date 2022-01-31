@@ -141,7 +141,7 @@ impl std::fmt::Display for FeelDaysAndTimeDuration {
     nanoseconds -= minute * NANOSECONDS_IN_MINUTE;
     let seconds = nanoseconds / NANOSECONDS_IN_SECOND;
     nanoseconds -= seconds * NANOSECONDS_IN_SECOND;
-    let nanoseconds_str = super::nanoseconds_to_string(nanoseconds as u64);
+    let nanoseconds_str = super::nanos_to_string(nanoseconds as u64);
     match (day > 0, hour > 0, minute > 0, seconds > 0, nanoseconds > 0) {
       (false, false, false, false, false) => write!(f, "PT0S"),
       (false, false, false, true, false) => write!(f, "{}PT{}S", sign, seconds),
@@ -260,7 +260,7 @@ pub mod errors {
 
 #[cfg(test)]
 mod tests {
-  use super::super::nanoseconds_to_string;
+  use super::super::nanos_to_string;
   use super::FeelDaysAndTimeDuration;
   use std::cmp::Ordering;
   use std::convert::TryFrom;
@@ -430,17 +430,17 @@ mod tests {
 
   #[test]
   fn converting_nanos_to_string_should_pass() {
-    assert_eq!("", nanoseconds_to_string(0));
-    assert_eq!("000000001", nanoseconds_to_string(1));
-    assert_eq!("00000001", nanoseconds_to_string(10));
-    assert_eq!("0000001", nanoseconds_to_string(100));
-    assert_eq!("000001", nanoseconds_to_string(1_000));
-    assert_eq!("00001", nanoseconds_to_string(10_000));
-    assert_eq!("0001", nanoseconds_to_string(100_000));
-    assert_eq!("001", nanoseconds_to_string(1_000_000));
-    assert_eq!("01", nanoseconds_to_string(10_000_000));
-    assert_eq!("1", nanoseconds_to_string(100_000_000));
-    assert_eq!("", nanoseconds_to_string(1_000_000_000));
+    assert_eq!("", nanos_to_string(0));
+    assert_eq!("000000001", nanos_to_string(1));
+    assert_eq!("00000001", nanos_to_string(10));
+    assert_eq!("0000001", nanos_to_string(100));
+    assert_eq!("000001", nanos_to_string(1_000));
+    assert_eq!("00001", nanos_to_string(10_000));
+    assert_eq!("0001", nanos_to_string(100_000));
+    assert_eq!("001", nanos_to_string(1_000_000));
+    assert_eq!("01", nanos_to_string(10_000_000));
+    assert_eq!("1", nanos_to_string(100_000_000));
+    assert_eq!("", nanos_to_string(1_000_000_000));
   }
 
   #[test]
