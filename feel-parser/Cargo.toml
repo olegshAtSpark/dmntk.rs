@@ -12,11 +12,11 @@ edition = "2021"
 parsing-tables = []
 
 [dependencies]
-dmntk-common = "0.0.45"
-dmntk-feel = "0.0.45"
+dmntk-common = "0.0.46"
+dmntk-feel = "0.0.46"
 
 [dev-dependencies]
 difference = "2.0.0"
 
 [build-dependencies]
-dmntk-feel-grammar = "0.0.45"
+dmntk-feel-grammar = "0.0.46"

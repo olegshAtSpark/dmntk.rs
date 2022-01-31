@@ -9,8 +9,8 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = "0.0.45"
-dmntk-feel = "0.0.45"
-dmntk-feel-evaluator = "0.0.45"
-dmntk-feel-parser = "0.0.45"
-dmntk-model-evaluator = "0.0.45"
+dmntk-common = "0.0.46"
+dmntk-feel = "0.0.46"
+dmntk-feel-evaluator = "0.0.46"
+dmntk-feel-parser = "0.0.46"
+dmntk-model-evaluator = "0.0.46"

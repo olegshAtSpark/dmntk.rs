@@ -9,9 +9,9 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-dmntk-common = "0.0.45"
-dmntk-feel = "0.0.45"
-dmntk-feel-parser = "0.0.45"
+dmntk-common = "0.0.46"
+dmntk-feel = "0.0.46"
+dmntk-feel-parser = "0.0.46"
 lazy_static = "1.4.0"
 regex = "1.5.4"
 thiserror = "1.0.30"
