@@ -71,7 +71,7 @@ impl std::fmt::Display for FeelZone {
 
 impl FeelZone {
   /// Creates [FeelZone] based on offset from UTC in seconds.
-  pub fn new(offset: i32) -> Self {
+  pub fn from_offset(offset: i32) -> Self {
     if offset != 0 {
       Self::Offset(offset)
     } else {
@@ -100,7 +100,7 @@ impl FeelZone {
               if sign_match.as_str() == "-" {
                 offset = -offset;
               }
-              return Some(FeelZone::new(offset));
+              return Some(if offset != 0 { Self::Offset(offset) } else { Self::Utc });
             }
           }
         }
@@ -130,19 +130,19 @@ mod tests {
 
   #[test]
   fn test_format_offset() {
-    assert_eq!("+05:00", FeelZone::new(18_000).to_string());
+    assert_eq!("+05:00", FeelZone::from_offset(18_000).to_string());
     assert_eq!("+05:00", FeelZone::Offset(18_000).to_string());
-    assert_eq!("-05:00", FeelZone::new(-18_000).to_string());
+    assert_eq!("-05:00", FeelZone::from_offset(-18_000).to_string());
     assert_eq!("-05:00", FeelZone::Offset(-18_000).to_string());
-    assert_eq!("+05:00:01", FeelZone::new(18_001).to_string());
+    assert_eq!("+05:00:01", FeelZone::from_offset(18_001).to_string());
     assert_eq!("+05:00:01", FeelZone::Offset(18_001).to_string());
-    assert_eq!("-05:00:01", FeelZone::new(-18_001).to_string());
+    assert_eq!("-05:00:01", FeelZone::from_offset(-18_001).to_string());
     assert_eq!("-05:00:01", FeelZone::Offset(-18_001).to_string());
   }
 
   #[test]
   fn test_format_utc() {
-    assert_eq!("Z", FeelZone::new(0).to_string());
+    assert_eq!("Z", FeelZone::from_offset(0).to_string());
     assert_eq!("Z", FeelZone::Utc.to_string());
   }
 

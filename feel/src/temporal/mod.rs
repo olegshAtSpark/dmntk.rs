@@ -125,7 +125,7 @@ impl TryFrom<FeelTime> for DateTime<FixedOffset> {
 impl FeelTime {
   pub fn new_hmso_opt(hour: u8, minute: u8, second: u8, nano: u64, offset: i32) -> Option<Self> {
     if is_valid_time(hour, minute, second) {
-      Some(Self(hour, minute, second, nano, FeelZone::new(offset)))
+      Some(Self(hour, minute, second, nano, FeelZone::from_offset(offset)))
     } else {
       None
     }
