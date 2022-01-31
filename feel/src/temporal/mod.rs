@@ -33,11 +33,9 @@
 //! Date and time utilities.
 
 use crate::temporal::date_time::FeelDateTime;
-use crate::temporal::errors::*;
 use crate::temporal::time::FeelTime;
 use crate::temporal::zone::FeelZone;
 use chrono::{DateTime, Datelike, FixedOffset, Local, LocalResult, NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
-use dmntk_common::Result;
 use regex::Regex;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
@@ -73,37 +71,6 @@ lazy_static! {
   static ref RE_TIME: Regex = Regex::new(format!("^{}({})?$", TIME_PATTERN, TIME_ZONE_PATTERN.as_str()).as_str()).unwrap();
   /// Regular expression for parsing date and time.
   static ref RE_DATE_AND_TIME: Regex = Regex::new(format!("^{}T{}({})?$", DATE_PATTERN, TIME_PATTERN, TIME_ZONE_PATTERN.as_str()).as_str()).unwrap();
-}
-
-/// Parses time literal.
-fn parse_time_literal(s: &str) -> Result<FeelTime> {
-  if let Some(captures) = RE_TIME.captures(s) {
-    if let Some(hour_match) = captures.name("hours") {
-      if let Ok(hour) = hour_match.as_str().parse::<u8>() {
-        if let Some(min_match) = captures.name("minutes") {
-          if let Ok(min) = min_match.as_str().parse::<u8>() {
-            if let Some(sec_match) = captures.name("seconds") {
-              if let Ok(sec) = sec_match.as_str().parse::<u8>() {
-                let mut fractional = 0.0;
-                if let Some(frac_match) = captures.name("fractional") {
-                  if let Ok(frac) = frac_match.as_str().parse::<f64>() {
-                    fractional = frac;
-                  }
-                }
-                let nanos = (fractional * 1e9).trunc() as u64;
-                if let Some(zone) = FeelZone::from_captures(&captures) {
-                  if is_valid_time(hour, min, sec) {
-                    return Ok(FeelTime(hour, min, sec, nanos, zone));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  Err(err_invalid_time_literal(s))
 }
 
 fn equal(v1: &FeelDateTime, v2: &FeelDateTime) -> Option<bool> {

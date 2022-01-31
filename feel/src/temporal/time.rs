@@ -32,9 +32,10 @@
 
 //! Implementation of FEEL time.
 
+use super::nanoseconds_to_string;
 use super::zone::FeelZone;
-use super::{nanoseconds_to_string, parse_time_literal};
-use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time};
+use crate::temporal::errors::err_invalid_time_literal;
+use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
 use crate::{FeelDate, FeelDateTime};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
@@ -53,15 +54,49 @@ impl std::fmt::Display for FeelTime {
   }
 }
 
+impl TryFrom<&str> for FeelTime {
+  type Error = DmntkError;
+  /// Converts a string into [FeelTime].
+  fn try_from(value: &str) -> Result<Self, Self::Error> {
+    if let Some(captures) = RE_TIME.captures(value) {
+      if let Some(hour_match) = captures.name("hours") {
+        if let Ok(hour) = hour_match.as_str().parse::<u8>() {
+          if let Some(min_match) = captures.name("minutes") {
+            if let Ok(min) = min_match.as_str().parse::<u8>() {
+              if let Some(sec_match) = captures.name("seconds") {
+                if let Ok(sec) = sec_match.as_str().parse::<u8>() {
+                  let mut fractional = 0.0;
+                  if let Some(frac_match) = captures.name("fractional") {
+                    if let Ok(frac) = frac_match.as_str().parse::<f64>() {
+                      fractional = frac;
+                    }
+                  }
+                  let nanos = (fractional * 1e9).trunc() as u64;
+                  if let Some(zone) = FeelZone::from_captures(&captures) {
+                    if is_valid_time(hour, min, sec) {
+                      return Ok(FeelTime(hour, min, sec, nanos, zone));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    Err(err_invalid_time_literal(value))
+  }
+}
+
 impl std::str::FromStr for FeelTime {
   type Err = DmntkError;
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     // parse the time from the provided string
-    let time = parse_time_literal(s)?;
+    let time = FeelTime::try_from(s)?;
     // even if parsing from string was successful, the time may still be invalid,
     // so check the time validity by converting to chrono::DateTime<FixedOffset>
     let _: DateTime<FixedOffset> = time.clone().try_into()?;
-    // time is valid
+    // now the time is valid
     Ok(time)
   }
 }
