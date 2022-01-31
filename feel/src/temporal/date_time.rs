@@ -34,9 +34,10 @@
 
 use super::date::is_valid_date;
 use super::errors::err_invalid_date_time_literal;
+use super::time::FeelTime;
 use super::zone::FeelZone;
 use super::*;
-use crate::{subtract, FeelDate, FeelTime, FeelYearsAndMonthsDuration};
+use crate::{subtract, FeelDate, FeelYearsAndMonthsDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 

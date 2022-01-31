@@ -31,3 +31,149 @@
  */
 
 //! Implementation of FEEL time.
+
+use super::zone::FeelZone;
+use super::{nanoseconds_to_string, parse_time_literal};
+use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time};
+use crate::{FeelDate, FeelDateTime};
+use chrono::{DateTime, FixedOffset};
+use dmntk_common::{DmntkError, Result};
+
+/// FEEL time.
+#[derive(Debug, Clone)]
+pub struct FeelTime(pub u8, pub u8, pub u8, pub u64, pub FeelZone); //TODO make these fields private
+
+impl std::fmt::Display for FeelTime {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    if self.3 > 0 {
+      write!(f, "{:02}:{:02}:{:02}.{}{}", self.0, self.1, self.2, nanoseconds_to_string(self.3), self.4)
+    } else {
+      write!(f, "{:02}:{:02}:{:02}{}", self.0, self.1, self.2, self.4)
+    }
+  }
+}
+
+impl std::str::FromStr for FeelTime {
+  type Err = DmntkError;
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    // parse the time from the provided string
+    let time = parse_time_literal(s)?;
+    // even if parsing from string was successful, the time may still be invalid,
+    // so check the time validity by converting to chrono::DateTime<FixedOffset>
+    let _: DateTime<FixedOffset> = time.clone().try_into()?;
+    // time is valid
+    Ok(time)
+  }
+}
+
+impl std::cmp::PartialEq for FeelTime {
+  fn eq(&self, other: &Self) -> bool {
+    if let Some(true) = self.equal(other) {
+      return true;
+    }
+    false
+  }
+}
+
+impl TryFrom<FeelTime> for DateTime<FixedOffset> {
+  type Error = DmntkError;
+  /// Tries to convert the `FEEL` time into chrono::DateTime<FixedOffset>.
+  /// If the conversion fails, the `FEEL` time is invalid.
+  fn try_from(me: FeelTime) -> Result<Self, Self::Error> {
+    let result: DateTime<FixedOffset> = FeelDateTime(FeelDate::today_local(), me).try_into()?;
+    Ok(result)
+  }
+}
+
+impl FeelTime {
+  pub fn new_hmso_opt(hour: u8, minute: u8, second: u8, nano: u64, offset: i32) -> Option<Self> {
+    if is_valid_time(hour, minute, second) {
+      Some(Self(hour, minute, second, nano, FeelZone::from_offset(offset)))
+    } else {
+      None
+    }
+  }
+
+  pub fn new_hms_opt(hour: u8, minute: u8, second: u8, nano: u64) -> Option<Self> {
+    if is_valid_time(hour, minute, second) {
+      Some(Self(hour, minute, second, nano, FeelZone::Local))
+    } else {
+      None
+    }
+  }
+
+  /// Creates UTC time from specified time values.
+  pub fn utc(hour: u8, minute: u8, second: u8, nanos: u64) -> Self {
+    Self(hour, minute, second, nanos, FeelZone::Utc)
+  }
+
+  /// Creates local time from specified time values.
+  pub fn local(hour: u8, minute: u8, second: u8, nanos: u64) -> Self {
+    Self(hour, minute, second, nanos, FeelZone::Local)
+  }
+
+  /// Creates a time from specified time and offset values.
+  pub fn offset(hour: u8, minute: u8, second: u8, nanos: u64, offset: i32) -> Self {
+    Self(hour, minute, second, nanos, FeelZone::Offset(offset))
+  }
+
+  /// Compares this time value with other time value and returns [Some] ([true])
+  /// when both are equal. Otherwise returns [Some] ([false]).
+  /// If any of compared values is not valid then [None] is returned.
+  /// Times are compared using current date in local time zone.     
+  pub fn equal(&self, other: &Self) -> Option<bool> {
+    let today = FeelDate::today_local();
+    equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
+  }
+
+  pub fn before(&self, other: &Self) -> Option<bool> {
+    let today = FeelDate::today_local();
+    before(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
+  }
+
+  pub fn before_or_equal(&self, other: &Self) -> Option<bool> {
+    let today = FeelDate::today_local();
+    before_or_equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
+  }
+
+  pub fn after(&self, other: &Self) -> Option<bool> {
+    let today = FeelDate::today_local();
+    after(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
+  }
+
+  pub fn after_or_equal(&self, other: &Self) -> Option<bool> {
+    let today = FeelDate::today_local();
+    after_or_equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
+  }
+
+  pub fn between(&self, left: &Self, right: &Self, left_closed: bool, right_closed: bool) -> Option<bool> {
+    let today = FeelDate::today_local();
+    between(
+      &FeelDateTime(today.clone(), self.clone()),
+      &FeelDateTime(today.clone(), left.clone()),
+      &FeelDateTime(today, right.clone()),
+      left_closed,
+      right_closed,
+    )
+  }
+
+  pub fn hour(&self) -> u8 {
+    self.0
+  }
+
+  pub fn minute(&self) -> u8 {
+    self.1
+  }
+
+  pub fn second(&self) -> u8 {
+    self.2
+  }
+
+  pub fn feel_time_offset(&self) -> Option<i32> {
+    feel_time_offset(&FeelDateTime(FeelDate::today_local(), self.clone()))
+  }
+
+  pub fn feel_time_zone(&self) -> Option<String> {
+    feel_time_zone(&FeelDateTime(FeelDate::today_local(), self.clone()))
+  }
+}
