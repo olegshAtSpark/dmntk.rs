@@ -80,13 +80,23 @@ fn _0004() {
 #[test]
 fn _0005() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_005", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_005",
+    &ctx,
+    r#"null([core::get value] invalid argument type, expected context, actual type is string)"#,
+  );
 }
 
 #[test]
 fn _0006() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_006", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_006",
+    &ctx,
+    r#"null([core::get value] invalid argument type, expected string, actual type is number)"#,
+  );
 }
 
 #[test]
@@ -104,23 +114,38 @@ fn _0008() {
 #[test]
 fn _0009() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_009", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_009",
+    &ctx,
+    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
+  );
 }
 
 #[test]
-fn _00010() {
+fn _0010() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_010", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_010",
+    &ctx,
+    r#"null([core::get value] invalid argument type, expected string, actual type is Null)"#,
+  );
 }
 
 #[test]
-fn _00011() {
+fn _0011() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_011", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_011",
+    &ctx,
+    r#"null([core::get value] invalid argument type, expected context, actual type is Null)"#,
+  );
 }
 
 #[test]
-fn _00012() {
+fn _0012() {
   let ctx = context(r#"{}"#);
   assert_decision(&MODEL_EVALUATOR, "decision_012", &ctx, r#"null"#);
 }

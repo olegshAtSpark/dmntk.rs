@@ -489,9 +489,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::Context(items));
-    } else {
-      self.yy_node_stack.push(AstNode::Context(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::Context(vec![node]));
     Ok(())
   }
 
@@ -515,9 +515,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::ContextType(items));
-    } else {
-      self.yy_node_stack.push(AstNode::ContextType(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::ContextType(vec![node]));
     Ok(())
   }
 
@@ -585,9 +585,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::ExpressionList(items));
-    } else {
-      self.yy_node_stack.push(AstNode::ExpressionList(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::ExpressionList(vec![node]));
     Ok(())
   }
 
@@ -783,9 +783,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::ParameterTypes(items));
-    } else {
-      self.yy_node_stack.push(AstNode::ParameterTypes(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::ParameterTypes(vec![node]));
     Ok(())
   }
 
@@ -893,9 +893,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::IterationContexts(items));
-    } else {
-      self.yy_node_stack.push(AstNode::IterationContexts(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::IterationContexts(vec![node]));
     Ok(())
   }
 
@@ -941,9 +941,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::CommaList(items));
-    } else {
-      self.yy_node_stack.push(AstNode::CommaList(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::CommaList(vec![node]));
     Ok(())
   }
 
@@ -1048,9 +1048,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::NamedParameters(items));
-    } else {
-      self.yy_node_stack.push(AstNode::NamedParameters(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::NamedParameters(vec![node]));
     Ok(())
   }
 
@@ -1095,9 +1095,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::PositionalParameters(items));
-    } else {
-      self.yy_node_stack.push(AstNode::PositionalParameters(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::PositionalParameters(vec![node]));
     Ok(())
   }
 
@@ -1162,9 +1162,9 @@ impl<'parser> ReduceActions for Parser<'parser> {
       let item = self.yy_node_stack.pop().ok_or_else(err_pop)?;
       items.insert(0, item);
       self.yy_node_stack.push(AstNode::QuantifiedContexts(items));
-    } else {
-      self.yy_node_stack.push(AstNode::QuantifiedContexts(vec![node]));
+      return Ok(());
     }
+    self.yy_node_stack.push(AstNode::QuantifiedContexts(vec![node]));
     Ok(())
   }
 

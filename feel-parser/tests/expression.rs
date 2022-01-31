@@ -35,12 +35,11 @@ use dmntk_feel::{scope, AstNode, Scope};
 #[test]
 fn _0001() {
   let scope = scope!();
-  assert_eq!(
-    AstNode::List(vec![
-      AstNode::Numeric("1".to_string(), "".to_string()),
-      AstNode::Numeric("2".to_string(), "".to_string()),
-      AstNode::Numeric("3".to_string(), "".to_string()),
-    ]),
-    dmntk_feel_parser::parse_expression(&scope, "[1,2,3]", false).unwrap()
-  );
+  let expected = AstNode::List(vec![
+    AstNode::Numeric("1".to_string(), "".to_string()),
+    AstNode::Numeric("2".to_string(), "".to_string()),
+    AstNode::Numeric("3".to_string(), "".to_string()),
+  ]);
+  let actual = dmntk_feel_parser::parse_expression(&scope, "[1,2,3]", false).unwrap();
+  assert_eq!(expected, actual);
 }

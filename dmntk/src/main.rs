@@ -35,6 +35,7 @@
 extern crate actix_web;
 extern crate base64;
 extern crate clap;
+extern crate difference;
 extern crate dmntk_common;
 extern crate dmntk_evaluator;
 extern crate dmntk_feel;

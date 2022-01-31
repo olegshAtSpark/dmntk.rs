@@ -32,7 +32,8 @@
 
 use crate::examples::*;
 use crate::{DMNTK_DESCRIPTION, DMNTK_VERSION};
-use clap::{load_yaml, App, AppSettings};
+use clap::{arg, App, ArgMatches};
+use difference::Changeset;
 use dmntk_common::ascii_ctrl::*;
 use dmntk_common::{ascii256, Jsonify};
 use dmntk_feel::values::Value;
@@ -46,25 +47,25 @@ enum Action {
   /// Evaluate `FEEL` expression.
   EvaluateFeelExpression(String, String),
   /// Test `FEEL` expression.
-  TestFeelExpression(String, String),
+  TestFeelExpression(String, String, bool),
   /// Export `FEEL` expression to HTML.
-  ExportFeelExpression(String, String),
+  ExportFeelExpression(String, String, String),
   /// Parse decision table.
   ParseDecisionTable(String),
   /// Evaluate decision table.
   EvaluateDecisionTable(String, String),
   /// Test decision table.
-  TestDecisionTable(String, String),
+  TestDecisionTable(String, String, bool),
   /// Export decision table.
   ExportDecisionTable(String, String),
   /// Recognize decision table.
   RecognizeDecisionTable(String),
   /// Parse `DMN` model`.
-  ParseDmnModel(String),
+  ParseDmnModel(String, String),
   /// Evaluate `DMN` model`.
   EvaluateDmnModel(String, String, String),
   /// Test `DMN` model`.
-  TestDmnModel(String, String, String),
+  TestDmnModel(String, String, String, bool),
   /// Export `DMN` model`.
   ExportDmnModel(String, String),
   /// Start `dmntk` as a service.
@@ -86,12 +87,12 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_feel_expression(&input_file_name, &feel_file_name);
       Ok(())
     }
-    Action::TestFeelExpression(test_file_name, feel_file_name) => {
-      test_feel_expression(&test_file_name, &feel_file_name);
+    Action::TestFeelExpression(test_file_name, feel_file_name, summary_only) => {
+      test_feel_expression(&test_file_name, &feel_file_name, summary_only);
       Ok(())
     }
-    Action::ExportFeelExpression(feel_file_name, html_file_name) => {
-      export_feel_expression(&feel_file_name, &html_file_name);
+    Action::ExportFeelExpression(input_file_name, feel_file_name, html_file_name) => {
+      export_feel_expression(&input_file_name, &feel_file_name, &html_file_name);
       Ok(())
     }
     Action::ParseDecisionTable(dectab_file_name) => {
@@ -102,8 +103,8 @@ pub async fn do_action() -> std::io::Result<()> {
       evaluate_decision_table(&input_file_name, &dectab_file_name);
       Ok(())
     }
-    Action::TestDecisionTable(test_file_name, dectab_file_name) => {
-      test_decision_table(&test_file_name, &dectab_file_name);
+    Action::TestDecisionTable(test_file_name, dectab_file_name, summary_only) => {
+      test_decision_table(&test_file_name, &dectab_file_name, summary_only);
       Ok(())
     }
     Action::ExportDecisionTable(dectab_file_name, html_file_name) => {
@@ -114,20 +115,20 @@ pub async fn do_action() -> std::io::Result<()> {
       recognize_decision_table(&dectab_file_name);
       Ok(())
     }
-    Action::ParseDmnModel(dectab_file_name) => {
-      parse_dmn_model(&dectab_file_name);
+    Action::ParseDmnModel(dmn_file_name, color) => {
+      parse_dmn_model(&dmn_file_name, &color);
       Ok(())
     }
-    Action::EvaluateDmnModel(dectab_file_name, ctx_file_name, invocable_name) => {
-      evaluate_dmn_model(&dectab_file_name, &ctx_file_name, &invocable_name);
+    Action::EvaluateDmnModel(dmn_file_name, ctx_file_name, invocable_name) => {
+      evaluate_dmn_model(&dmn_file_name, &ctx_file_name, &invocable_name);
       Ok(())
     }
-    Action::TestDmnModel(test_file_name, dectab_file_name, invocable_name) => {
-      test_dmn_model(&test_file_name, &dectab_file_name, &invocable_name);
+    Action::TestDmnModel(test_file_name, dmn_file_name, invocable_name, summary_only) => {
+      test_dmn_model(&test_file_name, &dmn_file_name, &invocable_name, summary_only);
       Ok(())
     }
-    Action::ExportDmnModel(dectab_file_name, html_file_name) => {
-      export_dmn_model(&dectab_file_name, &html_file_name);
+    Action::ExportDmnModel(dmn_file_name, html_file_name) => {
+      export_dmn_model(&dmn_file_name, &html_file_name);
       Ok(())
     }
     Action::StartService(opt_host, opt_port, opt_dir) => dmntk_server::start_server(opt_host, opt_port, opt_dir).await,
@@ -139,15 +140,65 @@ pub async fn do_action() -> std::io::Result<()> {
   }
 }
 
+/// Parses CLI argument matches.
+#[rustfmt::skip]
+fn get_matches() -> ArgMatches {
+  App::new("dmntk").version(DMNTK_VERSION).about(DMNTK_DESCRIPTION)
+    .subcommand(App::new("pfe").about("Parse FEEL Expression").display_order(7)
+      .arg(arg!(<CONTEXT_FILE>).help("File containing context for parsed FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be parsed").required(true).index(2)))
+    .subcommand(App::new("efe").about("Evaluate FEEL Expression").display_order(4)
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tfe").about("Test FEEL Expression").display_order(10)
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(false).display_order(1))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested FEEL expression").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be tested").required(true).index(2)))
+    .subcommand(App::new("xfe").about("eXport FEEL Expression").display_order(13)
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for expression to be exported to HTML").required(true).index(1))
+      .arg(arg!(<FEEL_FILE>).help("File containing FEEL expression to be exported to HTML").required(true).index(2))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(3)))
+    .subcommand(App::new("pdm").about("Parse DMN Model").display_order(5)
+      .arg(arg!(-c --color).help("Control when colored output is used").takes_value(true).display_order(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be parsed").required(true).index(1)))
+    .subcommand(App::new("edm").about("Evaluate DMN Model").display_order(2)
+      .arg(arg!(-i --invocable).help("Name of the invocable (decision, bkm, decision service) to be evaluated").required(true).takes_value(true).display_order(1))
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated DMN model").required(true).index(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tdm").about("Test DMN Model").display_order(8)
+      .arg(arg!(-i --invocable).help("Name of the invocable to be tested").required(true).takes_value(true).display_order(1))
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(true).display_order(2))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested DMN model").required(true).index(1))
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be tested").required(true).index(2)))
+    .subcommand(App::new("xdm").about("eXport DMN Model").display_order(11)
+      .arg(arg!(<DMN_FILE>).help("File containing DMN model to be exported to HTML").required(true).index(1))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+    .subcommand(App::new("pdt").about("Parse Decision Table").display_order(6)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be parsed").required(true).index(1)))
+    .subcommand(App::new("edt").about("Evaluate Decision Table").display_order(3)
+      .arg(arg!(<INPUT_FILE>).help("File containing input data for evaluated decision table").required(true).index(1))
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be evaluated").required(true).index(2)))
+    .subcommand(App::new("tdt").about("Test Decision Table").display_order(9)
+      .arg(arg!(-s --summary).help("Display only summary after completing all tests").required(true).display_order(2))
+      .arg(arg!(<TEST_FILE>).help("File containing test cases for tested decision table").required(true).index(1))
+      .arg(arg!(<DECTAB_FILE>).help("File containing FEEL expression to be tested").required(true).index(2)))
+    .subcommand(App::new("xdt").about("eXport Decision Table").display_order(12)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be exported to HTML").required(true).index(1))
+      .arg(arg!(<HTML_FILE>).help("Output HTML file").required(true).index(2)))
+    .subcommand(App::new("rdt").about("Recognize Decision Table").display_order(14)
+      .arg(arg!(<DECTAB_FILE>).help("File containing decision table to be recognized").required(true).index(1)))
+    .subcommand(App::new("srv").about("Run DMNTK as a service").display_order(1)
+      .arg(arg!(-H --host).help("Host name").takes_value(true).display_order(1))
+      .arg(arg!(-P --port).help("Port number").takes_value(true).display_order(2))
+      .arg(arg!(-D --dir).help("Directory where DMN files are searched").takes_value(true).display_order(3)))
+    .subcommand(App::new("exs").about("Generate examples in current directory").display_order(15))
+    .get_matches()
+}
+
 /// Checks the list of arguments passed from the command line
 /// and returns an action related to valid argument.
 fn get_cli_action() -> Action {
-  let yaml = load_yaml!("cli.yml");
-  let matches = App::from_yaml(yaml)
-    .version(DMNTK_VERSION)
-    .about(DMNTK_DESCRIPTION)
-    .setting(AppSettings::SubcommandRequiredElseHelp)
-    .get_matches();
+  let matches = get_matches();
   // parse FEEL expression subcommand
   if let Some(matches) = matches.subcommand_matches("pfe") {
     return Action::ParseFeelExpression(
@@ -167,11 +218,13 @@ fn get_cli_action() -> Action {
     return Action::TestFeelExpression(
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("FEEL_FILE").unwrap_or("unknown.feel").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export FEEL expression subcommand
   if let Some(matches) = matches.subcommand_matches("xfe") {
     return Action::ExportFeelExpression(
+      matches.value_of("INPUT_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("FEEL_FILE").unwrap_or("unknown.feel").to_string(),
       matches.value_of("HTML_FILE").unwrap_or("unknown.html").to_string(),
     );
@@ -192,6 +245,7 @@ fn get_cli_action() -> Action {
     return Action::TestDecisionTable(
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DECTAB_FILE").unwrap_or("unknown.dtb").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export decision table subcommand
@@ -207,7 +261,10 @@ fn get_cli_action() -> Action {
   }
   // parse DMN model subcommand
   if let Some(matches) = matches.subcommand_matches("pdm") {
-    return Action::ParseDmnModel(matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string());
+    return Action::ParseDmnModel(
+      matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
+      matches.value_of("color").unwrap_or("auto").to_string(),
+    );
   }
   // evaluate DMN model subcommand
   if let Some(matches) = matches.subcommand_matches("edm") {
@@ -223,6 +280,7 @@ fn get_cli_action() -> Action {
       matches.value_of("TEST_FILE").unwrap_or("unknown.ctx").to_string(),
       matches.value_of("DMN_FILE").unwrap_or("unknown.dmn").to_string(),
       matches.value_of("invocable").unwrap_or("unknown").to_string(),
+      matches.is_present("summary"),
     );
   }
   // export DMN model subcommand
@@ -244,6 +302,10 @@ fn get_cli_action() -> Action {
   if let Some(_matches) = matches.subcommand_matches("exs") {
     return Action::GenerateExamples;
   }
+  println!("dmntk {}", DMNTK_VERSION);
+  println!("{}", DMNTK_DESCRIPTION);
+  println!("dmntk: missing subcommand");
+  println!("Try 'dmntk --help' for more information.");
   Action::DoNothing
 }
 
@@ -289,7 +351,7 @@ fn evaluate_feel_expression(ctx_file_name: &str, feel_file_name: &str) {
 }
 
 /// Tests `FEEL` expression loaded from file and prints the test result to standard output.
-fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
+fn test_feel_expression(test_file_name: &str, feel_file_name: &str, summary_only: bool) {
   match std::fs::read_to_string(feel_file_name) {
     Ok(feel_file_content) => match std::fs::read_to_string(test_file_name) {
       Ok(test_file_content) => match dmntk_evaluator::evaluate_test_cases(&test_file_content) {
@@ -300,13 +362,13 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
             let scope = input_data.clone().into();
             match dmntk_feel_parser::parse_expression(&scope, &feel_file_content, false) {
               Ok(node) => match dmntk_evaluator::evaluate(&scope, &node) {
-                Ok(actual) => display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed),
+                Ok(actual) => display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only),
                 Err(reason) => println!("evaluating expression failed with reason: {}", reason),
               },
               Err(reason) => println!("parsing expression failed with reason: {}", reason),
             }
           }
-          display_test_summary(passed, failed);
+          display_test_summary(passed, failed, summary_only);
         }
         Err(reason) => println!("evaluation of test cases failed with reason: {}", reason),
       },
@@ -317,8 +379,8 @@ fn test_feel_expression(test_file_name: &str, feel_file_name: &str) {
 }
 
 /// Exports `FEEL` expression loaded from file to HTML output file.
-fn export_feel_expression(_feel_file_name: &str, _html_file_name: &str) {
-  println!("xfe command is not implemented yet")
+fn export_feel_expression(_input_file_name: &str, _feel_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Parses decision table loaded from text file.
@@ -384,7 +446,7 @@ fn evaluate_decision_table(input_file_name: &str, dectab_file_name: &str) {
 }
 
 /// Tests decision table loaded from file.
-fn test_decision_table(test_file_name: &str, dectab_file_name: &str) {
+fn test_decision_table(test_file_name: &str, dectab_file_name: &str, summary_only: bool) {
   let dtb_file_content = match std::fs::read_to_string(dectab_file_name) {
     Ok(dtb_file_content) => dtb_file_content,
     Err(reason) => {
@@ -425,14 +487,14 @@ fn test_decision_table(test_file_name: &str, dectab_file_name: &str) {
       }
     };
     let actual = evaluator(&scope) as Value;
-    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
+    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only);
   }
-  display_test_summary(passed, failed);
+  display_test_summary(passed, failed, summary_only);
 }
 
 /// Exports decision table loaded from text file to HTML output file.
-fn export_decision_table(_dectab_file_name: &str, _html_file_name: &str) {
-  println!("xdt command is not implemented yet")
+fn export_decision_table(_dectab_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Recognizes the decision table loaded from text file.
@@ -449,57 +511,60 @@ fn recognize_decision_table(dtb_file_name: &str) {
 }
 
 /// Parses `DMN` model loaded from XML file.
-fn parse_dmn_model(dmn_file_name: &str) {
-  let c_a = ascii256!(255);
-  let c_b = ascii256!(82);
-  let c_c = ascii256!(184);
-  let c_d = ascii256!(208);
+fn parse_dmn_model(dmn_file_name: &str, color: &str) {
+  let use_color = color.to_lowercase() != "never";
+  let color_a = if use_color { ascii256!(255) } else { "".to_string() };
+  let color_b = if use_color { ascii256!(82) } else { "".to_string() };
+  let color_c = if use_color { ascii256!(184) } else { "".to_string() };
+  let color_d = if use_color { ascii256!(208) } else { "".to_string() };
+  let color_e = if use_color { ASCII_RED } else { "" };
+  let color_r = if use_color { ASCII_RESET } else { "" };
   let none = "(none)".to_string();
   match std::fs::read_to_string(dmn_file_name) {
     Ok(dmn_file_content) => match dmntk_model::parse(&dmn_file_content) {
       Ok(definitions) => {
-        println!("\n{}Model{}", c_a, ASCII_RESET);
-        println!("{} ├─ name:{} {}{}", c_a, c_b, definitions.name(), ASCII_RESET);
-        println!("{} ├─ namespace:{} {}{}", c_a, c_b, definitions.namespace(), ASCII_RESET);
-        println!("{} └─ id:{} {}{}", c_a, c_b, definitions.id().as_ref().unwrap_or(&none), ASCII_RESET);
+        println!("\n{}Model{}", color_a, color_r);
+        println!("{} ├─ name:{} {}{}", color_a, color_b, definitions.name(), color_r);
+        println!("{} ├─ namespace:{} {}{}", color_a, color_b, definitions.namespace(), color_r);
+        println!("{} └─ id:{} {}{}", color_a, color_b, definitions.id().as_ref().unwrap_or(&none), color_r);
         // definitions
         if definitions.decisions().is_empty() {
-          println!("\n{}Decisions{} {}{}", c_a, c_c, none, ASCII_RESET);
+          println!("\n{}Decisions{} {}{}", color_a, color_c, none, color_r);
         } else {
-          println!("\n{}Decisions{}", c_a, ASCII_RESET);
+          println!("\n{}Decisions{}", color_a, color_r);
           let decision_count = definitions.decisions().len();
           for (i, decision) in definitions.decisions().iter().enumerate() {
             if i < decision_count - 1 {
-              print!(" {}├─{}", c_a, ASCII_RESET);
+              print!(" {}├─{}", color_a, color_r);
             } else {
-              print!(" {}└─{}", c_a, ASCII_RESET);
+              print!(" {}└─{}", color_a, color_r);
             }
-            println!(" {}{}{}", c_c, decision.name(), ASCII_RESET);
+            println!(" {}{}{}", color_c, decision.name(), color_r);
           }
         }
         // item data
         if definitions.input_data().is_empty() {
-          println!("\n{}Input data{} {}{}", c_a, c_c, none, ASCII_RESET);
+          println!("\n{}Input data{} {}{}", color_a, color_c, none, color_r);
         } else {
-          println!("\n{}Input data{}", c_a, ASCII_RESET);
+          println!("\n{}Input data{}", color_a, color_r);
           let input_data_count = definitions.input_data().len();
           for (i, input_data) in definitions.input_data().iter().enumerate() {
             if i < input_data_count - 1 {
-              print!(" {}├─{}", c_a, ASCII_RESET);
+              print!(" {}├─{}", color_a, color_r);
             } else {
-              print!(" {}└─{}", c_a, ASCII_RESET);
+              print!(" {}└─{}", color_a, color_r);
             }
             println!(
               " {}{} ({}){}",
-              c_d,
+              color_d,
               input_data.name(),
               input_data.variable().type_ref().as_ref().unwrap_or(&none),
-              ASCII_RESET
+              color_r
             );
           }
         }
         // more...
-        print!("\n{}MORE DETAILS WILL BE IMPLEMENTED...{}\n\n", ASCII_RED, ASCII_RESET);
+        print!("\n{}MORE DETAILS WILL BE IMPLEMENTED...{}\n\n", color_e, color_r);
       }
       Err(reason) => println!("parsing model file failed with reason: {}", reason),
     },
@@ -531,7 +596,7 @@ fn evaluate_dmn_model(input_file_name: &str, dmn_file_name: &str, invocable_name
 }
 
 /// Tests `DMN` model loaded from XML file.
-fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &str) {
+fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &str, summary_only: bool) {
   let dmn_file_content = match std::fs::read_to_string(dmn_file_name) {
     Ok(dmn_file_content) => dmn_file_content,
     Err(reason) => {
@@ -571,14 +636,14 @@ fn test_dmn_model(test_file_name: &str, dmn_file_name: &str, invocable_name: &st
   let mut failed = 0_usize;
   for (test_no, (input_data, expected)) in test_cases.iter().enumerate() {
     let actual = model_evaluator.evaluate_invocable(invocable_name, input_data);
-    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed);
+    display_test_case_result(&actual, expected, &test_no, &mut passed, &mut failed, summary_only);
   }
-  display_test_summary(passed, failed);
+  display_test_summary(passed, failed, summary_only);
 }
 
 /// Exports `DMN` model loaded from XML file to HTML output file.
-fn export_dmn_model(_dmn_file_name: &str, _html_file_name: &str) {
-  println!("xdm command is not implemented yet")
+fn export_dmn_model(_dmn_file_name: &str, html_file_name: &str) {
+  let _ = std::fs::write(html_file_name, "not implemented\n");
 }
 
 /// Generates examples in current directory.
@@ -602,22 +667,38 @@ fn generate_examples() {
 }
 
 /// Utility function for displaying test case result.
-fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize) {
+fn display_test_case_result(actual: &Value, expected: &Value, test_no: &usize, passed: &mut usize, failed: &mut usize, summary_only: bool) {
   if dmntk_evaluator::evaluate_equals(actual, expected) {
-    println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
     *passed += 1;
+    if !summary_only {
+      println!("test {} ... {}ok{}", test_no + 1, ASCII_GREEN, ASCII_RESET);
+    }
   } else {
-    println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
-    println!("  expected: {}", expected);
-    println!("    actual: {}", actual);
     *failed += 1;
+    if !summary_only {
+      println!("test {} ... {}FAILED{}", test_no + 1, ASCII_RED, ASCII_RESET);
+      println!("    {}expected{}: {}", ASCII_GREEN, ASCII_RESET, expected);
+      println!("      {}actual{}: {}", ASCII_RED, ASCII_RESET, actual);
+      println!(
+        "  {}difference{}: {}",
+        ASCII_MAGENTA,
+        ASCII_RESET,
+        Changeset::new(&expected.jsonify(), &actual.jsonify(), "")
+      );
+    }
   }
 }
 
 /// Utility function for displaying test summary.
-fn display_test_summary(passed: usize, failed: usize) {
+fn display_test_summary(passed: usize, failed: usize, summary_only: bool) {
   if failed > 0 {
-    println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+    if summary_only {
+      println!("test result: FAILED. {} passed; {} failed.", passed, failed);
+    } else {
+      println!("\ntest result: {}FAILED{}. {} passed; {} failed.\n", ASCII_RED, ASCII_RESET, passed, failed);
+    }
+  } else if summary_only {
+    println!("test result: ok. {} passed; {} failed.", passed, failed);
   } else {
     println!("\ntest result: {}ok{}. {} passed; {} failed.\n", ASCII_GREEN, ASCII_RESET, passed, failed);
   }

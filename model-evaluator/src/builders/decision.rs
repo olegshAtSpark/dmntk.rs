@@ -112,7 +112,8 @@ fn build_decision_evaluator(definitions: &Definitions, decision: &Decision, mode
     }
     // bring into context the variable from required input
     if let Some(href) = information_requirement.required_input() {
-      input_data_context_evaluator.eval(href.into(), &mut ctx, &item_definition_context_evaluator);
+      //TODO checked unused returned type
+      let _ = input_data_context_evaluator.eval(href.into(), &mut ctx, &item_definition_context_evaluator);
     }
   }
   // prepare a scope and build expression instance evaluator

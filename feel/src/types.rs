@@ -53,6 +53,7 @@ pub const FEEL_TYPE_NAME_TIME: &str = "time";
 pub const FEEL_TYPE_NAME_YEARS_AND_MONTHS_DURATION: &str = "years and months duration";
 
 #[derive(Debug, Clone, PartialEq)]
+#[must_use]
 pub enum FeelType {
   /// Type representing any valid `FEEL` type.
   Any,
@@ -373,7 +374,7 @@ impl FeelType {
     FeelType::Function(parameter_types.iter().map(|typ| (*typ).clone()).collect(), Box::new((*result_type).clone()))
   }
   ///
-  pub fn zip(&self, other: &FeelType) -> FeelType {
+  pub fn zip(&self, other: &FeelType) -> Self {
     if self == other {
       self.clone()
     } else {

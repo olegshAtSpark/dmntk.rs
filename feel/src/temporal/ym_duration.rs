@@ -47,6 +47,7 @@ lazy_static! {
 /// Years and months duration in `FEEL`.
 /// Holds the number of months in the duration.
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd)]
+#[must_use]
 pub struct FeelYearsAndMonthsDuration(i64);
 
 /// Number of months in a year.

@@ -100,64 +100,64 @@ fn _0009() {
 }
 
 #[test]
-fn _00010() {
+fn _0010() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "ymDuration2", &ctx, r#"P1Y"#);
 }
 
 #[test]
 #[ignore]
-fn _00011() {
+fn _0011() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cDay", &ctx, r#"24"#);
 }
 
 #[test]
 #[ignore]
-fn _00012() {
+fn _0012() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cYear", &ctx, r#"2015"#);
 }
 
 #[test]
 #[ignore]
-fn _00013() {
+fn _0013() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cMonth", &ctx, r#"12"#);
 }
 
 #[test]
-fn _00014() {
+fn _0014() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cHour", &ctx, r#"0"#);
 }
 
 #[test]
-fn _00015() {
+fn _0015() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cMinute", &ctx, r#"0"#);
 }
 
 #[test]
-fn _00016() {
+fn _0016() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cSecond", &ctx, r#"1"#);
 }
 
 #[test]
-fn _00017() {
+fn _0017() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "cOffset", &ctx, r#"-PT1H"#);
 }
 
 #[test]
-fn _00018() {
+fn _0018() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "years", &ctx, r#"1"#);
 }
 
 #[test]
-fn _00019() {
+fn _0019() {
   let ctx = context(INPUT_DATA);
   assert_decision(&MODEL_EVALUATOR, "seconds", &ctx, r#"14"#);
 }

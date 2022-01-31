@@ -45,7 +45,7 @@ fn _0001() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_001_05fd7d6215",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid argument type, expected string, actual type is Null)"#,
   );
 }
 
@@ -56,7 +56,7 @@ fn _0002() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_002_8c66ed2d1a",
     &ctx,
-    r#"null(date_and_time_1)"#,
+    r#"null([core::date and time] invalid argument type, expected date and time or date, actual type is Null)"#,
   );
 }
 
@@ -67,7 +67,7 @@ fn _0003() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_003_335cff371a",
     &ctx,
-    r#"null(date_and_time_1)"#,
+    r#"null([core::date and time] invalid argument type, expected time, actual type is Null)"#,
   );
 }
 
@@ -78,7 +78,7 @@ fn _0004() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_004_28ef3e7882",
     &ctx,
-    r#"null(date_and_time_1)"#,
+    r#"null([core::date and time] invalid argument type, expected time, actual type is Null)"#,
   );
 }
 
@@ -89,7 +89,7 @@ fn _0005() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_005_15df95b27a",
     &ctx,
-    r#"null(date_and_time_1)"#,
+    r#"null([core::date and time] invalid argument type, expected date and time or date, actual type is Null)"#,
   );
 }
 
@@ -574,7 +574,7 @@ fn _0055() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_055_6ce9202e17",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid argument type, expected string, actual type is number)"#,
   );
 }
 
@@ -585,7 +585,7 @@ fn _0056() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_056_e66397568e",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid argument type, expected string, actual type is list<Null>)"#,
   );
 }
 
@@ -596,7 +596,7 @@ fn _0057() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_057_0452ca8719",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '')"#,
   );
 }
 
@@ -607,7 +607,7 @@ fn _0058() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_058_588040ceaa",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '11:00:00')"#,
   );
 }
 
@@ -618,7 +618,7 @@ fn _0059() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_059_dfc62a3ebc",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2011-12-0310:15:30')"#,
   );
 }
 
@@ -629,7 +629,7 @@ fn _0060() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_060_890c302575",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2011-12-03T10:15:30+01:00@Europe/Paris')"#,
   );
 }
 
@@ -640,7 +640,7 @@ fn _0061() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_061_38ea1fc94d",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '9999999999-12-27T11:22:33')"#,
   );
 }
 
@@ -651,7 +651,7 @@ fn _0062() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_062_528aa370a3",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-13-10T11:22:33')"#,
   );
 }
 
@@ -662,7 +662,7 @@ fn _0063() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_063_2c94303011",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-00-10T11:22:33')"#,
   );
 }
 
@@ -673,7 +673,7 @@ fn _0064() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_064_926a372666",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-13-32T11:22:33')"#,
   );
 }
 
@@ -684,7 +684,7 @@ fn _0065() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_065_a13de18ee4",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-13-0T11:22:33')"#,
   );
 }
 
@@ -695,7 +695,7 @@ fn _0066() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_066_e9f3d6d2c2",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '998-12-31T11:22:33')"#,
   );
 }
 
@@ -706,7 +706,7 @@ fn _0067() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_067_35fef99b53",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '01211-12-31T11:22:33')"#,
   );
 }
 
@@ -717,7 +717,7 @@ fn _0068() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_068_abaa1c2774",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '+99999-12-01T11:22:33')"#,
   );
 }
 
@@ -728,7 +728,7 @@ fn _0069() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_069_ca84e9c806",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T24:00:01')"#,
   );
 }
 
@@ -739,7 +739,7 @@ fn _0070() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_070_889c75a0cf",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T24:01:00')"#,
   );
 }
 
@@ -750,7 +750,7 @@ fn _0071() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_071_e90b813dfe",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T25:00:00')"#,
   );
 }
 
@@ -761,7 +761,7 @@ fn _0072() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_072_9f3e9b9c21",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T00:60:00')"#,
   );
 }
 
@@ -772,7 +772,7 @@ fn _0073() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_073_717548bec6",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T00:00:61')"#,
   );
 }
 
@@ -783,7 +783,7 @@ fn _0074() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_074_a15e7f8d29",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T7:00:00')"#,
   );
 }
 
@@ -794,7 +794,7 @@ fn _0075() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_075_4c3b8e7097",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T07:1:00')"#,
   );
 }
 
@@ -805,7 +805,7 @@ fn _0076() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_076_4d31fed18e",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T07:01:2')"#,
   );
 }
 
@@ -816,7 +816,7 @@ fn _0077() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_077_f83b3ac8bb",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00@xyz/abc')"#,
   );
 }
 
@@ -827,7 +827,7 @@ fn _0078() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_078_e113dabcdd",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00+19:00')"#,
   );
 }
 
@@ -838,7 +838,7 @@ fn _0079() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_079_2e6f80eb94",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00-19:00')"#,
   );
 }
 
@@ -849,7 +849,7 @@ fn _0080() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_080_69de952053",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00+05:0')"#,
   );
 }
 
@@ -860,7 +860,7 @@ fn _0081() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_081_e063215a7c",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00+5:00')"#,
   );
 }
 
@@ -871,7 +871,7 @@ fn _0082() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_082_5b6ed4e801",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00+5')"#,
   );
 }
 
@@ -882,7 +882,7 @@ fn _0083() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_083_4f41731f2a",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T13:20:00+02:00@Europe/Paris')"#,
   );
 }
 
@@ -893,7 +893,7 @@ fn _0084() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_084_c633b01603",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T7:20')"#,
   );
 }
 
@@ -904,7 +904,7 @@ fn _0085() {
     &MODEL_EVALUATOR,
     "feel-date-and-time-function_ErrorCase_085_a604a1bc80",
     &ctx,
-    r#"null(date_and_time)"#,
+    r#"null([core::date and time] invalid date or date and time '2017-12-31T07:2')"#,
   );
 }
 

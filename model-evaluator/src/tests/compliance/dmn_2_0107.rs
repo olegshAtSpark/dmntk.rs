@@ -53,5 +53,10 @@ fn _0002() {
 #[test]
 fn _0003() {
   let ctx = context(r#"{A: null}"#);
-  assert_decision(&MODEL_EVALUATOR, "DecisionNot", &ctx, r#"null(not)"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "DecisionNot",
+    &ctx,
+    r#"null([core::not] invalid argument type, expected boolean, actual type is Null)"#,
+  );
 }

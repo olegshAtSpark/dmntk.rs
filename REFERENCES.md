@@ -4,3 +4,10 @@
 - [DMN Technology Compatibility Kit (TCK)](https://dmn-tck.github.io/tck/index.html)
 - [Combining DMN and Blockchain](https://www.businessprocessincubator.com/content/combining-dmn-and-blockchain/)
 - [Decision Management Community](https://dmcommunity.org/category/blockchain/)
+
+---
+
+- [Contributor Covenant](https://www.contributor-covenant.org/)
+- [Keep a Changelog](https://keepachangelog.com)
+- [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+

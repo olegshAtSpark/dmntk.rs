@@ -9,6 +9,11 @@ tasks:
     cmds:
       - cmd: cargo bench -q | grep 'bench'
 
+  benchmarks:
+    desc: Runs all compliance benchmarks
+    cmds:
+      - cmd: cargo bench -q compliance | grep 'bench' > benchmarks.txt
+
   build:
     desc: Builds in debug mode
     cmds:
@@ -19,18 +24,38 @@ tasks:
     cmds:
       - cmd: cargo clean
 
-  cov-open:
-    desc: Runs code coverage and opens it in browser
+  cov:
+    desc: Runs code coverage using grcov
+    cmds:
+      - cmd: ./coverage.sh
+
+  cov-common:
+    desc: Runs code coverage using grcov for dmntk-common
+    cmds:
+      - cmd: ./coverage.sh dmntk-common
+
+  cov-feel-parser:
+    desc: Runs code coverage using grcov for dmntk-feel-parser
+    cmds:
+      - cmd: ./coverage.sh dmntk-feel-parser
+
+  cov-feel-evaluator:
+    desc: Runs code coverage using grcov for dmntk-feel-evaluator
+    cmds:
+      - cmd: ./coverage.sh dmntk-feel-evaluator
+
+  tcov:
+    desc: Runs code coverage using tarpaulin
+    cmds:
+      - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
+
+  tcov-open:
+    desc: Runs code coverage using tarpaulin and opens the coverage report in browser
     cmds:
       - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
       - cmd: echo -e '#!/usr/bin/env bash\n\nfirefox ./target/tarpaulin/tarpaulin-report.html &' > ./target/tarpaulin/open-report.sh
       - cmd: chmod +x ./target/tarpaulin/open-report.sh
       - cmd: ./target/tarpaulin/open-report.sh
-
-  cov:
-    desc: Runs code coverage
-    cmds:
-      - cmd: cargo tarpaulin {{.CLI_ARGS}} --out Html --output-dir ./target/tarpaulin
 
   doc:
     desc: Generates documentation
@@ -51,6 +76,21 @@ tasks:
     desc: Generates documentation and opens it in browser
     cmds:
       - cmd: cargo doc --no-deps --open --document-private-items
+
+  install:
+    desc: Builds and installs release version
+    cmds:
+      - cmd: cargo uninstall dmntk > /dev/null 2>&1
+        ignore_error: true
+      - cmd: rm ~/.cargo/bin/dmntl > /dev/null 2>&1
+        ignore_error: true
+      - cmd: cargo build --release
+      - cmd: cp ./target/release/dmntk ~/.cargo/bin/
+
+  musl:
+    desc: Builds the Linux MUSL target
+    cmds:
+      - cmd: cargo build --release --target=x86_64-unknown-linux-musl
 
   release:
     desc: Builds in release mode

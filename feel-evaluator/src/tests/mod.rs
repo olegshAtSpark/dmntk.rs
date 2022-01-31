@@ -37,7 +37,6 @@ use crate::builders::build_evaluator;
 
 mod addition;
 mod bifs;
-mod built_in_functions;
 mod comments;
 mod comparison_between;
 mod comparison_eq;
@@ -58,6 +57,7 @@ mod for_expression;
 mod function_invocation;
 mod if_expression;
 mod instance_of;
+mod join;
 mod list;
 mod literal_at;
 mod literal_boolean;

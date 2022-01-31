@@ -247,7 +247,7 @@ impl std::fmt::Display for Value {
       Value::ParameterTypes(_) => write!(f, "ParameterTypes"),
       Value::PositionalParameters(_) => write!(f, "PositionalParameters"),
       Value::QualifiedNameSegment(_) => write!(f, "QualifiedNameSegment"),
-      Value::Range(_, _, _, _) => write!(f, "Range"),
+      Value::Range(v1, c1, v2, c2) => write!(f, "{}{}..{}{}", if *c1 { '[' } else { '(' }, v1, v2, if *c2 { ']' } else { ')' }),
       Value::String(s) => write!(f, "\"{}\"", s),
       Value::Time(time) => write!(f, "{}", time),
       Value::UnaryGreater(_) => write!(f, "UnaryGreater"),
@@ -265,7 +265,7 @@ impl ToFeelString for Value {
     match self {
       Value::Context(context) => context.to_feel_string(),
       Value::List(items) => items.to_feel_string(),
-      Value::String(value) => format!("\"{}\"", value.replace("\"", "\\\"")),
+      Value::String(value) => format!("\"{}\"", value.replace('"', "\\\"")),
       other => other.to_string(),
     }
   }

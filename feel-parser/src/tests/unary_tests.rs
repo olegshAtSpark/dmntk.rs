@@ -33,6 +33,7 @@
 use super::accept;
 use crate::lalr::TokenType::StartUnaryTests;
 use crate::parser::Parser;
+use dmntk_common::DmntkError;
 use dmntk_feel::{scope, Scope};
 
 #[test]
@@ -206,8 +207,10 @@ fn _0009() {
 }
 
 #[test]
-#[should_panic]
 fn _00010() {
   let scope = scope!();
-  Parser::new(&scope, StartUnaryTests, "(1,2,3,4)", false).parse().unwrap();
+  assert_eq!(
+    Err(DmntkError::new(r#"ParserError"#, r#"syntax error: (1,2,3,4)"#)),
+    Parser::new(&scope, StartUnaryTests, "(1,2,3,4)", false).parse()
+  );
 }

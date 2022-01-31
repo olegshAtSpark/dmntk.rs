@@ -63,7 +63,12 @@ fn _0002() {
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_003", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_003",
+    &ctx,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is Null)"#,
+  );
 }
 
 #[test]
@@ -97,13 +102,23 @@ fn _0006() {
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_007", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_007",
+    &ctx,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is number)"#,
+  );
 }
 
 #[test]
 fn _0008() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision_008", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision_008",
+    &ctx,
+    r#"null([core::get entries] invalid argument type, expected context, actual type is list<number>)"#,
+  );
 }
 
 #[test]

@@ -58,6 +58,7 @@ macro_rules! from_feel_number_into {
 
 /// FEEL number.
 #[derive(Copy, Clone)]
+#[must_use]
 pub struct FeelNumber(DecQuad);
 
 impl FeelNumber {
@@ -446,6 +447,7 @@ impl From<usize> for FeelNumber {
 from_feel_number_into!(isize);
 from_feel_number_into!(usize);
 from_feel_number_into!(u64);
+from_feel_number_into!(u32);
 
 /// Converts a string in scientific notation into digits without exponent.
 fn scientific_to_plain(s: String) -> String {
@@ -488,26 +490,23 @@ mod errors {
   use dmntk_common::DmntkError;
 
   /// `FEEL` number errors.
-  #[derive(Error, Debug)]
-  enum FeelNumberError {
-    #[error("invalid number literal '{0}'")]
-    InvalidNumberLiteral(String),
-    #[error("number conversion failed")]
-    NumberConversionFailed,
-  }
+  struct FeelNumberError(String);
 
   impl From<FeelNumberError> for DmntkError {
+    /// Converts into [DmntkError].
     fn from(e: FeelNumberError) -> Self {
-      DmntkError::new("FeelNumberError", &e.to_string())
+      DmntkError::new("FeelNumberError", &e.0)
     }
   }
 
+  /// Creates invalid number literal error.
   pub fn err_invalid_number_literal(s: &str) -> DmntkError {
-    FeelNumberError::InvalidNumberLiteral(s.to_string()).into()
+    FeelNumberError(format!("invalid number literal '{}'", s)).into()
   }
 
+  /// Creates number conversion error.
   pub fn err_number_conversion_failed() -> DmntkError {
-    FeelNumberError::NumberConversionFailed.into()
+    FeelNumberError("number conversion failed".to_string()).into()
   }
 }
 
@@ -525,6 +524,12 @@ mod tests {
     assert_eq!("50", FeelNumber::from_i128(50).to_string());
     assert_eq!("50.5", FeelNumber::new(505, 1).to_string());
     assert_eq!("50.50", FeelNumber::new(5050, 2).to_string());
+  }
+
+  #[test]
+  fn test_debug() {
+    assert_eq!("49", format!("{:?}", FeelNumber::new(49, 0)));
+    assert_eq!("1.23456789", format!("{:?}", FeelNumber::new(123456789, 8)));
   }
 
   #[test]
@@ -602,6 +607,12 @@ mod tests {
     assert!(!(FeelNumber::from_i128(1) == FeelNumber::from_i128(0)));
     assert!((FeelNumber::new(123456, 2) == FeelNumber::new(123456, 2)));
     assert!(!(FeelNumber::new(123456, 2) == FeelNumber::new(-123456, 2)));
+    assert!((FeelNumber::from_i128(0) == 0_isize));
+    assert!((FeelNumber::from_i128(1) == 1_isize));
+    assert!((FeelNumber::from_i128(-1) == -1_isize));
+    assert!((0_isize == FeelNumber::from_i128(0)));
+    assert!((1_isize == FeelNumber::from_i128(1)));
+    assert!((-1_isize == FeelNumber::from_i128(-1)));
   }
 
   #[test]
@@ -623,6 +634,16 @@ mod tests {
   fn test_exp() {
     assert_eq!("2.718281828459045235360287471352662", FeelNumber::from_i128(1).exp().to_string());
     assert_eq!("54.59815003314423907811026120286088", FeelNumber::from_i128(4).exp().to_string());
+  }
+
+  #[test]
+  fn test_from_string() {
+    assert_eq!("0", FeelNumber::from_string("0").to_string());
+    assert_eq!("-0", FeelNumber::from_string("-0").to_string());
+    assert_eq!("1", FeelNumber::from_string("1").to_string());
+    assert_eq!("-1", FeelNumber::from_string("-1").to_string());
+    assert_eq!("1.23456789", FeelNumber::from_string("1.23456789").to_string());
+    assert_eq!("-1.23456789", FeelNumber::from_string("-1.23456789").to_string());
   }
 
   #[test]
@@ -754,6 +775,9 @@ mod tests {
   fn test_square() {
     assert_eq!("4", FeelNumber::from_i128(2).square().unwrap().to_string());
     assert_eq!("25", FeelNumber::from_i128(5).square().unwrap().to_string());
+    assert_eq!(None, FeelNumber::from_string("NaN").square());
+    assert_eq!(None, FeelNumber::from_string("Inf").square());
+    assert_eq!(None, FeelNumber::from_string("-Inf").square());
   }
 
   #[test]
@@ -809,6 +833,15 @@ mod tests {
 
   #[test]
   fn test_try_from_number_to_u64() {
+    assert!(u64::try_from(FeelNumber::from_i128(0)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_i128(2)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_usize(usize::MAX)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_usize(usize::MIN)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_isize(isize::MAX)).is_ok());
+    assert!(u64::try_from(FeelNumber::from_isize(isize::MIN)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(i128::MAX)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(i128::MIN)).is_err());
+    assert!(u64::try_from(FeelNumber::from_i128(-1)).is_err());
     assert_eq!(Some(300_000_000), FeelNumber::from_i128(300_000_000).to_u64());
   }
 }

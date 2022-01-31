@@ -42,13 +42,30 @@ use std::borrow::Borrow;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 
+/// Builds null value with invalid argument type message.
+macro_rules! invalid_argument_type {
+  ($function:literal, $expected:literal, $actual:expr) => {{
+    value_null!(
+      "[core::{}] invalid argument type, expected {}, actual type is {}",
+      $function,
+      $expected,
+      $actual
+    )
+  }};
+}
+
 /// Returns the absolute value of the argument.
 pub fn abs(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.abs())
   } else {
-    value_null!("invalid argument type, expected number, actual type is {}", value.type_of())
+    invalid_argument_type!("abs", "number", value.type_of())
   }
+}
+
+/// TBD
+pub fn after(value1: &Value, value2: &Value) -> Value {
+  value_null!("[core::after] under construction: {} | {}", value1, value2)
 }
 
 /// Returns `false` if any item is `false`, `true` if empty or all items are true, else `null`.
@@ -68,23 +85,25 @@ pub fn all(values: &[Value]) -> Value {
   VALUE_TRUE
 }
 
-/// ???
+/// Returns `true` if any item is `true`, `false` if empty or all items are `false`, else `null`.
 pub fn any(values: &[Value]) -> Value {
   if values.is_empty() {
     return VALUE_FALSE;
   }
   let mut has_true = false;
-  let mut all_false = true;
+  let mut all_boolean = true;
   for value in values {
-    if let Value::Boolean(v) = value {
-      if *v {
-        has_true = true;
+    match value {
+      Value::Boolean(v) => {
+        if *v {
+          has_true = true;
+        }
       }
-    } else {
-      all_false = false;
+      Value::Null(_) => return value_null!(),
+      _ => all_boolean = false,
     }
   }
-  match (has_true, all_false) {
+  match (has_true, all_boolean) {
     (false, false) => value_null!(),
     (false, true) => VALUE_FALSE,
     (true, false) => value_null!(),
@@ -92,7 +111,7 @@ pub fn any(values: &[Value]) -> Value {
   }
 }
 
-///
+/// Returns new list with items appended.
 pub fn append(list: &Value, values: &[Value]) -> Value {
   if let Value::List(items) = list {
     let mut appended = items.clone();
@@ -101,10 +120,10 @@ pub fn append(list: &Value, values: &[Value]) -> Value {
     }
     return Value::List(appended);
   }
-  value_null!("append")
+  invalid_argument_type!("append", "list", list.type_of())
 }
 
-///
+/// TBD
 pub fn before(value1: &Value, value2: &Value) -> Value {
   match value1 {
     Value::Number(point1) => match value2 {
@@ -139,19 +158,24 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
     },
     _ => {}
   }
-  value_null!()
+  invalid_argument_type!("before", "scalar or range of scalars", value1.type_of())
 }
 
-/// ???
+/// Returns the smallest integer >= argument.
 pub fn ceiling(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.ceiling())
   } else {
-    value_null!("ceiling")
+    invalid_argument_type!("ceiling", "number", value.type_of())
   }
 }
 
-/// ???
+/// TBD
+pub fn coincides(value1: &Value, value2: &Value) -> Value {
+  value_null!("[core::coincides] under construction: {} | {}", value1, value2)
+}
+
+/// Returns new list that is a concatenation of the arguments.
 pub fn concatenate(values: &[Value]) -> Value {
   let mut concatenated = vec![];
   for value in values {
@@ -160,7 +184,7 @@ pub fn concatenate(values: &[Value]) -> Value {
         concatenated.push(item.clone());
       }
     } else {
-      value_null!("concatenate");
+      return invalid_argument_type!("concatenate", "list", value.type_of());
     }
   }
   Value::List(Values::new(concatenated))
@@ -172,39 +196,39 @@ pub fn contains(input_string_value: &Value, match_string_value: &Value) -> Value
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.contains(match_string))
     } else {
-      value_null!("contains")
+      invalid_argument_type!("contains", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("contains")
+    invalid_argument_type!("contains", "string", input_string_value.type_of())
   }
 }
 
-/// ???
+/// Returns size of list, or zero if list is empty.
 pub fn count(list: &Value) -> Value {
   if let Value::List(items) = list {
     Value::Number(items.as_vec().len().into())
   } else {
-    value_null!("parameter is not a list")
+    invalid_argument_type!("count", "list", list.type_of())
   }
 }
 
-/// ???
+/// Returns date converted from string or date and time.
 pub fn date_1(value: &Value) -> Value {
   match value {
     Value::String(text) => {
       if let Ok(date) = FeelDate::try_from(text.as_str()) {
         Value::Date(date)
       } else {
-        value_null!("date_1 1")
+        value_null!("[core::date] invalid date string '{}'", text)
       }
     }
     Value::Date(date) => Value::Date(date.clone()),
     Value::DateTime(date_time) => Value::Date(date_time.date()),
-    _ => value_null!("date_1 2: {}", value),
+    _ => invalid_argument_type!("date", "string, date or date and time", value.type_of()),
   }
 }
 
-/// ???
+/// Returns date created from year, month and day.
 pub fn date_3(year_value: &Value, month_value: &Value, day_value: &Value) -> Value {
   if let Value::Number(year) = year_value {
     if let Value::Number(month) = month_value {
@@ -212,20 +236,25 @@ pub fn date_3(year_value: &Value, month_value: &Value, day_value: &Value) -> Val
         if let Ok(date) = FeelDate::try_from((*year, *month, *day)) {
           Value::Date(date)
         } else {
-          value_null!("date_3 1")
+          value_null!(
+            "[core::date] invalid date '{:04}-{:02}-{:02}'",
+            year.to_u64().unwrap_or(0),
+            month.to_u64().unwrap_or(0),
+            day.to_u64().unwrap_or(0)
+          )
         }
       } else {
-        value_null!("date_3 2")
+        invalid_argument_type!("date", "number (day)", day_value.type_of())
       }
     } else {
-      value_null!("date_3 3")
+      invalid_argument_type!("date", "number (month)", month_value.type_of())
     }
   } else {
-    value_null!("date_3 4")
+    invalid_argument_type!("date", "number (year)", year_value.type_of())
   }
 }
 
-/// ???
+/// Returns date and time created from string.
 pub fn date_and_time_1(value: &Value) -> Value {
   if let Value::String(text) = value {
     if let Ok(date_time) = FeelDateTime::try_from(text.as_str()) {
@@ -234,26 +263,29 @@ pub fn date_and_time_1(value: &Value) -> Value {
     if let Ok(date) = FeelDate::try_from(text.as_str()) {
       return Value::DateTime(FeelDateTime::new(date, FeelTime::local(0, 0, 0, 0)));
     }
+    value_null!("[core::date and time] invalid date or date and time '{}'", text)
+  } else {
+    invalid_argument_type!("date and time", "string", value.type_of())
   }
-  value_null!("date_and_time")
 }
 
-/// ???
+/// Returns date and time created from date and time.
 pub fn date_and_time_2(date_value: &Value, time_value: &Value) -> Value {
   match date_value {
     Value::DateTime(date_time) => {
       if let Value::Time(time) = time_value {
         return Value::DateTime(FeelDateTime::new(date_time.date(), time.clone()));
       }
+      invalid_argument_type!("date and time", "time", time_value.type_of())
     }
     Value::Date(date) => {
       if let Value::Time(time) = time_value {
         return Value::DateTime(FeelDateTime::new(date.clone(), time.clone()));
       }
+      invalid_argument_type!("date and time", "time", time_value.type_of())
     }
-    _ => {}
+    _ => invalid_argument_type!("date and time", "date and time or date", date_value.type_of()),
   }
-  value_null!("date_and_time_1")
 }
 
 /// Returns `number` rounded to given `scale`.
@@ -264,29 +296,29 @@ pub fn decimal(number_value: &Value, scale_value: &Value) -> Value {
       if (-6111..6176).contains(scale) {
         Value::Number((*number).round(scale))
       } else {
-        value_null!("decimal: scale is out of range")
+        value_null!("[core::decimal] scale is out of range: {}", scale)
       }
     } else {
-      value_null!("decimal: 1")
+      value_null!("[core::decimal] scale value is not a number: {}", scale_value)
     }
   } else {
-    value_null!("decimal: 2")
+    value_null!("[core::decimal] number value is not a number: {}", number_value)
   }
 }
 
-/// ???
+/// Returns new list with removed duplicates.
 pub fn distinct_values(value: &Value) -> Value {
-  let mut result = vec![];
   if let Value::List(items) = value {
+    let mut result = vec![];
     for item in items.as_vec() {
-      if result.iter().all(|a| !evaluate_equals(a, item)) {
+      if result.iter().all(|v| !evaluate_equals(v, item)) {
         result.push(item.clone())
       }
     }
+    Value::List(Values::new(result))
   } else {
-    return value_null!("distinct_values");
+    invalid_argument_type!("distinct values", "list", value.type_of())
   }
-  Value::List(Values::new(result))
 }
 
 /// Converts string value to a days and time or years and months duration.
@@ -304,16 +336,16 @@ pub fn duration(value: &Value) -> Value {
   }
 }
 
-/// Returns **true** when the input string ends with specified match string.
+/// Returns `true` when the input string ends with specified match string.
 pub fn ends_with(input_string_value: &Value, match_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.ends_with(match_string))
     } else {
-      value_null!("ends_with")
+      invalid_argument_type!("ends with", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("ends_with")
+    invalid_argument_type!("ends with", "string", input_string_value.type_of())
   }
 }
 
@@ -334,17 +366,18 @@ pub fn exp(value: &Value) -> Value {
   value_null!("exp")
 }
 
-/// ???
+/// Returns new list with flattened nested lists.
 pub fn flatten(value: &Value) -> Value {
   if let Value::List(_) = value {
     let mut flattened = vec![];
     flatten_value(value, &mut flattened);
-    return Value::List(Values::new(flattened));
+    Value::List(Values::new(flattened))
+  } else {
+    invalid_argument_type!("flatten", "list", value.type_of())
   }
-  value_null!("flatten")
 }
 
-/// ???
+/// Flattens nested lists.
 fn flatten_value(value: &Value, flattened: &mut Vec<Value>) {
   if let Value::List(items) = value {
     for item in items.as_vec() {
@@ -362,7 +395,7 @@ pub fn floor(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Number(v.floor())
   } else {
-    value_null!("floor")
+    invalid_argument_type!("floor", "number", value.type_of())
   }
 }
 
@@ -380,7 +413,7 @@ pub fn get_entries(context: &Value) -> Value {
     });
     Value::List(Values::new(entries))
   } else {
-    value_null!()
+    invalid_argument_type!("get entries", "context", context.type_of())
   }
 }
 
@@ -390,35 +423,41 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
     if let Value::String(entry_key) = key {
       let name = Name::from(entry_key.to_owned());
       if let Some(entry_value) = ctx.get_entry(&name) {
-        return entry_value.clone();
+        entry_value.clone()
+      } else {
+        value_null!()
       }
+    } else {
+      invalid_argument_type!("get value", "string", key.type_of())
     }
+  } else {
+    invalid_argument_type!("get value", "context", context.type_of())
   }
-  value_null!()
 }
 
-/// ???
+/// Return ascending list of list positions containing match.
 pub fn index_of(list: &Value, element: &Value) -> Value {
   if let Value::List(items) = list {
     let mut indexes = vec![];
     for (i, item) in items.as_vec().iter().enumerate() {
       if evaluate_equals(item, element) {
-        indexes.push(Value::Number(i.into()));
+        indexes.push(Value::Number((i + 1).into()));
       }
     }
-    return Value::List(Values::new(indexes));
+    Value::List(Values::new(indexes))
+  } else {
+    invalid_argument_type!("index of", "list", list.type_of())
   }
-  value_null!("index_of")
 }
 
 /// ???
-pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> Value {
+pub fn insert_before(list: &Value, position_value: &Value, new_item_value: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
     if let Value::Number(position) = position_value {
       if position.is_positive() {
         if let Some(i) = position.to_usize() {
           if i <= items.len() {
-            items.insert(i - 1, new_item.clone());
+            items.insert(i - 1, new_item_value.clone());
             return Value::List(items);
           }
         }
@@ -426,7 +465,7 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> 
       if position.is_negative() {
         if let Some(i) = position.abs().to_usize() {
           if i <= items.as_vec().len() {
-            items.insert(items.len() - i, new_item.clone());
+            items.insert(items.len() - i, new_item_value.clone());
             return Value::List(items);
           }
         }
@@ -436,7 +475,7 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item: &Value) -> 
   value_null!("index is out of range")
 }
 
-/// ???
+/// Returns `true` when the list contain the specified element.
 pub fn list_contains(list: &Value, element: &Value) -> Value {
   if let Value::List(items) = list {
     for item in items.as_vec() {
@@ -444,8 +483,10 @@ pub fn list_contains(list: &Value, element: &Value) -> Value {
         return VALUE_TRUE;
       }
     }
+    VALUE_FALSE
+  } else {
+    invalid_argument_type!("list contains", "list", list.type_of())
   }
-  VALUE_FALSE
 }
 
 /// Returns the natural logarithm (base **e**) of the number parameter.
@@ -465,7 +506,7 @@ pub fn lower_case(input_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     Value::String(input_string.to_lowercase().trim().to_string())
   } else {
-    value_null!("lower_case")
+    invalid_argument_type!("lower case", "string", input_string_value.type_of())
   }
 }
 
@@ -501,9 +542,7 @@ pub fn max(values: &[Value]) -> Value {
             }
           }
           Value::Null(_) => {}
-          other => {
-            return value_null!("max: expected value of type number or Null, but encountered: {:?}", other.type_of());
-          }
+          other => return invalid_argument_type!("max", "number", other.type_of()),
         }
       }
       Value::Number(max)
@@ -518,16 +557,12 @@ pub fn max(values: &[Value]) -> Value {
             }
           }
           Value::Null(_) => {}
-          other => {
-            return value_null!("max: expected value of type string or Null, but encountered: {:?}", other.type_of());
-          }
+          other => return invalid_argument_type!("max", "string", other.type_of()),
         }
       }
       Value::String(max)
     }
-    other => {
-      value_null!("max: unhandled value type: {:?}", other.type_of())
-    }
+    other => return invalid_argument_type!("max", "number, string", other.type_of()),
   };
 }
 
@@ -541,7 +576,7 @@ pub fn mean(values: &[Value]) -> Value {
     if let Value::Number(n) = value {
       sum += *n;
     } else {
-      return value_null!("not a number");
+      return invalid_argument_type!("mean", "number", value.type_of());
     }
   }
   Value::Number(sum / values.len().into())
@@ -574,7 +609,7 @@ pub fn min(values: &[Value]) -> Value {
   if values.is_empty() {
     return value_null!();
   }
-  match &values[0] {
+  return match &values[0] {
     Value::Number(n) => {
       let mut min = *n;
       for value in values.iter().skip(1) {
@@ -583,10 +618,10 @@ pub fn min(values: &[Value]) -> Value {
             min = *v;
           }
         } else {
-          return value_null!("min");
+          return invalid_argument_type!("min", "number", value.type_of());
         }
       }
-      return Value::Number(min);
+      Value::Number(min)
     }
     Value::String(s) => {
       let mut min = s.clone();
@@ -596,14 +631,13 @@ pub fn min(values: &[Value]) -> Value {
             min = v.clone();
           }
         } else {
-          return value_null!("min");
+          return invalid_argument_type!("min", "string", value.type_of());
         }
       }
-      return Value::String(min);
+      Value::String(min)
     }
-    _ => {}
-  }
-  value_null!("min")
+    other => invalid_argument_type!("min", "number, string", other.type_of()),
+  };
 }
 
 /// Returns the mode of numbers.
@@ -611,13 +645,13 @@ pub fn mode(values: &[Value]) -> Value {
   if values.is_empty() {
     return Value::List(Values::default());
   }
-  // make sure all values are numbers and prepare the list of numbers
+  // make sure all values are numbers and prepare the list of them
   let mut list = vec![];
   for value in values {
     if let Value::Number(n) = value {
       list.push(*n);
     } else {
-      return value_null!("mode");
+      return invalid_argument_type!("mode", "number", value.type_of());
     }
   }
   // sort values in ascending order
@@ -641,17 +675,15 @@ pub fn mode(values: &[Value]) -> Value {
     std::cmp::Ordering::Equal => x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal),
     other => other,
   });
-  // there must be minimum one element in the list but to be sure check it
-  if let Some((max, _)) = mode.get(0) {
-    // return items with maximum frequency
-    return Value::List(Values::new(
-      mode
-        .iter()
-        .filter_map(|(c, v)| if *c == *max { Some(Value::Number(*v)) } else { None })
-        .collect(),
-    ));
-  }
-  value_null!("mode")
+  // there is minimum one element in the list, so unwrap is ok
+  let max = mode.get(0).unwrap().0;
+  // return items with maximum frequency
+  Value::List(Values::new(
+    mode
+      .iter()
+      .filter_map(|(c, v)| if *c == max { Some(Value::Number(*v)) } else { None })
+      .collect(),
+  ))
 }
 
 /// Returns the remainder of the division of dividend by divisor.
@@ -659,15 +691,15 @@ pub fn modulo(dividend_value: &Value, divisor_value: &Value) -> Value {
   if let Value::Number(dividend) = *dividend_value {
     if let Value::Number(divisor) = *divisor_value {
       if divisor.abs() == FeelNumber::zero() {
-        value_null!("division by zero")
+        value_null!("[core::modulo] division by zero")
       } else {
         Value::Number(dividend - divisor * (dividend / divisor).floor())
       }
     } else {
-      value_null!("modulo")
+      invalid_argument_type!("modulo", "number", divisor_value.type_of())
     }
   } else {
-    value_null!("modulo")
+    invalid_argument_type!("modulo", "number", dividend_value.type_of())
   }
 }
 
@@ -676,7 +708,7 @@ pub fn not(negand: &Value) -> Value {
   if let Value::Boolean(v) = negand {
     Value::Boolean(!(*v))
   } else {
-    value_null!("not")
+    invalid_argument_type!("not", "boolean", negand.type_of())
   }
 }
 
@@ -686,7 +718,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
   // function for converting string to Value::Number
   let convert = |value: String| match value.parse::<FeelNumber>() {
     Ok(number) => Value::Number(number),
-    Err(reason) => value_null!("number: {}", reason),
+    Err(reason) => value_null!("[core::number] {}", reason),
   };
   match from {
     Value::String(value) => {
@@ -694,27 +726,19 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
       let grouping_sep = match grouping_separator {
         Value::String(s) => match s.as_str() {
           " " | "." | "," => Some((*s).clone()),
-          _ => {
-            return value_null!();
-          }
+          _ => return value_null!("[core::number] grouping separator must be space, period, comma or null"),
         },
         Value::Null(_) => None,
-        _ => {
-          return value_null!("number");
-        }
+        _ => return value_null!("[core::number] grouping separator must be space, period, comma or null"),
       };
       // prepare decimal separator from Value::String ot VALUE_NULL
       let decimal_sep = match decimal_separator {
         Value::String(s) => match s.as_str() {
           "." | "," => Some((*s).clone()),
-          _ => {
-            return value_null!();
-          }
+          _ => return value_null!("[core::number] decimal separator must be period, comma or null"),
         },
         Value::Null(_) => None,
-        _ => {
-          return value_null!("number");
-        }
+        _ => return value_null!("[core::number] decimal separator must be period, comma or null"),
       };
       // replace both separators and try to convert
       if let Some(grp_sep) = &grouping_sep {
@@ -722,7 +746,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
           return if *grp_sep != *dec_sep {
             convert(value.replace(grp_sep, "").replace(dec_sep, "."))
           } else {
-            value_null!()
+            value_null!("[core::number] decimal separator must be different from grouping separator")
           };
         }
       }
@@ -741,9 +765,7 @@ pub fn number(from: &Value, grouping_separator: &Value, decimal_separator: &Valu
       // try to convert an input parameter without replacing
       convert(value.clone())
     }
-    _ => {
-      value_null!("number")
-    }
+    _ => invalid_argument_type!("number", "string", from.type_of()),
   }
 }
 
@@ -752,7 +774,7 @@ pub fn odd(value: &Value) -> Value {
   if let Value::Number(v) = value {
     Value::Boolean(v.odd())
   } else {
-    value_null!("odd")
+    invalid_argument_type!("odd", "number", value.type_of())
   }
 }
 
@@ -844,9 +866,10 @@ pub fn replace(input_string_value: &Value, pattern_string_value: &Value, replace
 pub fn reverse(list: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
     items.reverse();
-    return Value::List(items);
+    Value::List(items)
+  } else {
+    invalid_argument_type!("reverse", "list", list.type_of())
   }
-  value_null!("reverse")
 }
 
 ///
@@ -919,10 +942,10 @@ pub fn starts_with(input_string_value: &Value, match_string_value: &Value) -> Va
     if let Value::String(match_string) = match_string_value {
       Value::Boolean(input_string.starts_with(match_string))
     } else {
-      value_null!("starts_with")
+      invalid_argument_type!("starts with", "string", match_string_value.type_of())
     }
   } else {
-    value_null!("starts_with")
+    invalid_argument_type!("starts with", "string", input_string_value.type_of())
   }
 }
 
@@ -987,12 +1010,13 @@ pub fn sum(values: &[Value]) -> Value {
       if let Value::Number(v) = *value {
         sum += v;
       } else {
-        return value_null!("sum");
+        return invalid_argument_type!("sum", "number", value.type_of());
       }
     }
-    return Value::Number(sum);
+    Value::Number(sum)
+  } else {
+    invalid_argument_type!("sum", "number", values[0].type_of())
   }
-  value_null!("sum")
 }
 
 /// ???
@@ -1219,7 +1243,7 @@ pub fn time_4(hour_value: &Value, minute_value: &Value, second_value: &Value, du
   value_null!("time_4")
 }
 
-/// ???
+/// Returns new list containing concatenated list with duplicates removed.
 pub fn union(lists: &[Value]) -> Value {
   let mut result = vec![];
   for list in lists {
@@ -1230,7 +1254,7 @@ pub fn union(lists: &[Value]) -> Value {
         }
       }
     } else {
-      return value_null!("union");
+      return invalid_argument_type!("union", "list", list.type_of());
     }
   }
   Value::List(Values::new(result))
@@ -1241,11 +1265,11 @@ pub fn upper_case(input_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
     Value::String(input_string.to_uppercase().trim().to_string())
   } else {
-    value_null!("upper_case")
+    invalid_argument_type!("upper case", "string", input_string_value.type_of())
   }
 }
 
-/// ???
+/// Returns years and months duration between `from` and `to`.
 pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value {
   if let Value::Date(from) = from_value {
     if let Value::DateTime(to) = to_value {
@@ -1254,6 +1278,7 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
     if let Value::Date(to) = to_value {
       return YearsAndMonthsDuration(to.ym_duration(from));
     }
+    return invalid_argument_type!("years and months duration", "date, date and time", to_value.type_of());
   }
   if let Value::DateTime(from) = from_value {
     if let Value::DateTime(to) = to_value {
@@ -1262,61 +1287,16 @@ pub fn years_and_months_duration(from_value: &Value, to_value: &Value) -> Value 
     if let Value::Date(to) = to_value {
       return YearsAndMonthsDuration(to.ym_duration(&from.date()));
     }
+    return invalid_argument_type!("years and months duration", "date, date and time", to_value.type_of());
   }
-  value_null!("years_and_months_duration")
+  invalid_argument_type!("years and months duration", "date, date and time", from_value.type_of())
 }
 
 #[cfg(test)]
 mod tests {
-  use crate::bifs::core;
   use crate::bifs::core::substring;
-  use dmntk_feel::values::{Value, VALUE_FALSE, VALUE_TRUE};
-  use dmntk_feel::{value_null, value_number, FeelDaysAndTimeDuration, FeelNumber, FeelYearsAndMonthsDuration};
-
-  #[test]
-  fn bif_abs() {
-    let expected = value_number!(1201, 2);
-    assert_eq!(expected, core::abs(&value_number!(1201, 2)));
-    assert_eq!(expected, core::abs(&value_number!(-1201, 2)));
-    assert_eq!(
-      Value::Null(Some(
-        "invalid argument type, expected number, actual type is days and time duration".to_string()
-      )),
-      core::abs(&Value::DaysAndTimeDuration(FeelDaysAndTimeDuration::default().second(2).nano(5).build()))
-    );
-    assert_eq!(
-      Value::Null(Some(
-        "invalid argument type, expected number, actual type is years and months duration".to_string()
-      )),
-      core::abs(&Value::YearsAndMonthsDuration(FeelYearsAndMonthsDuration::new_m(-18)))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is Null".to_string())),
-      core::abs(&Value::Null(None))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is boolean".to_string())),
-      core::abs(&Value::Boolean(true))
-    );
-    assert_eq!(
-      Value::Null(Some("invalid argument type, expected number, actual type is string".to_string())),
-      core::abs(&Value::String("text".to_string()))
-    );
-  }
-
-  #[test]
-  fn bif_all() {
-    assert_eq!(VALUE_TRUE, core::all(&[]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true)]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(VALUE_TRUE, core::all(&[Value::Boolean(true), Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(false)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(true), Value::Boolean(false)]));
-    assert_eq!(VALUE_FALSE, core::all(&[Value::Boolean(false), Value::Boolean(true), Value::Boolean(true)]));
-    assert_eq!(value_null!(), core::all(&[value_number!(1)]));
-    assert_eq!(value_null!(), core::all(&[Value::Boolean(true), value_number!(1)]));
-    assert_eq!(value_null!(), core::all(&[value_number!(1), Value::Boolean(true), Value::Boolean(true)]));
-  }
+  use dmntk_feel::values::Value;
+  use dmntk_feel::{value_null, value_number, FeelNumber};
 
   #[test]
   fn bif_substring() {

@@ -58,7 +58,12 @@ fn _0002() {
 #[test]
 fn _0003() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision003_a", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision003_a",
+    &ctx,
+    r#"null([positional::stddev] invalid argument type, expected list, actual type is Null)"#,
+  );
 }
 
 #[test]
@@ -87,7 +92,12 @@ fn _0006() {
 #[test]
 fn _0007() {
   let ctx = context(r#"{}"#);
-  assert_decision(&MODEL_EVALUATOR, "decision008", &ctx, r#"null"#);
+  assert_decision(
+    &MODEL_EVALUATOR,
+    "decision008",
+    &ctx,
+    r#"null([positional::stddev] invalid argument type, expected list, actual type is number)"#,
+  );
 }
 
 #[test]
