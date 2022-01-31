@@ -8,6 +8,15 @@ and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - tbd
 
+## [v0.0.46 (pre-alpha)] - 2022-01-31
+### Added
+- Performance benchmarks.
+- Test files for manual tests.
+- CLI switch for displaying only summary after tests using test files.
+
+### Changed
+- Refactored CLI. 
+
 ## [v0.0.45 (pre-alpha)] - 2022-01-13
 ### Added
 - CLI subcommand for saving examples.
