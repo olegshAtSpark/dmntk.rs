@@ -32,19 +32,14 @@
 
 //! Implementation of FEEL date.
 
-use self::errors::*;
-use crate::temporal::ym_duration::FeelYearsAndMonthsDuration;
-use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, weekday, FeelDateTime, FeelTime};
+use super::ym_duration::FeelYearsAndMonthsDuration;
+use super::{after, after_or_equal, before, before_or_equal, between, equal, weekday, FeelDateTime, FeelTime, RE_DATE};
+use crate::temporal::errors::{err_invalid_date, err_invalid_date_literal};
 use crate::FeelNumber;
 use chrono::{DateTime, Datelike, FixedOffset, Local};
 use dmntk_common::DmntkError;
-use regex::Regex;
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
-
-lazy_static! {
-  static ref RE_DATE: Regex = Regex::new(format!("^{}$", super::DATE_PATTERN).as_str()).unwrap();
-}
 
 /// FEEL date.
 #[derive(Debug, Clone)]
@@ -80,7 +75,7 @@ impl TryFrom<&str> for FeelDate {
         }
       }
     }
-    Err(invalid_date_literal(value.to_string()))
+    Err(err_invalid_date_literal(value))
   }
 }
 
@@ -96,7 +91,7 @@ impl TryFrom<(FeelNumber, FeelNumber, FeelNumber)> for FeelDate {
         return Ok(Self(year, month, day));
       }
     }
-    Err(invalid_date(value.0.into(), value.1.into(), value.2.into()))
+    Err(err_invalid_date(value.0.into(), value.1.into(), value.2.into()))
   }
 }
 
@@ -254,45 +249,6 @@ pub fn last_day_of_month(year: i32, month: u8) -> Option<u8> {
     4 | 6 | 9 | 11 => Some(30),
     2 => Some(if is_leap_year(year) { 29 } else { 28 }),
     _ => None,
-  }
-}
-
-/// Definitions of date errors.
-pub mod errors {
-  use dmntk_common::DmntkError;
-
-  /// Date errors.
-  #[derive(Debug, PartialEq)]
-  enum FeelDateError {
-    InvalidDateLiteral(String),
-    InvalidDate(i32, u8, u8),
-  }
-
-  impl From<FeelDateError> for DmntkError {
-    fn from(e: FeelDateError) -> Self {
-      DmntkError::new("FeelDateError", &format!("{}", e))
-    }
-  }
-
-  impl std::fmt::Display for FeelDateError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      match self {
-        FeelDateError::InvalidDateLiteral(literal) => {
-          write!(f, "invalid date literal: {}", literal)
-        }
-        FeelDateError::InvalidDate(y, m, d) => {
-          write!(f, "invalid date: {}-{}-{}", y, m, d)
-        }
-      }
-    }
-  }
-
-  pub fn invalid_date_literal(literal: String) -> DmntkError {
-    FeelDateError::InvalidDateLiteral(literal).into()
-  }
-
-  pub fn invalid_date(y: i32, m: u8, d: u8) -> DmntkError {
-    FeelDateError::InvalidDate(y, m, d).into()
   }
 }
 
