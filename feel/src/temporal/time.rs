@@ -33,11 +33,10 @@
 //! Implementation of FEEL time.
 
 use super::date::FeelDate;
-use super::nanos_to_string;
 use super::zone::FeelZone;
+use super::{date_time_offset_t, feel_time_offset, feel_time_zone, get_local_offset_t, get_zone_offset_t, is_valid_time, nanos_to_string, RE_TIME};
 use crate::temporal::errors::err_invalid_time_literal;
-use crate::temporal::{feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
-use crate::FeelDateTime;
+use crate::{FeelDateTime, FeelDaysAndTimeDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 use std::cmp::Ordering;
@@ -124,6 +123,37 @@ impl PartialOrd for FeelTime {
   }
 }
 
+impl std::ops::Sub<FeelTime> for FeelTime {
+  type Output = Option<FeelDaysAndTimeDuration>;
+  /// Subtracts the argument from this [FeelTime] value.
+  fn sub(self, other: Self) -> Self::Output {
+    let me_time_tuple = (self.0 as u32, self.1 as u32, self.2 as u32, self.3 as u32);
+    let me_offset_opt = match &self.4 {
+      FeelZone::Utc => Some(0),
+      FeelZone::Local => get_local_offset_t(me_time_tuple),
+      FeelZone::Offset(offset) => Some(*offset),
+      FeelZone::Zone(zone_name) => get_zone_offset_t(zone_name, me_time_tuple),
+    };
+    let other_time_tuple = (other.0 as u32, other.1 as u32, other.2 as u32, other.3 as u32);
+    let other_offset_opt = match &other.4 {
+      FeelZone::Utc => Some(0),
+      FeelZone::Local => get_local_offset_t(other_time_tuple),
+      FeelZone::Offset(offset) => Some(*offset),
+      FeelZone::Zone(zone_name) => get_zone_offset_t(zone_name, other_time_tuple),
+    };
+    if let Some((me_offset, other_offset)) = me_offset_opt.zip(other_offset_opt) {
+      let me_date_opt = date_time_offset_t(me_time_tuple, me_offset);
+      let other_date_opt = date_time_offset_t(other_time_tuple, other_offset);
+      if let Some((me_date, other_date)) = me_date_opt.zip(other_date_opt) {
+        if let Some(nanos) = me_date.sub(other_date).num_nanoseconds() {
+          return Some(FeelDaysAndTimeDuration::from_n(nanos));
+        }
+      }
+    }
+    None
+  }
+}
+
 impl TryFrom<FeelTime> for DateTime<FixedOffset> {
   type Error = DmntkError;
   /// Converts [FeelTime] into [DateTime] with [FixedOffset].
@@ -188,6 +218,7 @@ impl FeelTime {
 
 #[cfg(test)]
 mod tests {
+  use super::super::dt_duration::FeelDaysAndTimeDuration;
   use super::super::zone::FeelZone;
   use super::*;
 
@@ -223,5 +254,17 @@ mod tests {
     assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Local)));
     assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Offset(18_000))));
     assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Zone("Europe/Warsaw".to_string()))));
+  }
+
+  #[test]
+  fn test_subtract() {
+    let t1 = FeelTime(0, 0, 0, 0, FeelZone::Utc);
+    let t2 = FeelTime(0, 0, 0, 0, FeelZone::Utc);
+    let d = FeelDaysAndTimeDuration::from_n(0);
+    assert_eq!(d, (t1 - t2).unwrap());
+    let t1 = FeelTime(0, 0, 59, 0, FeelZone::Utc);
+    let t2 = FeelTime(0, 0, 39, 0, FeelZone::Utc);
+    let d = FeelDaysAndTimeDuration::from_s(20);
+    assert_eq!(d, (t1 - t2).unwrap());
   }
 }

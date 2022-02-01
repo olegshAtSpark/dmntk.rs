@@ -81,21 +81,21 @@ pub fn subtract(me: &FeelDateTime, other: &FeelDateTime) -> Option<i64> {
   let me_time_tuple = ((me.1).0 as u32, (me.1).1 as u32, (me.1).2 as u32, (me.1).3 as u32);
   let me_offset_opt = match &(me.1).4 {
     FeelZone::Utc => Some(0),
-    FeelZone::Local => get_local_offset(me_date_tuple, me_time_tuple),
+    FeelZone::Local => get_local_offset_dt(me_date_tuple, me_time_tuple),
     FeelZone::Offset(offset) => Some(*offset),
-    FeelZone::Zone(zone_name) => get_zone_offset(zone_name, me_date_tuple, me_time_tuple),
+    FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, me_date_tuple, me_time_tuple),
   };
   let other_date_tuple = other.0.as_tuple();
   let other_time_tuple = ((other.1).0 as u32, (other.1).1 as u32, (other.1).2 as u32, (other.1).3 as u32);
   let other_offset_opt = match &(other.1).4 {
     FeelZone::Utc => Some(0),
-    FeelZone::Local => get_local_offset(other_date_tuple, other_time_tuple),
+    FeelZone::Local => get_local_offset_dt(other_date_tuple, other_time_tuple),
     FeelZone::Offset(offset) => Some(*offset),
-    FeelZone::Zone(zone_name) => get_zone_offset(zone_name, other_date_tuple, other_time_tuple),
+    FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, other_date_tuple, other_time_tuple),
   };
   if let Some((me_offset, other_offset)) = me_offset_opt.zip(other_offset_opt) {
-    let me_date_opt = date_time_offset(me_date_tuple, me_time_tuple, me_offset);
-    let other_date_opt = date_time_offset(other_date_tuple, other_time_tuple, other_offset);
+    let me_date_opt = date_time_offset_dt(me_date_tuple, me_time_tuple, me_offset);
+    let other_date_opt = date_time_offset_dt(other_date_tuple, other_time_tuple, other_offset);
     if let Some((me_date, other_date)) = me_date_opt.zip(other_date_opt) {
       return me_date.sub(other_date).num_nanoseconds();
     }
@@ -108,12 +108,12 @@ fn weekday(me: &FeelDateTime) -> Option<u32> {
   let me_time_tuple = ((me.1).0 as u32, (me.1).1 as u32, (me.1).2 as u32, (me.1).3 as u32);
   let me_offset_opt = match &(me.1).4 {
     FeelZone::Utc => Some(0),
-    FeelZone::Local => get_local_offset(me_date_tuple, me_time_tuple),
+    FeelZone::Local => get_local_offset_dt(me_date_tuple, me_time_tuple),
     FeelZone::Offset(offset) => Some(*offset),
-    FeelZone::Zone(zone_name) => get_zone_offset(zone_name, me_date_tuple, me_time_tuple),
+    FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, me_date_tuple, me_time_tuple),
   };
   if let Some(me_offset) = me_offset_opt {
-    if let Some(me_date) = date_time_offset(me_date_tuple, me_time_tuple, me_offset) {
+    if let Some(me_date) = date_time_offset_dt(me_date_tuple, me_time_tuple, me_offset) {
       return Some(me_date.weekday().number_from_monday());
     }
   }
@@ -127,7 +127,7 @@ fn feel_time_offset(me: &FeelDateTime) -> Option<i32> {
     FeelZone::Utc => Some(0),
     FeelZone::Local => None, // in FEEL semantic domain the local offset is treated as none
     FeelZone::Offset(offset) => Some(*offset),
-    FeelZone::Zone(zone_name) => get_zone_offset(zone_name, me_date_tuple, me_time_tuple),
+    FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, me_date_tuple, me_time_tuple),
   };
   if let Some(me_offset) = me_offset_opt {
     return Some(me_offset);
@@ -142,7 +142,8 @@ fn feel_time_zone(me: &FeelDateTime) -> Option<String> {
   None
 }
 
-fn date_time_offset(date: (i32, u32, u32), time: (u32, u32, u32, u32), offset: i32) -> Option<DateTime<FixedOffset>> {
+///
+fn date_time_offset_dt(date: (i32, u32, u32), time: (u32, u32, u32, u32), offset: i32) -> Option<DateTime<FixedOffset>> {
   if let LocalResult::Single(date_time) = FixedOffset::east(offset)
     .ymd_opt(date.0, date.1, date.2)
     .and_hms_nano_opt(time.0, time.1, time.2, time.3)
@@ -152,9 +153,21 @@ fn date_time_offset(date: (i32, u32, u32), time: (u32, u32, u32, u32), offset: i
   None
 }
 
-/// Returns time offset (in seconds) between local time zone
-/// and UTC time zone at specified date and time.
-fn get_local_offset(date: (i32, u32, u32), time: (u32, u32, u32, u32)) -> Option<i32> {
+///
+fn date_time_offset_t(time: (u32, u32, u32, u32), offset: i32) -> Option<DateTime<FixedOffset>> {
+  let today = Local::today();
+  if let LocalResult::Single(date_time) = FixedOffset::east(offset)
+    .ymd_opt(today.year(), today.month(), today.day())
+    .and_hms_nano_opt(time.0, time.1, time.2, time.3)
+  {
+    return Some(date_time);
+  }
+  None
+}
+
+/// Returns the time offset (in seconds) between local time zone
+/// and UTC time zone at specified **date and time**.
+fn get_local_offset_dt(date: (i32, u32, u32), time: (u32, u32, u32, u32)) -> Option<i32> {
   if let Some(naive_date) = NaiveDate::from_ymd_opt(date.0, date.1, date.2) {
     if let Some(naive_time) = NaiveTime::from_hms_nano_opt(time.0, time.1, time.2, time.3) {
       let naive_date_time = NaiveDateTime::new(naive_date, naive_time);
@@ -164,15 +177,50 @@ fn get_local_offset(date: (i32, u32, u32), time: (u32, u32, u32, u32)) -> Option
   None
 }
 
+/// Returns the time offset (in seconds) between local time zone
+/// and UTC time zone at specified **time** today.
+fn get_local_offset_t(time: (u32, u32, u32, u32)) -> Option<i32> {
+  let today = Local::today();
+  if let Some(naive_date) = NaiveDate::from_ymd_opt(today.year(), today.month(), today.day()) {
+    if let Some(naive_time) = NaiveTime::from_hms_nano_opt(time.0, time.1, time.2, time.3) {
+      let naive_date_time = NaiveDateTime::new(naive_date, naive_time);
+      return Some(Local.offset_from_utc_datetime(&naive_date_time).local_minus_utc());
+    }
+  }
+  None
+}
+
 /// Returns time offset (in seconds) between named time zone
-/// and UTC time zone at specified date and time.
-fn get_zone_offset(zone_name: &str, date: (i32, u32, u32), time: (u32, u32, u32, u32)) -> Option<i32> {
+/// and UTC time zone at specified **date and time**.
+fn get_zone_offset_dt(zone_name: &str, date: (i32, u32, u32), time: (u32, u32, u32, u32)) -> Option<i32> {
   // try to build UTC date and time from specified values
   if let LocalResult::Single(utc) = Utc.ymd_opt(date.0, date.1, date.2).and_hms_nano_opt(time.0, time.1, time.2, time.3) {
     // try parse the time zone specified as text
     if let Ok(tz) = zone_name.parse::<chrono_tz::Tz>() {
       // build date and time in parsed time zone
       let zdt = tz.ymd(date.0, date.1, date.2).and_hms_nano(time.0, time.1, time.2, time.3);
+      // calculate the time offset, the result is a chrono::Duration
+      let offset: chrono::Duration = utc.with_timezone(&tz) - zdt;
+      // return seconds
+      return Some(offset.num_seconds() as i32);
+    }
+  }
+  None
+}
+
+/// Returns time offset (in seconds) between named time zone
+/// and UTC time zone at specified **time** today.
+fn get_zone_offset_t(zone_name: &str, time: (u32, u32, u32, u32)) -> Option<i32> {
+  let today = Local::today();
+  // try to build UTC date and time from specified values
+  if let LocalResult::Single(utc) = Utc
+    .ymd_opt(today.year(), today.month(), today.day())
+    .and_hms_nano_opt(time.0, time.1, time.2, time.3)
+  {
+    // try parse the time zone specified as text
+    if let Ok(tz) = zone_name.parse::<chrono_tz::Tz>() {
+      // build date and time in parsed time zone
+      let zdt = tz.ymd(today.year(), today.month(), today.day()).and_hms_nano(time.0, time.1, time.2, time.3);
       // calculate the time offset, the result is a chrono::Duration
       let offset: chrono::Duration = utc.with_timezone(&tz) - zdt;
       // return seconds
@@ -227,7 +275,7 @@ fn is_valid_time(hour: u8, minute: u8, second: u8) -> bool {
 
 #[cfg(test)]
 mod tests {
-  use super::{get_local_offset, get_zone_offset};
+  use super::{get_local_offset_dt, get_zone_offset_dt};
   use crate::temporal::nanos_to_string;
   use crate::FeelDate;
   use std::str::FromStr;
@@ -274,22 +322,22 @@ mod tests {
   // }
 
   #[test]
-  fn test_get_local_offset() {
-    let utc_offset = get_zone_offset("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
-    let warsaw_offset = get_zone_offset("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
-    let local_offset = get_local_offset((2020, 6, 12), (9, 12, 3, 0)).unwrap();
+  fn test_get_local_offset_dt() {
+    let utc_offset = get_zone_offset_dt("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
+    let warsaw_offset = get_zone_offset_dt("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)).unwrap();
+    let local_offset = get_local_offset_dt((2020, 6, 12), (9, 12, 3, 0)).unwrap();
     if local_offset == warsaw_offset {
-      assert_eq!(Some(SECONDS_IN_HOUR), get_local_offset((2020, 10, 29), (9, 12, 3, 0)));
+      assert_eq!(Some(SECONDS_IN_HOUR), get_local_offset_dt((2020, 10, 29), (9, 12, 3, 0)));
       assert_eq!(
-        get_zone_offset("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)),
-        get_local_offset((2020, 6, 12), (9, 12, 3, 0))
+        get_zone_offset_dt("Europe/Warsaw", (2020, 6, 12), (9, 12, 3, 0)),
+        get_local_offset_dt((2020, 6, 12), (9, 12, 3, 0))
       );
     }
     if local_offset == utc_offset {
-      assert_eq!(Some(0), get_local_offset((2020, 10, 29), (9, 12, 3, 0)));
+      assert_eq!(Some(0), get_local_offset_dt((2020, 10, 29), (9, 12, 3, 0)));
       assert_eq!(
-        get_zone_offset("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)),
-        get_local_offset((2020, 6, 12), (9, 12, 3, 0))
+        get_zone_offset_dt("Etc/UTC", (2020, 6, 12), (9, 12, 3, 0)),
+        get_local_offset_dt((2020, 6, 12), (9, 12, 3, 0))
       );
     }
   }
@@ -297,29 +345,38 @@ mod tests {
   #[test]
   fn test_get_zone_offset() {
     // winter time in Warsaw, offset = +01:00
-    assert_eq!(Some(SECONDS_IN_HOUR), get_zone_offset("Europe/Warsaw", (2020, 10, 29), (9, 12, 3, 0)));
+    assert_eq!(Some(SECONDS_IN_HOUR), get_zone_offset_dt("Europe/Warsaw", (2020, 10, 29), (9, 12, 3, 0)));
     // summer time in Warsaw, offset = +02:00
-    assert_eq!(Some(2 * SECONDS_IN_HOUR), get_zone_offset("Europe/Warsaw", (2020, 6, 21), (11, 13, 49, 0)));
+    assert_eq!(Some(2 * SECONDS_IN_HOUR), get_zone_offset_dt("Europe/Warsaw", (2020, 6, 21), (11, 13, 49, 0)));
     // time in Moscow, offset = +03:00
-    assert_eq!(Some(3 * SECONDS_IN_HOUR), get_zone_offset("Europe/Moscow", (2020, 10, 29), (9, 12, 3, 0)));
+    assert_eq!(Some(3 * SECONDS_IN_HOUR), get_zone_offset_dt("Europe/Moscow", (2020, 10, 29), (9, 12, 3, 0)));
     // summer time in New York, offset = -04:00
-    assert_eq!(Some(-4 * SECONDS_IN_HOUR), get_zone_offset("America/New_York", (2020, 6, 28), (12, 12, 3, 0)));
+    assert_eq!(
+      Some(-4 * SECONDS_IN_HOUR),
+      get_zone_offset_dt("America/New_York", (2020, 6, 28), (12, 12, 3, 0))
+    );
     // winter time in New York, offset = -05:00
-    assert_eq!(Some(-5 * SECONDS_IN_HOUR), get_zone_offset("America/New_York", (2020, 11, 12), (18, 4, 33, 0)));
+    assert_eq!(
+      Some(-5 * SECONDS_IN_HOUR),
+      get_zone_offset_dt("America/New_York", (2020, 11, 12), (18, 4, 33, 0))
+    );
     // time in Kolkata, offset = +05:30
     assert_eq!(
       Some(5 * SECONDS_IN_HOUR + 30 * SECONDS_IN_MIN),
-      get_zone_offset("Asia/Kolkata", (2020, 11, 12), (18, 4, 33, 0))
+      get_zone_offset_dt("Asia/Kolkata", (2020, 11, 12), (18, 4, 33, 0))
     );
     // no time change in Kolkata in summer, offset = +05:30
     assert_eq!(
       Some(5 * SECONDS_IN_HOUR + 30 * SECONDS_IN_MIN),
-      get_zone_offset("Asia/Kolkata", (2020, 6, 8), (8, 0, 0, 0))
+      get_zone_offset_dt("Asia/Kolkata", (2020, 6, 8), (8, 0, 0, 0))
     );
     // time in Honolulu, offset = -10:00
-    assert_eq!(Some(-10 * SECONDS_IN_HOUR), get_zone_offset("Pacific/Honolulu", (2020, 11, 12), (18, 4, 33, 0)));
+    assert_eq!(
+      Some(-10 * SECONDS_IN_HOUR),
+      get_zone_offset_dt("Pacific/Honolulu", (2020, 11, 12), (18, 4, 33, 0))
+    );
     // no time change in Honolulu in summer, offset = -10:00
-    assert_eq!(Some(-10 * SECONDS_IN_HOUR), get_zone_offset("Pacific/Honolulu", (2020, 6, 8), (8, 0, 0, 0)));
+    assert_eq!(Some(-10 * SECONDS_IN_HOUR), get_zone_offset_dt("Pacific/Honolulu", (2020, 6, 8), (8, 0, 0, 0)));
   }
 
   #[test]

@@ -36,7 +36,7 @@ use super::date::{is_valid_date, FeelDate};
 use super::errors::err_invalid_date_time_literal;
 use super::time::FeelTime;
 use super::zone::FeelZone;
-use crate::temporal::{date_time_offset, feel_time_offset, feel_time_zone, get_local_offset, get_zone_offset, is_valid_time, RE_DATE_AND_TIME};
+use crate::temporal::{date_time_offset_dt, feel_time_offset, feel_time_zone, get_local_offset_dt, get_zone_offset_dt, is_valid_time, RE_DATE_AND_TIME};
 use crate::{subtract, FeelYearsAndMonthsDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
@@ -146,12 +146,12 @@ impl TryFrom<FeelDateTime> for DateTime<FixedOffset> {
     let me_time_tuple = ((value.1).0 as u32, (value.1).1 as u32, (value.1).2 as u32, (value.1).3 as u32);
     let me_offset_opt = match &(value.1).4 {
       FeelZone::Utc => Some(0),
-      FeelZone::Local => get_local_offset(me_date_tuple, me_time_tuple),
+      FeelZone::Local => get_local_offset_dt(me_date_tuple, me_time_tuple),
       FeelZone::Offset(offset) => Some(*offset),
-      FeelZone::Zone(zone_name) => get_zone_offset(zone_name, me_date_tuple, me_time_tuple),
+      FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, me_date_tuple, me_time_tuple),
     };
     if let Some(me_offset) = me_offset_opt {
-      if let Some(me_date) = date_time_offset(me_date_tuple, me_time_tuple, me_offset) {
+      if let Some(me_date) = date_time_offset_dt(me_date_tuple, me_time_tuple, me_offset) {
         return Ok(me_date);
       }
     }

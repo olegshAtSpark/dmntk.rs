@@ -1540,25 +1540,31 @@ fn build_sub(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
   let lhe = build_evaluator(lhs)?;
   let rhe = build_evaluator(rhs)?;
   Ok(Box::new(move |scope: &Scope| {
-    let lhv = lhe(scope);
-    let rhv = rhe(scope);
+    let lhv = lhe(scope) as Value;
+    let rhv = rhe(scope) as Value;
     match lhv {
-      Value::Number(ref lh) => {
-        if let Value::Number(ref rh) = rhv {
-          return Value::Number(*lh - *rh);
+      Value::Number(lh) => {
+        if let Value::Number(rh) = rhv {
+          return Value::Number(lh - rh);
         }
       }
-      Value::DateTime(ref lh) => {
-        if let Value::DateTime(ref rh) = rhv {
-          if let Some(a) = subtract(lh, rh) {
+      Value::Time(lh) => {
+        if let Value::Time(rh) = rhv {
+          if let Some(duration) = lh - rh {
+            return Value::DaysAndTimeDuration(duration);
+          }
+        }
+      }
+      Value::DateTime(lh) => {
+        if let Value::DateTime(rh) = rhv {
+          if let Some(a) = subtract(&lh, &rh) {
             return Value::DaysAndTimeDuration(FeelDaysAndTimeDuration::default().nano(a).build());
           }
         }
       }
       _ => {}
     }
-    //TODO make a macro for incompatible types
-    value_null!("[subtraction] incompatible types: {} - {}", lhv as Value, rhv as Value)
+    value_null!("[subtraction] incompatible types: {} - {}", lhe(scope), rhe(scope))
   }))
 }
 

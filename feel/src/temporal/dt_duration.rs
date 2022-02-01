@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! `FEEL` days and time durations.
+//! FEEL days and time duration.
 
 use self::errors::*;
 use dmntk_common::DmntkError;
@@ -41,37 +41,41 @@ use std::convert::TryFrom;
 const REGEX_DAYS_AND_TIME: &str =
   r#"^(?P<sign>-)?P((?P<days>[0-9]+)D)?(T((?P<hours>[0-9]+)H)?((?P<minutes>[0-9]+)M)?((?P<seconds>[0-9]+)(?P<fractional>\.[0-9]*)?S)?)?$"#;
 
+/// Number of nanoseconds in a day.
+const NANOSECONDS_IN_DAY: i64 = 24 * NANOSECONDS_IN_HOUR;
+/// Number of nanoseconds in an hour.
+const NANOSECONDS_IN_HOUR: i64 = 60 * NANOSECONDS_IN_MINUTE;
+/// Number of nanoseconds in a minute.
+const NANOSECONDS_IN_MINUTE: i64 = 60 * NANOSECONDS_IN_SECOND;
+/// Number of nanoseconds in a second.
+const NANOSECONDS_IN_SECOND: i64 = 1_000_000_000;
+
 lazy_static! {
   static ref RE_DAYS_AND_TIME: Regex = Regex::new(REGEX_DAYS_AND_TIME).unwrap();
 }
 
-/// Days and time duration in `FEEL`.
-/// Holds the number of nanoseconds in the duration.
-#[derive(Debug, Default, Clone, PartialEq, PartialOrd)]
+/// FEEL days and time duration.
 #[must_use]
-pub struct FeelDaysAndTimeDuration(i128);
-
-/// Number of nanoseconds in a day.
-const NANOSECONDS_IN_DAY: i128 = 24 * NANOSECONDS_IN_HOUR;
-
-/// Number of nanoseconds in an hour.
-const NANOSECONDS_IN_HOUR: i128 = 60 * NANOSECONDS_IN_MINUTE;
-
-/// Number of nanoseconds in a minute.
-const NANOSECONDS_IN_MINUTE: i128 = 60 * NANOSECONDS_IN_SECOND;
-
-/// Number of nanoseconds in a second.
-const NANOSECONDS_IN_SECOND: i128 = 1_000_000_000;
+#[derive(Debug, Default, Clone, PartialEq, PartialOrd)]
+pub struct FeelDaysAndTimeDuration(i64);
 
 impl FeelDaysAndTimeDuration {
+  /// Creates [FeelDaysAndTimeDuration] from nanoseconds.
+  pub fn from_n(nanos: i64) -> Self {
+    Self(nanos)
+  }
+  /// Creates [FeelDaysAndTimeDuration] from seconds.
+  pub fn from_s(seconds: i64) -> Self {
+    Self(seconds * NANOSECONDS_IN_SECOND)
+  }
   /// Adds nanoseconds to current duration.
   pub fn nano(&mut self, nano: i64) -> &mut Self {
-    self.0 += nano as i128;
+    self.0 += nano;
     self
   }
   /// Adds seconds to current duration.
   pub fn second(&mut self, sec: i64) -> &mut Self {
-    self.0 += sec as i128 * NANOSECONDS_IN_SECOND;
+    self.0 += sec * NANOSECONDS_IN_SECOND;
     self
   }
   ///
@@ -185,34 +189,34 @@ impl TryFrom<&str> for FeelDaysAndTimeDuration {
   fn try_from(value: &str) -> Result<Self, Self::Error> {
     if let Some(captures) = RE_DAYS_AND_TIME.captures(value) {
       let mut is_valid = false;
-      let mut nanoseconds = 0_i128;
+      let mut nanoseconds = 0_i64;
       if let Some(days_match) = captures.name("days") {
         if let Ok(days) = days_match.as_str().parse::<u64>() {
-          nanoseconds += (days as i128) * NANOSECONDS_IN_DAY;
+          nanoseconds += (days as i64) * NANOSECONDS_IN_DAY;
           is_valid = true;
         }
       }
       if let Some(hours_match) = captures.name("hours") {
         if let Ok(hours) = hours_match.as_str().parse::<u64>() {
-          nanoseconds += (hours as i128) * NANOSECONDS_IN_HOUR;
+          nanoseconds += (hours as i64) * NANOSECONDS_IN_HOUR;
           is_valid = true;
         }
       }
       if let Some(minutes_match) = captures.name("minutes") {
         if let Ok(minutes) = minutes_match.as_str().parse::<u64>() {
-          nanoseconds += (minutes as i128) * NANOSECONDS_IN_MINUTE;
+          nanoseconds += (minutes as i64) * NANOSECONDS_IN_MINUTE;
           is_valid = true;
         }
       }
       if let Some(seconds_match) = captures.name("seconds") {
         if let Ok(seconds) = seconds_match.as_str().parse::<u64>() {
-          nanoseconds += (seconds as i128) * NANOSECONDS_IN_SECOND;
+          nanoseconds += (seconds as i64) * NANOSECONDS_IN_SECOND;
           is_valid = true;
         }
       }
       if let Some(fractional_match) = captures.name("fractional") {
         if let Ok(fractional) = fractional_match.as_str().parse::<f64>() {
-          nanoseconds += (fractional * NANOSECONDS_IN_SECOND as f64).trunc() as i128;
+          nanoseconds += (fractional * NANOSECONDS_IN_SECOND as f64).trunc() as i64;
           is_valid = true;
         }
       }
