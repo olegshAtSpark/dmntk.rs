@@ -34,7 +34,7 @@
 
 use super::errors::{err_invalid_date, err_invalid_date_literal};
 use super::ym_duration::FeelYearsAndMonthsDuration;
-use super::{after, after_or_equal, before, before_or_equal, between, equal, weekday, Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
+use super::{weekday, Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
 use crate::FeelNumber;
 use chrono::{DateTime, Datelike, FixedOffset, Local};
 use dmntk_common::DmntkError;
@@ -98,29 +98,27 @@ impl TryFrom<(FeelNumber, FeelNumber, FeelNumber)> for FeelDate {
 }
 
 impl PartialEq for FeelDate {
-  ///
+  /// Returns `true` when two dated are equal.
   fn eq(&self, other: &Self) -> bool {
     self.0 == other.0 && self.1 == other.1 && self.2 == other.2
   }
 }
 
 impl PartialOrd for FeelDate {
-  ///
+  /// Returns the ordering of two dates.
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    if self == other {
-      return Some(Ordering::Equal);
+    let y = self.0.cmp(&other.0);
+    let m = self.1.cmp(&other.1);
+    let d = self.2.cmp(&other.2);
+    match (y, m, d) {
+      (Ordering::Equal, Ordering::Equal, Ordering::Equal) => Some(Ordering::Equal),
+      (Ordering::Equal, Ordering::Equal, Ordering::Less) => Some(Ordering::Less),
+      (Ordering::Equal, Ordering::Equal, Ordering::Greater) => Some(Ordering::Greater),
+      (Ordering::Equal, Ordering::Less, _) => Some(Ordering::Less),
+      (Ordering::Equal, Ordering::Greater, _) => Some(Ordering::Greater),
+      (Ordering::Less, _, _) => Some(Ordering::Less),
+      (Ordering::Greater, _, _) => Some(Ordering::Greater),
     }
-    if let Some(before) = self.before(other) {
-      if before {
-        return Some(Ordering::Less);
-      }
-    }
-    if let Some(after) = self.after(other) {
-      if after {
-        return Some(Ordering::Greater);
-      }
-    }
-    None
   }
 }
 
@@ -150,42 +148,6 @@ impl FeelDate {
   pub fn today_local() -> Self {
     let today = Local::today();
     Self(today.year() as Year, today.month() as Month, today.day() as Day)
-  }
-  ///
-  pub fn equal(&self, other: &Self) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    equal(&FeelDateTime(self.clone(), midnight.clone()), &FeelDateTime(other.clone(), midnight))
-  }
-  ///
-  pub fn before(&self, other: &Self) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    before(&FeelDateTime(self.clone(), midnight.clone()), &FeelDateTime(other.clone(), midnight))
-  }
-  ///
-  pub fn before_or_equal(&self, other: &Self) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    before_or_equal(&FeelDateTime(self.clone(), midnight.clone()), &FeelDateTime(other.clone(), midnight))
-  }
-  ///
-  pub fn after(&self, other: &Self) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    after(&FeelDateTime(self.clone(), midnight.clone()), &FeelDateTime(other.clone(), midnight))
-  }
-  ///
-  pub fn after_or_equal(&self, other: &Self) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    after_or_equal(&FeelDateTime(self.clone(), midnight.clone()), &FeelDateTime(other.clone(), midnight))
-  }
-  ///
-  pub fn between(&self, left: &Self, right: &Self, left_closed: bool, right_closed: bool) -> Option<bool> {
-    let midnight = FeelTime::utc(0, 0, 0, 0);
-    between(
-      &FeelDateTime(self.clone(), midnight.clone()),
-      &FeelDateTime(left.clone(), midnight.clone()),
-      &FeelDateTime(right.clone(), midnight),
-      left_closed,
-      right_closed,
-    )
   }
   ///
   pub fn ym_duration(&self, other: &FeelDate) -> FeelYearsAndMonthsDuration {
@@ -228,9 +190,6 @@ impl FeelDate {
 
 ///
 pub fn is_valid_date(year: Year, month: Month, day: Day) -> bool {
-  if DateTime::try_from(FeelDate(year, month, day)).is_ok() {
-    return true;
-  }
   if year >= -999_999_999 && year <= 999_999_999 {
     if let Some(last_day_of_month) = last_day_of_month(year, month) {
       return day <= last_day_of_month;
@@ -240,12 +199,12 @@ pub fn is_valid_date(year: Year, month: Month, day: Day) -> bool {
 }
 
 ///
-pub fn is_leap_year(year: i32) -> bool {
+pub fn is_leap_year(year: Year) -> bool {
   year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 }
 
 ///
-pub fn last_day_of_month(year: i32, month: u8) -> Option<u8> {
+pub fn last_day_of_month(year: Year, month: Month) -> Option<u8> {
   match month {
     1 | 3 | 5 | 7 | 8 | 10 | 12 => Some(31),
     4 | 6 | 9 | 11 => Some(30),
@@ -256,7 +215,7 @@ pub fn last_day_of_month(year: i32, month: u8) -> Option<u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::{is_leap_year, is_valid_date, last_day_of_month};
+  use super::*;
 
   #[test]
   fn test_is_valid_date() {
@@ -313,5 +272,29 @@ mod tests {
     assert_eq!(31, last_day_of_month(2020, 12).unwrap());
     assert_eq!(None, last_day_of_month(2020, 13));
     assert_eq!(None, last_day_of_month(2020, 0));
+  }
+
+  #[test]
+  fn test_eq() {
+    assert!((FeelDate(2021, 2, 1) == FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 1) != FeelDate(2021, 2, 2)));
+    assert!((FeelDate(2021, 2, 1) != FeelDate(2021, 3, 1)));
+    assert!((FeelDate(2021, 2, 1) != FeelDate(2022, 2, 1)));
+    assert!((FeelDate(999_999_999, 12, 31) != FeelDate(-999_999_999, 1, 1)));
+  }
+
+  #[test]
+  fn test_compare() {
+    assert!((FeelDate(2021, 2, 1) == FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 1) < FeelDate(2021, 2, 2)));
+    assert!((FeelDate(2021, 2, 1) < FeelDate(2021, 3, 1)));
+    assert!((FeelDate(2021, 2, 5) < FeelDate(2022, 2, 5)));
+    assert!((FeelDate(2021, 2, 2) > FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 3, 1) > FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2022, 2, 1) > FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 1) >= FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 2) >= FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 1) <= FeelDate(2021, 2, 1)));
+    assert!((FeelDate(2021, 2, 1) <= FeelDate(2021, 2, 2)));
   }
 }

@@ -138,7 +138,7 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
     },
     Value::Range(_, _, range_end1, closed_end1) => match range_end1.borrow() {
       Value::Number(end1) => match value2 {
-        Value::Number(point2) => return Value::Boolean(end1 < point2 || (end1 == point2 && !*closed_end1)),
+        Value::Number(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
         Value::Range(range_start2, closed_start2, _, _) => {
           if let Value::Number(start2) = range_start2.borrow() {
             return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
@@ -146,11 +146,11 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
         }
         _ => {}
       },
-      Value::Date(_end1) => match value2 {
-        Value::Date(_point2) => return Value::Boolean(false), //FIXME add operators to dates and then fix this case
-        Value::Range(range_start2, _closed_start2, _, _) => {
-          if let Value::Date(_start2) = range_start2.borrow() {
-            return Value::Boolean(false); //FIXME add operators to dates and then fix this case
+      Value::Date(end1) => match value2 {
+        Value::Date(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
+        Value::Range(range_start2, closed_start2, _, _) => {
+          if let Value::Date(start2) = range_start2.borrow() {
+            return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
           }
         }
         _ => {}
