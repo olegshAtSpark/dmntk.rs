@@ -32,12 +32,12 @@
 
 //! Implementation of FEEL date and time.
 
-use super::date::is_valid_date;
+use super::date::{is_valid_date, FeelDate};
 use super::errors::err_invalid_date_time_literal;
 use super::time::FeelTime;
 use super::zone::FeelZone;
 use super::*;
-use crate::{subtract, FeelDate, FeelYearsAndMonthsDuration};
+use crate::{subtract, FeelYearsAndMonthsDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 

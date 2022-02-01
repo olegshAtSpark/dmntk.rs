@@ -32,11 +32,12 @@
 
 //! Implementation of FEEL time.
 
+use super::date::FeelDate;
 use super::nanos_to_string;
 use super::zone::FeelZone;
 use crate::temporal::errors::err_invalid_time_literal;
 use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
-use crate::{FeelDate, FeelDateTime};
+use crate::FeelDateTime;
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 use std::str::FromStr;

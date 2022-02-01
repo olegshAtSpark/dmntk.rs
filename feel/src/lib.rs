@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! `FEEL` definitions.
+//! FEEL definitions.
 
 extern crate ascii_tree;
 extern crate chrono;

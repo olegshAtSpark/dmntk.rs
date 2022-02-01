@@ -41,13 +41,13 @@ use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::ops::Sub;
 
-pub mod date;
-pub mod date_time;
-pub mod dt_duration;
+pub(crate) mod date;
+pub(crate) mod date_time;
+pub(crate) mod dt_duration;
 mod errors;
-pub mod time;
-pub mod ym_duration;
-pub mod zone;
+pub(crate) mod time;
+pub(crate) mod ym_duration;
+pub(crate) mod zone;
 
 /// Regular expression pattern for parsing dates.
 const DATE_PATTERN: &str = r#"(?P<sign>-)?(?P<year>[1-9][0-9]{3,8})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})"#;
