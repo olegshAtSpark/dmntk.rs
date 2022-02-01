@@ -171,3 +171,23 @@ fn _0026() {
     r#"[core::before] invalid argument type, expected scalar or range of scalars, actual type is string"#,
   );
 }
+
+#[test]
+fn _0027() {
+  te_bool(false, &scope!(), r#"before(date("2022-01-31"),date("2022-02-01"))"#, true);
+}
+
+#[test]
+fn _0028() {
+  te_bool(false, &scope!(), r#"before(date("2022-01-31"),[date("2022-02-01")..date("2022-12-31")])"#, true);
+}
+
+#[test]
+fn _0029() {
+  te_bool(
+    false,
+    &scope!(),
+    r#"before([date("2021-01-01")..date("2021-12-31")],[date("2022-01-01")..date("2022-12-31")])"#,
+    true,
+  );
+}
