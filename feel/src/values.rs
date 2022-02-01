@@ -398,7 +398,7 @@ impl Value {
   /// Tries to convert `xsd:date` string into valid [Value] representing a date.
   /// FEEL date format is fully conformant with `xsd:date`.
   pub fn try_from_xsd_date(text: &str) -> Result<Self> {
-    if let Ok(feel_date) = FeelDate::try_from(text) {
+    if let Ok(feel_date) = FeelDate::from_str(text) {
       return Ok(Value::Date(feel_date));
     }
     Err(invalid_xsd_date(text))

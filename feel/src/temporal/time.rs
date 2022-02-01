@@ -39,12 +39,14 @@ use crate::temporal::{after, after_or_equal, before, before_or_equal, between, e
 use crate::{FeelDate, FeelDateTime};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
+use std::str::FromStr;
 
 /// FEEL time.
 #[derive(Debug, Clone)]
 pub struct FeelTime(pub u8, pub u8, pub u8, pub u64, pub FeelZone); //TODO make these fields private
 
 impl std::fmt::Display for FeelTime {
+  /// Converts [FeelTime] into [String].
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     if self.3 > 0 {
       write!(f, "{:02}:{:02}:{:02}.{}{}", self.0, self.1, self.2, nanos_to_string(self.3), self.4)
@@ -54,11 +56,11 @@ impl std::fmt::Display for FeelTime {
   }
 }
 
-impl TryFrom<&str> for FeelTime {
-  type Error = DmntkError;
-  /// Converts a string into [FeelTime].
-  fn try_from(value: &str) -> Result<Self, Self::Error> {
-    if let Some(captures) = RE_TIME.captures(value) {
+impl FromStr for FeelTime {
+  type Err = DmntkError;
+  /// Converts [String] into [FeelTime].
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    if let Some(captures) = RE_TIME.captures(s) {
       if let Some(hour_match) = captures.name("hours") {
         if let Ok(hour) = hour_match.as_str().parse::<u8>() {
           if let Some(min_match) = captures.name("minutes") {
@@ -73,9 +75,10 @@ impl TryFrom<&str> for FeelTime {
                   }
                   let nanos = (fractional * 1e9).trunc() as u64;
                   if let Some(zone) = FeelZone::from_captures(&captures) {
-                    if is_valid_time(hour, min, sec) {
-                      return Ok(FeelTime(hour, min, sec, nanos, zone));
-                    }
+                    let time = FeelTime(hour, min, sec, nanos, zone);
+                    // even if parsing from string was successful, the time may still be invalid, so another check
+                    let _: DateTime<FixedOffset> = time.clone().try_into().map_err(|_| err_invalid_time_literal(s))?;
+                    return Ok(time);
                   }
                 }
               }
@@ -84,20 +87,7 @@ impl TryFrom<&str> for FeelTime {
         }
       }
     }
-    Err(err_invalid_time_literal(value))
-  }
-}
-
-impl std::str::FromStr for FeelTime {
-  type Err = DmntkError;
-  fn from_str(s: &str) -> Result<Self, Self::Err> {
-    // parse the time from the provided string
-    let time = FeelTime::try_from(s)?;
-    // even if parsing from string was successful, the time may still be invalid,
-    // so check the time validity by converting to chrono::DateTime<FixedOffset>
-    let _: DateTime<FixedOffset> = time.clone().try_into()?;
-    // now the time is valid
-    Ok(time)
+    Err(err_invalid_time_literal(s))
   }
 }
 
@@ -112,8 +102,7 @@ impl std::cmp::PartialEq for FeelTime {
 
 impl TryFrom<FeelTime> for DateTime<FixedOffset> {
   type Error = DmntkError;
-  /// Tries to convert the `FEEL` time into chrono::DateTime<FixedOffset>.
-  /// If the conversion fails, the `FEEL` time is invalid.
+  /// Converts [FeelTime] into [DateTime] with [FixedOffset].
   fn try_from(me: FeelTime) -> Result<Self, Self::Error> {
     let result: DateTime<FixedOffset> = FeelDateTime(FeelDate::today_local(), me).try_into()?;
     Ok(result)
@@ -210,5 +199,54 @@ impl FeelTime {
 
   pub fn feel_time_zone(&self) -> Option<String> {
     feel_time_zone(&FeelDateTime(FeelDate::today_local(), self.clone()))
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use crate::FeelZone;
+
+  fn eq_time_loc(hour: u8, min: u8, sec: u8, s: &str) {
+    let expected = FeelTime(hour, min, sec, 0, FeelZone::Local);
+    let actual = FeelTime::from_str(s).expect("should not fail");
+    assert_eq!(Some(true), expected.equal(&actual));
+  }
+
+  fn eq_time_utc(hour: u8, min: u8, sec: u8, s: &str) {
+    let expected = FeelTime(hour, min, sec, 0, FeelZone::Utc);
+    let actual = FeelTime::from_str(s).expect("should not fail");
+    assert_eq!(Some(true), expected.equal(&actual));
+  }
+
+  #[test]
+  fn test_time_from_str() {
+    eq_time_loc(18, 37, 9, "18:37:09");
+    eq_time_utc(16, 37, 9, "16:37:09z");
+    eq_time_utc(16, 37, 9, "16:37:09Z");
+    eq_time_utc(16, 37, 9, "16:37:09@Etc/UTC");
+    eq_time_utc(16, 37, 9, "18:37:09@Africa/Johannesburg");
+    eq_time_utc(17, 37, 9, "17:37:09@Europe/London");
+
+    // summer time in Vancouver
+    // eq_time_utc(17, 37, 9, "10:37:09@America/Vancouver");
+
+    // winter time in Vancouver
+    eq_time_utc(18, 37, 9, "10:37:09@America/Vancouver");
+
+    // summer time in New York
+    // eq_time_utc(17, 37, 9, "13:37:09@America/New_York");
+
+    // winter time in New York
+    eq_time_utc(18, 37, 9, "13:37:09@America/New_York");
+
+    eq_time_utc(17, 37, 9, "18:37:09@Europe/Warsaw");
+  }
+
+  #[test]
+  fn test_time_from_str_errors() {
+    assert_eq!(Err(err_invalid_time_literal("24:37:09")), FeelTime::from_str("24:37:09"));
+    assert_eq!(Err(err_invalid_time_literal("18:60:09")), FeelTime::from_str("18:60:09"));
+    assert_eq!(Err(err_invalid_time_literal("05:12:60")), FeelTime::from_str("05:12:60"));
   }
 }

@@ -32,29 +32,31 @@
 
 //! Implementation of FEEL date.
 
+use super::errors::{err_invalid_date, err_invalid_date_literal};
 use super::ym_duration::FeelYearsAndMonthsDuration;
-use super::{after, after_or_equal, before, before_or_equal, between, equal, weekday, FeelDateTime, FeelTime, RE_DATE};
-use crate::temporal::errors::{err_invalid_date, err_invalid_date_literal};
+use super::{after, after_or_equal, before, before_or_equal, between, equal, weekday, Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
 use crate::FeelNumber;
 use chrono::{DateTime, Datelike, FixedOffset, Local};
 use dmntk_common::DmntkError;
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
+use std::str::FromStr;
 
 /// FEEL date.
 #[derive(Debug, Clone)]
-pub struct FeelDate(i32, u8, u8);
+pub struct FeelDate(Year, Month, Day);
 
 impl std::fmt::Display for FeelDate {
+  /// Converts [FeelDate] into [String].
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(f, "{:04}-{:02}-{:02}", self.0, self.1, self.2)
   }
 }
 
-impl TryFrom<&str> for FeelDate {
-  type Error = DmntkError;
-  /// Converts string into [FeelDate].
-  fn try_from(value: &str) -> Result<Self, Self::Error> {
+impl FromStr for FeelDate {
+  type Err = DmntkError;
+  /// Converts [String] into [FeelDate].
+  fn from_str(value: &str) -> Result<Self, Self::Err> {
     if let Some(captures) = RE_DATE.captures(value) {
       if let Some(year_match) = captures.name("year") {
         if let Ok(mut year) = year_match.as_str().parse::<i32>() {
@@ -75,6 +77,7 @@ impl TryFrom<&str> for FeelDate {
         }
       }
     }
+    //TODO implement additional information in for specific erogenous cases.
     Err(err_invalid_date_literal(value))
   }
 }
@@ -133,11 +136,11 @@ impl TryFrom<FeelDate> for DateTime<FixedOffset> {
 
 impl FeelDate {
   ///
-  pub fn new(year: i32, month: u8, day: u8) -> Self {
+  pub fn new(year: Year, month: Month, day: Day) -> Self {
     Self(year, month, day)
   }
   ///
-  pub fn new_opt(year: i32, month: u8, day: u8) -> Option<Self> {
+  pub fn new_opt(year: Year, month: Month, day: Day) -> Option<Self> {
     if is_valid_date(year, month, day) {
       Some(Self(year, month, day))
     } else {
@@ -147,7 +150,7 @@ impl FeelDate {
   ///
   pub fn today_local() -> Self {
     let today = Local::today();
-    Self(today.year(), today.month() as u8, today.day() as u8)
+    Self(today.year() as Year, today.month() as Month, today.day() as Day)
   }
   ///
   pub fn equal(&self, other: &Self) -> Option<bool> {
@@ -203,15 +206,15 @@ impl FeelDate {
     FeelYearsAndMonthsDuration::new_m(months)
   }
   ///
-  pub fn year(&self) -> i32 {
+  pub fn year(&self) -> Year {
     self.0
   }
   ///
-  pub fn month(&self) -> u8 {
+  pub fn month(&self) -> Month {
     self.1
   }
   ///
-  pub fn day(&self) -> u8 {
+  pub fn day(&self) -> Day {
     self.2
   }
   ///

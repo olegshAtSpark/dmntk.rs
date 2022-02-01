@@ -162,7 +162,7 @@ fn build_add(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
 
 /// Builds evaluator of temporal expression after `@` (at) literal.
 fn build_at(text: &str) -> Result<Evaluator> {
-  if let Ok(date) = FeelDate::try_from(text) {
+  if let Ok(date) = FeelDate::from_str(text) {
     return Ok(Box::new(move |_: &Scope| Value::Date(date.clone())));
   }
   if let Ok(date_time) = FeelDateTime::try_from(text) {

@@ -57,6 +57,7 @@ pub use temporal::dt_duration::FeelDaysAndTimeDuration;
 pub use temporal::subtract;
 pub use temporal::time::FeelTime;
 pub use temporal::ym_duration::FeelYearsAndMonthsDuration;
+pub use temporal::zone::FeelZone;
 pub use types::{is_built_in_type_name, FeelType};
 
 mod ast;

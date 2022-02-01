@@ -41,6 +41,7 @@ use regex::Regex;
 use std::borrow::Borrow;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
+use std::str::FromStr;
 
 /// Builds null value with invalid argument type message.
 macro_rules! invalid_argument_type {
@@ -216,7 +217,7 @@ pub fn count(list: &Value) -> Value {
 pub fn date_1(value: &Value) -> Value {
   match value {
     Value::String(text) => {
-      if let Ok(date) = FeelDate::try_from(text.as_str()) {
+      if let Ok(date) = FeelDate::from_str(text) {
         Value::Date(date)
       } else {
         value_null!("[core::date] invalid date string '{}'", text)
@@ -260,7 +261,7 @@ pub fn date_and_time_1(value: &Value) -> Value {
     if let Ok(date_time) = FeelDateTime::try_from(text.as_str()) {
       return Value::DateTime(date_time);
     }
-    if let Ok(date) = FeelDate::try_from(text.as_str()) {
+    if let Ok(date) = FeelDate::from_str(text) {
       return Value::DateTime(FeelDateTime::new(date, FeelTime::local(0, 0, 0, 0)));
     }
     value_null!("[core::date and time] invalid date or date and time '{}'", text)

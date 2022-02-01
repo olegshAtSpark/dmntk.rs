@@ -59,6 +59,12 @@ const ZULU_PATTERN: &str = r#"(?P<zulu>[zZ])"#;
 const ZONE_PATTERN: &str = r#"@(?P<zone>[a-zA-Z_/]+)"#;
 /// Regular expression pattern for parsing time zones given as offset.
 const OFFSET_PATTERN: &str = r#"(?P<offSign>[+-])(?P<offHours>[0-9]{2}):(?P<offMinutes>[0-9]{2})(:(?P<offSeconds>[0-9]{2}))?"#;
+/// Type alias for year.
+type Year = i32;
+/// Type alias for month.
+type Month = u8;
+/// Type alias for day.
+type Day = u8;
 
 lazy_static! {
   /// Regular expression pattern for parsing time zone.
@@ -261,7 +267,6 @@ fn get_zone_offset(zone_name: &str, date: (i32, u32, u32), time: (u32, u32, u32,
 /// assert_eq!("", nanos_to_string(1_000_000_000));
 /// assert_eq!("00012", nanos_to_string(120_000));
 /// assert_eq!("1", nanos_to_string(100_000_000));
-
 /// ```
 fn nanos_to_string(nano: u64) -> String {
   let chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -298,12 +303,13 @@ mod tests {
   use crate::temporal::nanos_to_string;
   use crate::FeelDate;
   use std::convert::TryFrom;
+  use std::str::FromStr;
 
   const SECONDS_IN_HOUR: i32 = 3_600;
   const SECONDS_IN_MIN: i32 = 60;
 
   fn eq_date(year: i32, month: u8, day: u8, s: &str) {
-    assert_eq!(Ok(FeelDate::new(year, month, day)), FeelDate::try_from(s));
+    assert_eq!(Ok(FeelDate::new(year, month, day)), FeelDate::from_str(s));
   }
 
   fn eq_time_loc(hour: u8, min: u8, sec: u8, s: &str) {
