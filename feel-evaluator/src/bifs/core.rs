@@ -136,6 +136,42 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
       }
       _ => {}
     },
+    Value::Date(point1) => match value2 {
+      Value::Date(point2) => return Value::Boolean(point1 < point2),
+      Value::Range(range_start2, closed_start2, _, _) => {
+        if let Value::Date(start2) = range_start2.borrow() {
+          return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
+        }
+      }
+      _ => {}
+    },
+    Value::DateTime(point1) => match value2 {
+      Value::DateTime(point2) => return Value::Boolean(point1 < point2),
+      Value::Range(range_start2, closed_start2, _, _) => {
+        if let Value::DateTime(start2) = range_start2.borrow() {
+          return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
+        }
+      }
+      _ => {}
+    },
+    Value::DaysAndTimeDuration(point1) => match value2 {
+      Value::DaysAndTimeDuration(point2) => return Value::Boolean(point1 < point2),
+      Value::Range(range_start2, closed_start2, _, _) => {
+        if let Value::DaysAndTimeDuration(start2) = range_start2.borrow() {
+          return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
+        }
+      }
+      _ => {}
+    },
+    Value::YearsAndMonthsDuration(point1) => match value2 {
+      Value::YearsAndMonthsDuration(point2) => return Value::Boolean(point1 < point2),
+      Value::Range(range_start2, closed_start2, _, _) => {
+        if let Value::YearsAndMonthsDuration(start2) = range_start2.borrow() {
+          return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
+        }
+      }
+      _ => {}
+    },
     Value::Range(_, _, range_end1, closed_end1) => match range_end1.borrow() {
       Value::Number(end1) => match value2 {
         Value::Number(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
@@ -159,6 +195,33 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
         Value::Time(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
         Value::Range(range_start2, closed_start2, _, _) => {
           if let Value::Time(start2) = range_start2.borrow() {
+            return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
+          }
+        }
+        _ => {}
+      },
+      Value::DateTime(end1) => match value2 {
+        Value::DateTime(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
+        Value::Range(range_start2, closed_start2, _, _) => {
+          if let Value::DateTime(start2) = range_start2.borrow() {
+            return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
+          }
+        }
+        _ => {}
+      },
+      Value::DaysAndTimeDuration(end1) => match value2 {
+        Value::DaysAndTimeDuration(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
+        Value::Range(range_start2, closed_start2, _, _) => {
+          if let Value::DaysAndTimeDuration(start2) = range_start2.borrow() {
+            return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
+          }
+        }
+        _ => {}
+      },
+      Value::YearsAndMonthsDuration(end1) => match value2 {
+        Value::YearsAndMonthsDuration(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
+        Value::Range(range_start2, closed_start2, _, _) => {
+          if let Value::YearsAndMonthsDuration(start2) = range_start2.borrow() {
             return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
           }
         }
