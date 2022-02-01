@@ -781,7 +781,7 @@ pub fn not(negand: &Value) -> Value {
   if let Value::Boolean(v) = negand {
     Value::Boolean(!(*v))
   } else {
-    invalid_argument_type!("not", "boolean", negand.type_of())
+    value_null!()
   }
 }
 

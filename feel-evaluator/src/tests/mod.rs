@@ -36,6 +36,7 @@ use dmntk_feel::{AstNode, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelN
 use crate::builders::build_evaluator;
 
 mod addition;
+mod arithmetic_negation;
 mod bifs;
 mod comments;
 mod comparison_between;

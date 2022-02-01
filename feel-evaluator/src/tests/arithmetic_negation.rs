@@ -35,40 +35,75 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_bool(false, &scope!(), r#"not(true)"#, false);
+  te_number(false, &scope!(), "-0", 0, 0);
 }
 
 #[test]
 fn _0002() {
-  te_bool(false, &scope!(), r#"not(false)"#, true);
+  te_number(false, &scope!(), "-0", -0, 0);
 }
 
 #[test]
 fn _0003() {
-  te_null(false, &scope!(), r#"not(1)"#, r#""#);
+  te_number(false, &scope!(), "0", 0, 0);
 }
 
 #[test]
 fn _0004() {
-  te_null(false, &scope!(), r#"not("a")"#, r#""#);
+  te_number(false, &scope!(), "--0", 0, 0);
 }
 
 #[test]
 fn _0005() {
-  te_null(false, &scope!(), r#"not(time("22:01:23"))"#, r#""#);
+  te_number(false, &scope!(), "-1", -1, 0);
 }
 
 #[test]
 fn _0006() {
-  te_null(false, &scope!(), r#"not(date("2022-02-01"))"#, r#""#);
+  te_number(false, &scope!(), "--1", 1, 0);
 }
 
 #[test]
 fn _0007() {
-  te_null(false, &scope!(), r#"not(date("2022-02-01T22:01:23"))"#, r#""#);
+  te_number(false, &scope!(), " -10.2 ", -102, 1);
 }
 
 #[test]
 fn _0008() {
-  te_null(false, &scope!(), r#"not(null)"#, r#""#);
+  te_number(false, &scope!(), " - 10 ", -10, 0);
+}
+
+#[test]
+fn _0009() {
+  te_number(false, &scope!(), "(-20)", -20, 0);
+}
+
+#[test]
+fn _0010() {
+  te_number(false, &scope!(), " ( -21 ) ", -21, 0);
+}
+
+#[test]
+fn _0011() {
+  te_number(false, &scope!(), " ( - 22 ) ", -22, 0);
+}
+
+#[test]
+fn _0012() {
+  te_number(false, &scope!(), " ((( - 23 ))) ", -23, 0);
+}
+
+#[test]
+fn _0013() {
+  te_number(false, &scope!(), " - - 24 ", 24, 0);
+}
+
+#[test]
+fn _0014() {
+  te_number(false, &scope!(), " - ( - 25 ) ", 25, 0);
+}
+
+#[test]
+fn _0015() {
+  te_days_and_time_duration(false, &scope!(), r#"duration("-PT1H")"#, true, 3600, 0)
 }
