@@ -59,8 +59,6 @@ const ZULU_PATTERN: &str = r#"(?P<zulu>[zZ])"#;
 const ZONE_PATTERN: &str = r#"@(?P<zone>[a-zA-Z_/]+)"#;
 /// Regular expression pattern for parsing time zones given as offset.
 const OFFSET_PATTERN: &str = r#"(?P<offSign>[+-])(?P<offHours>[0-9]{2}):(?P<offMinutes>[0-9]{2})(:(?P<offSeconds>[0-9]{2}))?"#;
-/// Number of nanoseconds in a second.
-const NANOS_IN_SECOND: u64 = 1_000_000_000;
 
 lazy_static! {
   /// Regular expression pattern for parsing time zone.
@@ -250,14 +248,31 @@ fn get_zone_offset(zone_name: &str, date: (i32, u32, u32), time: (u32, u32, u32,
   None
 }
 
-/// Converts the nanoseconds into text appearing after decimal separator with trailing zeros trimmed.
-pub fn nanos_to_string(nano: u64) -> String {
+/// Converts nanoseconds into string.
+///
+/// Calculates the remaining number of nanoseconds in a second (modulo),
+/// converts the result into string prefixed with zeros when appropriate
+/// and trims all zeros after last non-zero digit.
+///
+/// # Examples
+///
+/// ```no run
+/// assert_eq!("", nanos_to_string(0));
+/// assert_eq!("", nanos_to_string(1_000_000_000));
+/// assert_eq!("00012", nanos_to_string(120_000));
+/// assert_eq!("1", nanos_to_string(100_000_000));
+
+/// ```
+fn nanos_to_string(nano: u64) -> String {
   let chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   let mut buffer = ['0', '0', '0', '0', '0', '0', '0', '0', '0'];
   let mut index = 9_usize;
   let mut count = 9_usize;
-  let mut value = nano % NANOS_IN_SECOND;
   let mut non_zero = false;
+  let mut value = nano % 1_000_000_000;
+  if value == 0 {
+    return "".to_string();
+  }
   while value > 0 {
     let remainder = (value % 10) as usize;
     value /= 10;
@@ -270,7 +285,6 @@ pub fn nanos_to_string(nano: u64) -> String {
     index -= 1;
     buffer[index] = chars[remainder];
   }
-  println!("{}", count);
   buffer.iter().take(count).collect()
 }
 
@@ -418,14 +432,17 @@ mod tests {
 
   #[test]
   fn test_nanos_to_string() {
+    assert_eq!("", nanos_to_string(0));
+    assert_eq!("000000001", nanos_to_string(1));
     assert_eq!("000000012", nanos_to_string(12));
     assert_eq!("00000012", nanos_to_string(120));
-    assert_eq!("0000012", nanos_to_string(1200));
-    assert_eq!("000012", nanos_to_string(12000));
-    assert_eq!("00012", nanos_to_string(120000));
-    assert_eq!("0012", nanos_to_string(1200000));
-    assert_eq!("012", nanos_to_string(12000000));
-    assert_eq!("12", nanos_to_string(120000000));
-    assert_eq!("", nanos_to_string(0));
+    assert_eq!("0000012", nanos_to_string(1_200));
+    assert_eq!("000012", nanos_to_string(12_000));
+    assert_eq!("00012", nanos_to_string(120_000));
+    assert_eq!("0012", nanos_to_string(1_200_000));
+    assert_eq!("012", nanos_to_string(12_000_000));
+    assert_eq!("12", nanos_to_string(120_000_000));
+    assert_eq!("1", nanos_to_string(100_000_000));
+    assert_eq!("", nanos_to_string(1_000_000_000));
   }
 }

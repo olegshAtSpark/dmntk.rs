@@ -54,9 +54,9 @@ pub use strings::ToFeelString;
 pub use temporal::date::FeelDate;
 pub use temporal::date_time::FeelDateTime;
 pub use temporal::dt_duration::FeelDaysAndTimeDuration;
+pub use temporal::subtract;
 pub use temporal::time::FeelTime;
 pub use temporal::ym_duration::FeelYearsAndMonthsDuration;
-pub use temporal::{nanos_to_string, subtract};
 pub use types::{is_built_in_type_name, FeelType};
 
 mod ast;

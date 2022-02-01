@@ -260,8 +260,7 @@ pub mod errors {
 
 #[cfg(test)]
 mod tests {
-  use super::super::nanos_to_string;
-  use super::FeelDaysAndTimeDuration;
+  use super::*;
   use std::cmp::Ordering;
   use std::convert::TryFrom;
 
@@ -426,21 +425,6 @@ mod tests {
     equals_str("-P1DT23H59M59S", true, 172_799, 0);
     equals_str("P1DT23H59M59.123S", false, 172_799, 123_000_000);
     equals_str("-P1DT23H59M59.123S", true, 172_799, 123_000_000);
-  }
-
-  #[test]
-  fn converting_nanos_to_string_should_pass() {
-    assert_eq!("", nanos_to_string(0));
-    assert_eq!("000000001", nanos_to_string(1));
-    assert_eq!("00000001", nanos_to_string(10));
-    assert_eq!("0000001", nanos_to_string(100));
-    assert_eq!("000001", nanos_to_string(1_000));
-    assert_eq!("00001", nanos_to_string(10_000));
-    assert_eq!("0001", nanos_to_string(100_000));
-    assert_eq!("001", nanos_to_string(1_000_000));
-    assert_eq!("01", nanos_to_string(10_000_000));
-    assert_eq!("1", nanos_to_string(100_000_000));
-    assert_eq!("", nanos_to_string(1_000_000_000));
   }
 
   #[test]
