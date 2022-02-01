@@ -36,10 +36,11 @@ use super::date::{is_valid_date, FeelDate};
 use super::errors::err_invalid_date_time_literal;
 use super::time::FeelTime;
 use super::zone::FeelZone;
-use super::*;
+use crate::temporal::{date_time_offset, feel_time_offset, feel_time_zone, get_local_offset, get_zone_offset, is_valid_time, RE_DATE_AND_TIME};
 use crate::{subtract, FeelYearsAndMonthsDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
+use std::cmp::Ordering;
 
 /// FEEL date and time.
 #[derive(Debug, Clone)]
@@ -105,13 +106,27 @@ impl TryFrom<&str> for FeelDateTime {
   }
 }
 
-/// Implements `PartialEq` trait for parsing date and time.
-impl std::cmp::PartialEq for FeelDateTime {
+impl PartialEq for FeelDateTime {
   fn eq(&self, other: &Self) -> bool {
-    if let Some(true) = self.equal(other) {
-      return true;
+    self.0 == other.0 && self.1 == other.1
+  }
+}
+
+impl PartialOrd for FeelDateTime {
+  /// Returns the ordering of two date and times.
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    if let Some(d) = self.0.partial_cmp(&other.0) {
+      if let Some(t) = self.1.partial_cmp(&other.1) {
+        return match (d, t) {
+          (Ordering::Equal, Ordering::Equal) => Some(Ordering::Equal),
+          (Ordering::Equal, Ordering::Less) => Some(Ordering::Less),
+          (Ordering::Equal, Ordering::Greater) => Some(Ordering::Greater),
+          (Ordering::Less, _) => Some(Ordering::Less),
+          (Ordering::Greater, _) => Some(Ordering::Greater),
+        };
+      }
     }
-    false
+    None
   }
 }
 
@@ -173,33 +188,6 @@ impl FeelDateTime {
   /// Returns the `Time` part from date and time value.
   pub fn time(&self) -> FeelTime {
     self.1.clone()
-  }
-
-  /// Compares this date and time value with other date and time value,
-  /// returns [Some] ([true]) when both are equal. Otherwise returns [Some] ([false]).
-  /// If any of compared values is not valid, the comparison can not evaluated and returns [None].    
-  pub fn equal(&self, other: &FeelDateTime) -> Option<bool> {
-    equal(self, other)
-  }
-
-  pub fn before(&self, other: &FeelDateTime) -> Option<bool> {
-    before(self, other)
-  }
-
-  pub fn before_or_equal(&self, other: &FeelDateTime) -> Option<bool> {
-    before_or_equal(self, other)
-  }
-
-  pub fn after(&self, other: &FeelDateTime) -> Option<bool> {
-    after(self, other)
-  }
-
-  pub fn after_or_equal(&self, other: &FeelDateTime) -> Option<bool> {
-    after_or_equal(self, other)
-  }
-
-  pub fn between(&self, left: &FeelDateTime, right: &FeelDateTime, left_closed: bool, right_closed: bool) -> Option<bool> {
-    between(self, left, right, left_closed, right_closed)
   }
 
   pub fn ym_duration(&self, other: &FeelDateTime) -> FeelYearsAndMonthsDuration {

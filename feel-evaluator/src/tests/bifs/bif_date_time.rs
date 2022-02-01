@@ -136,7 +136,14 @@ fn _0013() {
 
 #[test]
 fn _0014() {
-  te_date_time_utc(false, &scope!(), r#"date and time("2016-12-24T23:59:00-08:00")"#, (2016, 12, 25), (7, 59, 0, 0));
+  te_date_time_offset(
+    false,
+    &scope!(),
+    r#"date and time("2016-12-24T23:59:00-08:00")"#,
+    (2016, 12, 24),
+    (23, 59, 0, 0),
+    -28800,
+  );
 }
 
 #[test]
