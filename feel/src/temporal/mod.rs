@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//! Date and time utilities.
+//! Implementation of FEEL temporal artifacts.
 
 use crate::temporal::date_time::FeelDateTime;
 use crate::temporal::time::FeelTime;
@@ -59,6 +59,7 @@ const ZULU_PATTERN: &str = r#"(?P<zulu>[zZ])"#;
 const ZONE_PATTERN: &str = r#"@(?P<zone>[a-zA-Z_/]+)"#;
 /// Regular expression pattern for parsing time zones given as offset.
 const OFFSET_PATTERN: &str = r#"(?P<offSign>[+-])(?P<offHours>[0-9]{2}):(?P<offMinutes>[0-9]{2})(:(?P<offSeconds>[0-9]{2}))?"#;
+
 /// Type alias for year.
 type Year = i32;
 /// Type alias for month.

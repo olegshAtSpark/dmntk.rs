@@ -56,17 +56,17 @@ impl std::fmt::Display for FeelDate {
 impl FromStr for FeelDate {
   type Err = DmntkError;
   /// Converts [String] into [FeelDate].
-  fn from_str(value: &str) -> Result<Self, Self::Err> {
-    if let Some(captures) = RE_DATE.captures(value) {
+  fn from_str(date: &str) -> Result<Self, Self::Err> {
+    if let Some(captures) = RE_DATE.captures(date) {
       if let Some(year_match) = captures.name("year") {
-        if let Ok(mut year) = year_match.as_str().parse::<i32>() {
+        if let Ok(mut year) = year_match.as_str().parse::<Year>() {
           if captures.name("sign").is_some() {
             year = -year;
           }
           if let Some(month_match) = captures.name("month") {
-            if let Ok(month) = month_match.as_str().parse::<u8>() {
+            if let Ok(month) = month_match.as_str().parse::<Month>() {
               if let Some(day_match) = captures.name("day") {
-                if let Ok(day) = day_match.as_str().parse::<u8>() {
+                if let Ok(day) = day_match.as_str().parse::<Day>() {
                   if is_valid_date(year, month, day) {
                     return Ok(FeelDate(year, month, day));
                   }
@@ -77,8 +77,7 @@ impl FromStr for FeelDate {
         }
       }
     }
-    //TODO implement additional information in for specific erogenous cases.
-    Err(err_invalid_date_literal(value))
+    Err(err_invalid_date_literal(date))
   }
 }
 
@@ -228,7 +227,7 @@ impl FeelDate {
 }
 
 ///
-pub fn is_valid_date(year: i32, month: u8, day: u8) -> bool {
+pub fn is_valid_date(year: Year, month: Month, day: Day) -> bool {
   if DateTime::try_from(FeelDate(year, month, day)).is_ok() {
     return true;
   }
