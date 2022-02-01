@@ -313,19 +313,6 @@ mod tests {
     assert_eq!(Ok(FeelDate::new(year, month, day)), FeelDate::from_str(s));
   }
 
-  fn eq_time_loc(hour: u8, min: u8, sec: u8, s: &str) {
-    let expected = FeelTime(hour, min, sec, 0, FeelZone::Local);
-    let actual = s.parse::<FeelTime>().expect("should not fail");
-    assert_eq!(Some(true), expected.equal(&actual));
-  }
-
-  fn eq_time_utc(hour: u8, min: u8, sec: u8, s: &str) {
-    let expected = FeelTime(hour, min, sec, 0, FeelZone::Utc);
-    let actual = s.parse::<FeelTime>().expect("should not fail");
-    println!("{} {}", expected, actual);
-    assert_eq!(Some(true), expected.equal(&actual));
-  }
-
   fn eq_date_time_loc(date: (i32, u8, u8), time: (u8, u8, u8), s: &str) {
     let feel_date = FeelDate::new(date.0, date.1, date.2);
     let feel_time = FeelTime(time.0, time.1, time.2, 0, FeelZone::Local);
@@ -348,24 +335,6 @@ mod tests {
   }
 
   #[test]
-  fn test_parse_time() {
-    eq_time_loc(18, 37, 9, "18:37:09");
-    eq_time_utc(16, 37, 9, "16:37:09z");
-    eq_time_utc(16, 37, 9, "16:37:09Z");
-    eq_time_utc(16, 37, 9, "16:37:09@Etc/UTC");
-    eq_time_utc(16, 37, 9, "18:37:09@Africa/Johannesburg");
-    eq_time_utc(17, 37, 9, "17:37:09@Europe/London");
-
-    // eq_time_utc(17, 37, 9, "10:37:09@America/Vancouver"); // summer time in Vancouver
-    eq_time_utc(18, 37, 9, "10:37:09@America/Vancouver"); // winter time in Vancouver
-
-    // eq_time_utc(17, 37, 9, "13:37:09@America/New_York"); // summer time in New York
-    eq_time_utc(18, 37, 9, "13:37:09@America/New_York"); // winter time in New York
-
-    eq_time_utc(17, 37, 9, "18:37:09@Europe/Warsaw");
-  }
-
-  #[test]
   fn test_parse_date_time() {
     eq_date_time_loc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09");
     eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09z");
@@ -376,16 +345,6 @@ mod tests {
     eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T09:37:09@America/Vancouver");
     eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T12:37:09@America/New_York");
     eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T18:37:09@Europe/Warsaw");
-  }
-
-  #[test]
-  fn test_after_or_equal() {
-    let v1 = "12:21:11".parse::<FeelTime>().expect("should not fail");
-    let v2 = "12:21:12".parse::<FeelTime>().expect("should not fail");
-    let v3 = "12:21:13".parse::<FeelTime>().expect("should not fail");
-    assert_eq!(Some(false), v1.after_or_equal(&v2));
-    assert_eq!(Some(true), v2.after_or_equal(&v2));
-    assert_eq!(Some(true), v3.after_or_equal(&v2));
   }
 
   #[test]

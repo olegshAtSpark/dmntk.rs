@@ -226,11 +226,7 @@ fn build_between(lhs: &AstNode, mhs: &AstNode, rhs: &AstNode) -> Result<Evaluato
       Value::Time(lh) => {
         if let Value::Time(mh) = mhv {
           if let Value::Time(rh) = rhv {
-            if let Some(result) = lh.between(&mh, &rh, true, true) {
-              Value::Boolean(result)
-            } else {
-              value_null!("between err 8")
-            }
+            Value::Boolean(mh <= lh && lh <= rh)
           } else {
             value_null!("between err 9")
           }
@@ -1657,7 +1653,7 @@ pub fn eval_ternary_equality(lhs: &Value, rhs: &Value) -> Option<bool> {
       _ => None,
     },
     Value::Time(ls) => match rhs {
-      Value::Time(rs) => ls.equal(rs),
+      Value::Time(rs) => Some(*ls == *rs),
       Value::Null(_) => Some(false),
       _ => None,
     },
@@ -1866,10 +1862,9 @@ fn eval_in_range(left: &Value, right: &Value) -> Value {
       Value::Range(l, l_closed, r, r_closed) => match l.borrow() {
         Value::Time(lv) => match r.borrow() {
           Value::Time(rv) => {
-            if let Some(b) = value.between(lv, rv, *l_closed, *r_closed) {
-              return Value::Boolean(b);
-            }
-            value_null!("eval_in_range")
+            let l_ok = if *l_closed { value >= lv } else { value > lv };
+            let r_ok = if *r_closed { value <= rv } else { value < rv };
+            Value::Boolean(l_ok && r_ok)
           }
           _ => value_null!("eval_in_range"),
         },
@@ -1953,9 +1948,7 @@ fn eval_in_unary_less(left: &Value, right: &Value) -> Value {
     }
     Value::Time(r) => {
       if let Value::Time(l) = left {
-        if let Some(result) = l.before(r) {
-          return Value::Boolean(result);
-        }
+        return Value::Boolean(l < r);
       }
     }
     Value::DateTime(r) => {
@@ -2000,9 +1993,7 @@ fn eval_in_unary_less_or_equal(left: &Value, right: &Value) -> Value {
     }
     Value::Time(r) => {
       if let Value::Time(l) = left {
-        if let Some(result) = l.before_or_equal(r) {
-          return Value::Boolean(result);
-        }
+        return Value::Boolean(l <= r);
       }
     }
     Value::DateTime(r) => {
@@ -2047,9 +2038,7 @@ fn eval_in_unary_greater(left: &Value, right: &Value) -> Value {
     }
     Value::Time(r) => {
       if let Value::Time(l) = left {
-        if let Some(result) = l.after(r) {
-          return Value::Boolean(result);
-        }
+        return Value::Boolean(l > r);
       }
     }
     Value::DateTime(r) => {
@@ -2094,9 +2083,7 @@ fn eval_in_unary_greater_or_equal(left: &Value, right: &Value) -> Value {
     }
     Value::Time(r) => {
       if let Value::Time(l) = left {
-        if let Some(result) = l.after_or_equal(r) {
-          return Value::Boolean(result);
-        }
+        return Value::Boolean(l >= r);
       }
     }
     Value::DateTime(r) => {

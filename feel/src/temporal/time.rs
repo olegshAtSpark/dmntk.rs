@@ -36,10 +36,11 @@ use super::date::FeelDate;
 use super::nanos_to_string;
 use super::zone::FeelZone;
 use crate::temporal::errors::err_invalid_time_literal;
-use crate::temporal::{after, after_or_equal, before, before_or_equal, between, equal, feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
+use crate::temporal::{feel_time_offset, feel_time_zone, is_valid_time, RE_TIME};
 use crate::FeelDateTime;
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
+use std::cmp::Ordering;
 use std::str::FromStr;
 
 /// FEEL time.
@@ -92,12 +93,34 @@ impl FromStr for FeelTime {
   }
 }
 
-impl std::cmp::PartialEq for FeelTime {
+impl PartialEq for FeelTime {
   fn eq(&self, other: &Self) -> bool {
-    if let Some(true) = self.equal(other) {
-      return true;
+    self.0 == other.0 && self.1 == other.1 && self.2 == other.2 && self.3 == other.3 && self.4 == other.4
+  }
+}
+
+impl PartialOrd for FeelTime {
+  /// Returns the ordering of two times.
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    if self.4 == other.4 {
+      let h = self.0.cmp(&other.0);
+      let m = self.1.cmp(&other.1);
+      let s = self.2.cmp(&other.2);
+      let n = self.3.cmp(&other.3);
+      match (h, m, s, n) {
+        (Ordering::Equal, Ordering::Equal, Ordering::Equal, Ordering::Equal) => Some(Ordering::Equal),
+        (Ordering::Equal, Ordering::Equal, Ordering::Equal, Ordering::Less) => Some(Ordering::Less),
+        (Ordering::Equal, Ordering::Equal, Ordering::Equal, Ordering::Greater) => Some(Ordering::Greater),
+        (Ordering::Equal, Ordering::Equal, Ordering::Less, _) => Some(Ordering::Less),
+        (Ordering::Equal, Ordering::Equal, Ordering::Greater, _) => Some(Ordering::Greater),
+        (Ordering::Equal, Ordering::Less, _, _) => Some(Ordering::Less),
+        (Ordering::Equal, Ordering::Greater, _, _) => Some(Ordering::Greater),
+        (Ordering::Less, _, _, _) => Some(Ordering::Less),
+        (Ordering::Greater, _, _, _) => Some(Ordering::Greater),
+      }
+    } else {
+      None
     }
-    false
   }
 }
 
@@ -142,46 +165,6 @@ impl FeelTime {
     Self(hour, minute, second, nanos, FeelZone::Offset(offset))
   }
 
-  /// Compares this time value with other time value and returns [Some] ([true])
-  /// when both are equal. Otherwise returns [Some] ([false]).
-  /// If any of compared values is not valid then [None] is returned.
-  /// Times are compared using current date in local time zone.     
-  pub fn equal(&self, other: &Self) -> Option<bool> {
-    let today = FeelDate::today_local();
-    equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
-  }
-
-  pub fn before(&self, other: &Self) -> Option<bool> {
-    let today = FeelDate::today_local();
-    before(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
-  }
-
-  pub fn before_or_equal(&self, other: &Self) -> Option<bool> {
-    let today = FeelDate::today_local();
-    before_or_equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
-  }
-
-  pub fn after(&self, other: &Self) -> Option<bool> {
-    let today = FeelDate::today_local();
-    after(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
-  }
-
-  pub fn after_or_equal(&self, other: &Self) -> Option<bool> {
-    let today = FeelDate::today_local();
-    after_or_equal(&FeelDateTime(today.clone(), self.clone()), &FeelDateTime(today, other.clone()))
-  }
-
-  pub fn between(&self, left: &Self, right: &Self, left_closed: bool, right_closed: bool) -> Option<bool> {
-    let today = FeelDate::today_local();
-    between(
-      &FeelDateTime(today.clone(), self.clone()),
-      &FeelDateTime(today.clone(), left.clone()),
-      &FeelDateTime(today, right.clone()),
-      left_closed,
-      right_closed,
-    )
-  }
-
   pub fn hour(&self) -> u8 {
     self.0
   }
@@ -205,43 +188,26 @@ impl FeelTime {
 
 #[cfg(test)]
 mod tests {
+  use super::super::zone::FeelZone;
   use super::*;
-  use crate::FeelZone;
 
-  fn eq_time_loc(hour: u8, min: u8, sec: u8, s: &str) {
-    let expected = FeelTime(hour, min, sec, 0, FeelZone::Local);
-    let actual = FeelTime::from_str(s).expect("should not fail");
-    assert_eq!(Some(true), expected.equal(&actual));
-  }
-
-  fn eq_time_utc(hour: u8, min: u8, sec: u8, s: &str) {
-    let expected = FeelTime(hour, min, sec, 0, FeelZone::Utc);
-    let actual = FeelTime::from_str(s).expect("should not fail");
-    assert_eq!(Some(true), expected.equal(&actual));
+  fn eq_time(h: u8, m: u8, s: u8, n: u64, z: FeelZone, time: &str) {
+    let expected = FeelTime(h, m, s, n, z);
+    let actual = FeelTime::from_str(time).expect("should not fail");
+    assert_eq!(expected, actual);
   }
 
   #[test]
   fn test_time_from_str() {
-    eq_time_loc(18, 37, 9, "18:37:09");
-    eq_time_utc(16, 37, 9, "16:37:09z");
-    eq_time_utc(16, 37, 9, "16:37:09Z");
-    eq_time_utc(16, 37, 9, "16:37:09@Etc/UTC");
-    eq_time_utc(16, 37, 9, "18:37:09@Africa/Johannesburg");
-    eq_time_utc(17, 37, 9, "17:37:09@Europe/London");
-
-    // summer time in Vancouver
-    // eq_time_utc(17, 37, 9, "10:37:09@America/Vancouver");
-
-    // winter time in Vancouver
-    eq_time_utc(18, 37, 9, "10:37:09@America/Vancouver");
-
-    // summer time in New York
-    // eq_time_utc(17, 37, 9, "13:37:09@America/New_York");
-
-    // winter time in New York
-    eq_time_utc(18, 37, 9, "13:37:09@America/New_York");
-
-    eq_time_utc(17, 37, 9, "18:37:09@Europe/Warsaw");
+    eq_time(18, 37, 9, 0, FeelZone::Local, "18:37:09");
+    eq_time(16, 37, 9, 0, FeelZone::Utc, "16:37:09z");
+    eq_time(16, 37, 9, 0, FeelZone::Utc, "16:37:09Z");
+    eq_time(16, 37, 9, 0, FeelZone::Zone("Etc/UTC".to_string()), "16:37:09@Etc/UTC");
+    eq_time(17, 37, 9, 0, FeelZone::Zone("Europe/London".to_string()), "17:37:09@Europe/London");
+    eq_time(18, 37, 9, 0, FeelZone::Zone("Europe/Warsaw".to_string()), "18:37:09@Europe/Warsaw");
+    eq_time(18, 37, 9, 0, FeelZone::Zone("Africa/Johannesburg".to_string()), "18:37:09@Africa/Johannesburg");
+    eq_time(10, 37, 9, 0, FeelZone::Zone("America/Vancouver".to_string()), "10:37:09@America/Vancouver");
+    eq_time(13, 37, 9, 0, FeelZone::Zone("America/New_York".to_string()), "13:37:09@America/New_York");
   }
 
   #[test]
@@ -249,5 +215,13 @@ mod tests {
     assert_eq!(Err(err_invalid_time_literal("24:37:09")), FeelTime::from_str("24:37:09"));
     assert_eq!(Err(err_invalid_time_literal("18:60:09")), FeelTime::from_str("18:60:09"));
     assert_eq!(Err(err_invalid_time_literal("05:12:60")), FeelTime::from_str("05:12:60"));
+  }
+
+  #[test]
+  fn test_eq() {
+    assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) == FeelTime(0, 0, 0, 0, FeelZone::Utc)));
+    assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Local)));
+    assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Offset(18_000))));
+    assert!((FeelTime(0, 0, 0, 0, FeelZone::Utc) != FeelTime(0, 0, 0, 0, FeelZone::Zone("Europe/Warsaw".to_string()))));
   }
 }

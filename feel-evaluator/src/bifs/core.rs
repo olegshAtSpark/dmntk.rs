@@ -155,6 +155,15 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
         }
         _ => {}
       },
+      Value::Time(end1) => match value2 {
+        Value::Time(point2) => return Value::Boolean(end1 < point2 || (!*closed_end1 && end1 == point2)),
+        Value::Range(range_start2, closed_start2, _, _) => {
+          if let Value::Time(start2) = range_start2.borrow() {
+            return Value::Boolean(end1 < start2 || (end1 == start2 && (!*closed_end1 || !*closed_start2)));
+          }
+        }
+        _ => {}
+      },
       _ => {}
     },
     _ => {}
