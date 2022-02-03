@@ -26,6 +26,7 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
+#[cfg(feature = "tck")]
 mod dto;
 mod errors;
 mod server;

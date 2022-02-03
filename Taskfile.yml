@@ -19,6 +19,11 @@ tasks:
     cmds:
       - cmd: cargo build
 
+  build-tck:
+    desc: Builds in debug mode with TCK feature
+    cmds:
+      - cmd: cargo build --features=tck
+
   clean:
     desc: Cleans all targets
     cmds:

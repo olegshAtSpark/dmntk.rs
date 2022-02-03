@@ -30,11 +30,13 @@
  * limitations under the License.
  */
 
+#[cfg(feature = "tck")]
 use crate::dto::{InputNodeDto, OutputNodeDto, WrappedValue};
 use crate::errors::*;
 use actix_web::web::Json;
 use actix_web::{error, get, post, web, App, HttpResponse, HttpServer};
 use dmntk_common::{DmntkError, Jsonify, Result};
+#[cfg(feature = "tck")]
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
@@ -181,6 +183,7 @@ pub struct StatusResult {
 /// Parameters for evaluating invocable in DMN™ model definitions.
 /// The format of input data is compatible with test cases
 /// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[cfg(feature = "tck")]
 #[derive(Debug, Deserialize)]
 pub struct TckEvaluateParams {
   /// Name of the model where the invocable will be searched.
@@ -278,6 +281,7 @@ async fn post_definitions_deploy(data: web::Data<ApplicationData>) -> std::io::R
 
 /// Handler for evaluating models with input values in format compatible with test cases
 /// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[cfg(feature = "tck")]
 #[post("/tck/evaluate")]
 async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<ApplicationData>) -> std::io::Result<Json<ResultDto<OutputNodeDto>>> {
   if let Ok(workspace) = data.workspace.read() {
@@ -288,6 +292,13 @@ async fn post_tck_evaluate(params: Json<TckEvaluateParams>, data: web::Data<Appl
   } else {
     Ok(Json(ResultDto::error(err_workspace_read_lock_failed())))
   }
+}
+
+/// Blind endpoint when `tck` feature is switched-off
+#[cfg(not(feature = "tck"))]
+#[post("/tck/evaluate")]
+async fn post_tck_evaluate() -> std::io::Result<Json<ResultDto<()>>> {
+  Ok(Json(ResultDto::error(err_endpoint_not_found())))
 }
 
 /// Handler for evaluating invocable in model.
@@ -512,6 +523,7 @@ fn do_deploy_definitions(workspace: &mut Workspace) -> Result<StatusResult> {
 /// Evaluates the invocable in model and returns the result.
 /// Input and output data format is compatible with
 /// [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
+#[cfg(feature = "tck")]
 #[inline(always)]
 fn do_evaluate_tck(workspace: &Workspace, params: &TckEvaluateParams) -> Result<OutputNodeDto, DmntkError> {
   if let Some(model_name) = &params.model_name {
