@@ -42,7 +42,6 @@ mod errors;
 mod examples;
 mod href;
 mod jsonify;
-mod macros;
 
 pub use errors::{DmntkError, Result};
 pub use examples::{EXAMPLE_0001_CTX, EXAMPLE_0001_DTB, EXAMPLE_0002_CTX, EXAMPLE_0002_DTB};
