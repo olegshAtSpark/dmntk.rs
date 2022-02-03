@@ -77,6 +77,13 @@ macro_rules! ascii256 {
   }};
 }
 
+#[macro_export]
+macro_rules! ascii_none {
+  () => {{
+    "".to_string()
+  }};
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
