@@ -35,75 +35,120 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_bool(false, &scope!(), "after(10,1)", true);
+  te_bool(false, &scope!(), r#"after(10,1)"#, true);
+}
+
+#[test]
+fn _00011() {
+  te_bool(false, &scope!(), r#"after(date("2022-01-01"),date("2021-12-31"))"#, true);
 }
 
 #[test]
 fn _0002() {
-  te_bool(false, &scope!(), "after(1,10)", false);
+  te_bool(false, &scope!(), r#"after(1,10)"#, false);
+}
+
+#[test]
+fn _00021() {
+  te_bool(false, &scope!(), r#"after(date("2021-12-31"),date("2022-01-01"))"#, false);
 }
 
 #[test]
 fn _0003() {
-  te_bool(false, &scope!(), "after(point1: 10, point2: 1)", true);
+  te_bool(false, &scope!(), r#"after(point1:10,point2:1)"#, true);
+}
+
+#[test]
+fn _00031() {
+  te_bool(false, &scope!(), r#"after(point1:date("2022-01-01"),point2:date("2021-12-31"))"#, true);
 }
 
 #[test]
 fn _0004() {
-  te_bool(false, &scope!(), "after(point1: 1, point2: 10)", false);
+  te_bool(false, &scope!(), r#"after(point1:1,point2:10)"#, false);
+}
+
+#[test]
+fn _00041() {
+  te_bool(false, &scope!(), r#"after(point1:date("2021-12-31"),point2:date("2022-01-01"))"#, false);
 }
 
 #[test]
 fn _0005() {
-  te_bool(false, &scope!(), "after(point2: 1, point1: 10)", true);
+  te_bool(false, &scope!(), r#"after(point2:1,point1:10)"#, true);
+}
+
+#[test]
+fn _00051() {
+  te_bool(false, &scope!(), r#"after(point2:date("2021-12-31"),point1:date("2022-01-01"))"#, true);
 }
 
 #[test]
 fn _0006() {
-  te_bool(false, &scope!(), "after(point2: 10, point1: 1)", false);
+  te_bool(false, &scope!(), r#"after(point2: 10, point1: 1)"#, false);
+}
+
+#[test]
+fn _00061() {
+  te_bool(false, &scope!(), r#"after(point2:date("2022-01-01"),point1:date("2021-12-31"))"#, false);
 }
 
 #[test]
 fn _0007() {
-  te_bool(false, &scope!(), "after(11, [1..10])", true);
+  te_bool(false, &scope!(), r#"after(11,[1..10])"#, true);
+}
+
+#[test]
+fn _00071() {
+  te_bool(false, &scope!(), r#"after(date("2021-06-01"),[date("2021-01-01")..date("2021-05-30")])"#, true);
 }
 
 #[test]
 fn _0008() {
-  te_bool(false, &scope!(), "after([1..10], 11)", false);
+  te_bool(false, &scope!(), r#"after([1..10],11)"#, false);
+}
+
+#[test]
+fn _00081() {
+  te_bool(false, &scope!(), r#"after([date("2021-01-01")..date("2021-05-30")],date("2021-06-01"))"#, false);
 }
 
 #[test]
 fn _0009() {
-  te_bool(false, &scope!(), "after(point: 11, range: [1..10])", true);
+  te_bool(false, &scope!(), r#"after(point: 11, range: [1..10])"#, true);
 }
 
 #[test]
 fn _0010() {
-  te_bool(false, &scope!(), "after(range: [1..10], point: 11)", false);
+  te_bool(false, &scope!(), r#"after(range: [1..10], point: 11)"#, false);
 }
 
 #[test]
 fn _0011() {
-  te_null(false, &scope!(), "after(p1: 10, point2: 1)", r#"[named::after] invalid named parameters"#);
+  te_null(false, &scope!(), r#"after(p1: 10, point2: 1)"#, r#"[named::after] invalid named parameters"#);
 }
 
 #[test]
 fn _0012() {
-  te_bool(false, &scope!(), "after(range1: [1..10], range2: [11..20])", false);
+  te_bool(false, &scope!(), r#"after(range1: [1..10], range2: [11..20])"#, false);
 }
 
 #[test]
 fn _0013() {
-  te_bool(false, &scope!(), "after(range2: [11..20], range1: [1..10])", false);
+  te_bool(false, &scope!(), r#"after(range2: [11..20], range1: [1..10])"#, false);
 }
 
 #[test]
 fn _0014() {
-  te_null(false, &scope!(), "after()", r#"expected 2 parameters, actual number of parameters is 0"#);
+  te_null(false, &scope!(), r#"after()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0015() {
-  te_null(false, &scope!(), "after(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
+  te_null(
+    false,
+    &scope!(),
+    r#"after(1,2,3)"#,
+    r#"expected 2 parameters, actual number of parameters is 3"#,
+  );
 }
