@@ -56,9 +56,9 @@ pub fn svg_decision(mut indent: usize, shape: &DmnShape, decision: &Decision) ->
   indent += 4;
   let mut svg_content = String::new();
   let text = get_label_text(shape, decision.name());
-  let text_position = get_text_center_position(&shape.bounds);
+  let _text_position = get_text_center_position(&shape.bounds);
   let shape_class = get_shape_shared_style_id(shape);
-  let label_class = get_shape_label_shared_style_id(shape);
+  let _label_class = get_shape_label_shared_style_id(shape);
   svg_content.push_str(&format!(
     r#"{:i$}<rect width="{}" height="{}" x="{}" y="{}" class="{}"/>{}"#,
     WS,
