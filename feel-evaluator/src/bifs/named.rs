@@ -177,8 +177,12 @@ fn bif_abs(parameters: &NamedParameters) -> Value {
 fn bif_after(parameters: &NamedParameters) -> Value {
   if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT_1).zip(get_param(parameters, &NAME_POINT_2)) {
     core::after(value1, value2)
-  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
-    core::after(value1, value2)
+  } else if let Some(((value1, pos1), (value2, pos2))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    if pos1 > pos2 {
+      core::after(value2, value1)
+    } else {
+      core::after(value1, value2)
+    }
   } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
     core::after(value1, value2)
   } else {
@@ -210,8 +214,12 @@ fn bif_append(_parameters: &NamedParameters) -> Value {
 fn bif_before(parameters: &NamedParameters) -> Value {
   if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT_1).zip(get_param(parameters, &NAME_POINT_2)) {
     core::before(value1, value2)
-  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
-    core::before(value1, value2)
+  } else if let Some(((value1, pos1), (value2, pos2))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    if pos1 > pos2 {
+      core::before(value2, value1)
+    } else {
+      core::before(value1, value2)
+    }
   } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
     core::before(value1, value2)
   } else {

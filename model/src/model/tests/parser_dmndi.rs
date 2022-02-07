@@ -73,11 +73,11 @@ fn _2_0001() {
   // there is a first shape's dmn_element_ref
   assert_eq!("_75b3add2-4d36-4a19-a76c-268b49b2f436", shape_0.dmn_element_ref.as_ref().unwrap());
   // there is a first shape's bound - height
-  assert!(61.0_f64.eq(&shape_0.bounds.height));
+  assert_eq!(60.0, shape_0.bounds.height);
   // there is a first shape's bound - width
-  assert!(154.0_f64.eq(&shape_0.bounds.width));
+  assert_eq!(150.0, shape_0.bounds.width);
   // there is a first shape's bound - x
-  assert!(150.0_f64.eq(&shape_0.bounds.x));
+  assert_eq!(150.0, shape_0.bounds.x);
   // there is a first shape's bound - y
   assert!(150.0_f64.eq(&shape_0.bounds.y));
   // there is a second shape's id
@@ -88,24 +88,24 @@ fn _2_0001() {
   // there is a second shape's bound - height
   assert!(60.0_f64.eq(&shape_1.bounds.height));
   // there is a second shape's bound - width
-  assert!(153.0_f64.eq(&shape_1.bounds.width));
+  assert!(150.0_f64.eq(&shape_1.bounds.width));
   // there is a second shape's bound - x
-  assert!(151.0_f64.eq(&shape_1.bounds.x));
+  assert!(150.0_f64.eq(&shape_1.bounds.x));
   // there is a second shape's bound - y
-  assert!(331.0_f64.eq(&shape_1.bounds.y));
+  assert!(330.0_f64.eq(&shape_1.bounds.y));
   // there is a first edge's id
   let edge_0 = get_edge(&dmndi.diagrams.get(0).unwrap().diagram_elements, 2).unwrap();
   assert_eq!("_e9a73517-0ba2-4b31-b308-82279ae21591", edge_0.id.as_ref().unwrap());
   // there is a first edge's dmn_element_ref
   assert_eq!("_8c935b50-10b7-426b-80a9-dddb4264b4a9", edge_0.dmn_element_ref.as_ref().unwrap());
   // there is a first waypoint's x
-  assert!(227.0_f64.eq(&edge_0.way_points.get(0).unwrap().x));
+  assert_eq!(225.0, edge_0.way_points.get(0).unwrap().x);
   // there is a first waypoint's y
-  assert!(331.0_f64.eq(&edge_0.way_points.get(0).unwrap().y));
+  assert_eq!(330.0, edge_0.way_points.get(0).unwrap().y);
   // there is a second waypoint's x
-  assert!(227.0_f64.eq(&edge_0.way_points.get(1).unwrap().x));
+  assert_eq!(225.0, edge_0.way_points.get(1).unwrap().x);
   // there is a second waypoint's y
-  assert!(211.0_f64.eq(&edge_0.way_points.get(1).unwrap().y));
+  assert_eq!(210.0, edge_0.way_points.get(1).unwrap().y);
 }
 
 #[test]
@@ -120,9 +120,9 @@ fn _2_0002() {
   // there is a diagram id
   assert_eq!("_0002-input-data-number_D1", dmndi.diagrams.get(0).unwrap().id.as_ref().unwrap());
   // there is a height of a diagram
-  assert!(650.0_f64.eq(&dmndi.diagrams.get(0).unwrap().size.as_ref().unwrap().height));
+  assert_eq!(650.0, dmndi.diagrams.get(0).unwrap().size.as_ref().unwrap().height);
   // there is a width of a diagram
-  assert!(650.0_f64.eq(&dmndi.diagrams.get(0).unwrap().size.as_ref().unwrap().width));
+  assert_eq!(650.0, dmndi.diagrams.get(0).unwrap().size.as_ref().unwrap().width);
   // there are a 3 diagram elements
   assert_eq!(3, dmndi.diagrams.get(0).unwrap().diagram_elements.len());
   // there is a first shape's id
@@ -131,39 +131,39 @@ fn _2_0002() {
   // there is a first shape's dmn_element_ref
   assert_eq!("d_YearlySalary", shape_0.dmn_element_ref.as_ref().unwrap());
   // there is a first shape's bound - height
-  assert!(61.0_f64.eq(&shape_0.bounds.height));
+  assert_eq!(61.0, shape_0.bounds.height);
   // there is a first shape's bound - width
-  assert!(154.0_f64.eq(&shape_0.bounds.width));
+  assert_eq!(154.0, shape_0.bounds.width);
   // there is a first shape's bound - x
-  assert!(150.0_f64.eq(&shape_0.bounds.x));
+  assert_eq!(150.0, shape_0.bounds.x);
   // there is a first shape's bound - y
-  assert!(150.0_f64.eq(&shape_0.bounds.y));
+  assert_eq!(150.0, shape_0.bounds.y);
   // there is a second shape's id
   let shape_1 = get_shape(&dmndi.diagrams.get(0).unwrap().diagram_elements, 1).unwrap();
   assert_eq!("_0002-input-data-number_s2", shape_1.id.as_ref().unwrap());
   // there is a second shape's dmn_element_ref
   assert_eq!("i_MonthlySalary", shape_1.dmn_element_ref.as_ref().unwrap());
   // there is a second shape's bound - height
-  assert!(60.0_f64.eq(&shape_1.bounds.height));
+  assert_eq!(60.0, shape_1.bounds.height);
   // there is a second shape's bound - width
-  assert!(153.0_f64.eq(&shape_1.bounds.width));
+  assert_eq!(153.0, shape_1.bounds.width);
   // there is a second shape's bound - x
-  assert!(151.0_f64.eq(&shape_1.bounds.x));
+  assert_eq!(151.0, shape_1.bounds.x);
   // there is a second shape's bound - y
-  assert!(331.0_f64.eq(&shape_1.bounds.y));
+  assert_eq!(331.0, shape_1.bounds.y);
   // there is a first edge's id
   let edge_0 = get_edge(&dmndi.diagrams.get(0).unwrap().diagram_elements, 2).unwrap();
   assert_eq!("_0002-input-data-number_e1", edge_0.id.as_ref().unwrap());
   // there is a first edge's dmn_element_ref
   assert_eq!("_94534179-9eda-4522-b970-aaffcb4e0c97", edge_0.dmn_element_ref.as_ref().unwrap());
   // there is a first waypoint's x
-  assert!(227.0_f64.eq(&edge_0.way_points.get(0).unwrap().x));
+  assert_eq!(227.0, edge_0.way_points.get(0).unwrap().x);
   // there is a first waypoint's y
-  assert!(331.0_f64.eq(&edge_0.way_points.get(0).unwrap().y));
+  assert_eq!(331.0, edge_0.way_points.get(0).unwrap().y);
   // there is a second waypoint's x
-  assert!(227.0_f64.eq(&edge_0.way_points.get(1).unwrap().x));
+  assert_eq!(227.0, edge_0.way_points.get(1).unwrap().x);
   // there is a second waypoint's y
-  assert!(211.0_f64.eq(&edge_0.way_points.get(1).unwrap().y));
+  assert_eq!(211.0, edge_0.way_points.get(1).unwrap().y);
 }
 
 #[test]

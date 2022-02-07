@@ -260,21 +260,26 @@ fn _0038() {
 
 #[test]
 fn _0039() {
-  te_bool(false, &scope!(), r#"before(range:(1..10],point:1)"#, true);
+  te_bool(false, &scope!(), r#"before(range:(1..10],point:1)"#, false);
 }
 
 #[test]
 fn _0040() {
-  te_null(false, &scope!(), r#"before()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
+  te_bool(false, &scope!(), r#"before(range:[1..10),point:10)"#, true);
 }
 
 #[test]
 fn _0041() {
-  te_null(false, &scope!(), r#"before(1)"#, r#"expected 2 parameters, actual number of parameters is 1"#);
+  te_null(false, &scope!(), r#"before()"#, r#"expected 2 parameters, actual number of parameters is 0"#);
 }
 
 #[test]
 fn _0042() {
+  te_null(false, &scope!(), r#"before(1)"#, r#"expected 2 parameters, actual number of parameters is 1"#);
+}
+
+#[test]
+fn _0043() {
   te_null(
     false,
     &scope!(),
@@ -284,12 +289,12 @@ fn _0042() {
 }
 
 #[test]
-fn _0043() {
+fn _0044() {
   te_null(false, &scope!(), r#"before(p1: 1, point2: 2)"#, r#"[named::before] invalid named parameters"#);
 }
 
 #[test]
-fn _0044() {
+fn _0045() {
   te_null(
     false,
     &scope!(),
@@ -299,12 +304,12 @@ fn _0044() {
 }
 
 #[test]
-fn _0045() {
+fn _0046() {
   te_bool(false, &scope!(), r#"before(date("2022-01-31"),[date("2022-02-01")..date("2022-12-31")])"#, true);
 }
 
 #[test]
-fn _0046() {
+fn _0047() {
   te_bool(
     false,
     &scope!(),

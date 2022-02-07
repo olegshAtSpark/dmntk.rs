@@ -35,70 +35,75 @@ use dmntk_feel::scope;
 
 #[test]
 fn _0001() {
-  te_null(false, &scope!(), "after(10,1)", r#"[core::after] under construction: 10 | 1"#);
+  te_bool(false, &scope!(), "after(10,1)", true);
 }
 
 #[test]
 fn _0002() {
-  te_null(false, &scope!(), "after(point1: 10, point2: 1)", r#"[core::after] under construction: 10 | 1"#);
+  te_bool(false, &scope!(), "after(1,10)", false);
 }
 
 #[test]
 fn _0003() {
-  te_null(false, &scope!(), "after(point2: 1, point1: 10)", r#"[core::after] under construction: 10 | 1"#);
+  te_bool(false, &scope!(), "after(point1: 10, point2: 1)", true);
 }
 
 #[test]
 fn _0004() {
-  te_null(
-    false,
-    &scope!(),
-    "after(point: 11, range: [1..10])",
-    r#"[core::after] under construction: 11 | [1..10]"#,
-  );
+  te_bool(false, &scope!(), "after(point1: 1, point2: 10)", false);
 }
 
 #[test]
 fn _0005() {
-  te_null(
-    false,
-    &scope!(),
-    "after(range: [1..10], point: 11)",
-    r#"[core::after] under construction: 11 | [1..10]"#,
-  );
+  te_bool(false, &scope!(), "after(point2: 1, point1: 10)", true);
 }
 
 #[test]
 fn _0006() {
-  te_null(false, &scope!(), "after(p1: 10, point2: 1)", r#"[named::after] invalid named parameters"#);
+  te_bool(false, &scope!(), "after(point2: 10, point1: 1)", false);
 }
 
 #[test]
 fn _0007() {
-  te_null(
-    false,
-    &scope!(),
-    "after(range1: [1..10], range2: [11..20])",
-    r#"[core::after] under construction: [1..10] | [11..20]"#,
-  );
+  te_bool(false, &scope!(), "after(11, [1..10])", true);
 }
 
 #[test]
 fn _0008() {
-  te_null(
-    false,
-    &scope!(),
-    "after(range2: [11..20], range1: [1..10])",
-    r#"[core::after] under construction: [1..10] | [11..20]"#,
-  );
+  te_bool(false, &scope!(), "after([1..10], 11)", false);
 }
 
 #[test]
 fn _0009() {
-  te_null(false, &scope!(), "after()", r#"expected 2 parameters, actual number of parameters is 0"#);
+  te_bool(false, &scope!(), "after(point: 11, range: [1..10])", true);
 }
 
 #[test]
 fn _0010() {
+  te_bool(false, &scope!(), "after(range: [1..10], point: 11)", false);
+}
+
+#[test]
+fn _0011() {
+  te_null(false, &scope!(), "after(p1: 10, point2: 1)", r#"[named::after] invalid named parameters"#);
+}
+
+#[test]
+fn _0012() {
+  te_bool(false, &scope!(), "after(range1: [1..10], range2: [11..20])", false);
+}
+
+#[test]
+fn _0013() {
+  te_bool(false, &scope!(), "after(range2: [11..20], range1: [1..10])", false);
+}
+
+#[test]
+fn _0014() {
+  te_null(false, &scope!(), "after()", r#"expected 2 parameters, actual number of parameters is 0"#);
+}
+
+#[test]
+fn _0015() {
   te_null(false, &scope!(), "after(1,2,3)", r#"expected 2 parameters, actual number of parameters is 3"#);
 }
