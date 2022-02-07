@@ -70,16 +70,31 @@ pub fn svg_decision(mut indent: usize, shape: &DmnShape, decision: &Decision) ->
     NL,
     i = indent
   ));
+
+  // svg_content.push_str(&format!(
+  //   r#"{:i$}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>{}"#,
+  //   WS,
+  //   text_position.0,
+  //   text_position.1,
+  //   label_class,
+  //   text,
+  //   NL,
+  //   i = indent
+  // ));
+
+  //<foreignObject x="20" y="20" width="160" height="160"><div>kuku</div></foreignObject>
   svg_content.push_str(&format!(
-    r#"{:i$}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>{}"#,
+    r#"{:i$}<foreignObject width="{}" height="{}" x="{}" y="{}"><div style="display:table;height:100%;width:100%;text-align:center;"><span style="display:table-cell;vertical-align:middle;">{}</span></div></foreignObject>{}"#,
     WS,
-    text_position.0,
-    text_position.1,
-    label_class,
+    shape.bounds.width,
+    shape.bounds.height,
+    shape.bounds.x,
+    shape.bounds.y,
     text,
     NL,
     i = indent
   ));
+
   svg_content
 }
 
