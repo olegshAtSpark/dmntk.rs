@@ -38,6 +38,7 @@ use std::ops::Div;
 
 const HTML_TEMPLATE: &str = include_str!("template.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
+const PI_2: f64 = std::f64::consts::PI * 2.0;
 
 /// Generates HTML documentation for DMN model.
 pub fn generate(definitions: &Definitions) -> String {
@@ -45,40 +46,40 @@ pub fn generate(definitions: &Definitions) -> String {
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
-  let mut svg = String::new();
+  let mut svg_content = String::new();
   let indent = 0_usize;
 
   if let Some(dmndi) = definitions.dmndi() {
     let styles = svg_styles(&dmndi.styles);
     for diagram in &dmndi.diagrams {
-      svg.push_str(&svg_begin(indent, &diagram.size));
-      svg = format!("{}{}", svg, styles);
+      svg_content.push_str(&svg_begin(indent, &diagram.size));
+      svg_content = format!("{}{}", svg_content, styles);
 
       for diagram_element in &diagram.diagram_elements {
         match diagram_element {
           DmnDiagramElement::DmnShape(shape) => {
             if let Some(dmn_element_ref) = &shape.dmn_element_ref {
               if let Some(decision) = definitions.decision_by_id(dmn_element_ref.as_str()) {
-                svg = format!("{}\n{}", svg, svg_decision(shape, decision));
+                svg_content.push_str(&svg_decision(indent, shape, decision));
               } else if let Some(input_data) = definitions.input_data_by_id(dmn_element_ref.as_str()) {
-                svg = format!("{}\n{}", svg, svg_input_data(shape, input_data));
+                svg_content.push_str(&svg_input_data(indent, shape, input_data));
               } else if let Some(business_knowledge) = definitions.business_knowledge_model_by_id(dmn_element_ref.as_str()) {
-                svg = format!("{}\n{}", svg, svg_business_knowledge(shape, business_knowledge));
+                svg_content = format!("{}\n{}", svg_content, svg_business_knowledge(shape, business_knowledge));
               } else if let Some(knowledge_source) = definitions.knowledge_source_by_id(dmn_element_ref.as_str()) {
-                svg = format!("{}\n{}", svg, svg_knowledge_source(shape, knowledge_source));
+                svg_content = format!("{}\n{}", svg_content, svg_knowledge_source(shape, knowledge_source));
               }
             }
           }
           DmnDiagramElement::DmnEdge(edge) => {
-            svg = format!("{}\n{}", svg, svg_edge(edge));
+            svg_content = format!("{}\n{}", svg_content, svg_edge(edge));
           }
         }
       }
 
-      svg.push_str(&svg_end(indent));
+      svg_content.push_str(&svg_end(indent));
     }
   }
-  html.replace(SVG_CONTENT, &svg)
+  html.replace(SVG_CONTENT, &svg_content)
 }
 
 fn get_shape_shared_style_id(shape: &DmnShape) -> String {
@@ -101,43 +102,6 @@ fn get_shape_label_shared_style_id(shape: &DmnShape) -> String {
   }
 }
 
-/// Generate svg element for Decision.
-fn svg_decision(shape: &DmnShape, decision: &Decision) -> String {
-  let text = get_text(shape, decision.name());
-  let text_position = get_text_position(&shape.bounds);
-  let shape_class = get_shape_shared_style_id(shape);
-  let label_class = get_shape_label_shared_style_id(shape);
-
-  let mut svg_decision = format!(
-    "<rect width=\"{}\" height=\"{}\" x=\"{}\" y=\"{}\" class=\"{}\"/>",
-    shape.bounds.width, shape.bounds.height, shape.bounds.x, shape.bounds.y, shape_class
-  );
-  svg_decision = format!(
-    "{}<text x=\"{}\" y=\"{}\" dominant-baseline=\"middle\" text-anchor=\"middle\" class=\"{}\" style=\"fill:black\">{}</text>",
-    svg_decision, text_position.0, text_position.1, label_class, text
-  );
-  svg_decision
-}
-
-/// Generate svg element for Decision.
-fn svg_input_data(shape: &DmnShape, input_data: &InputData) -> String {
-  let rxy = shape.bounds.height.div(2.0);
-  let text = get_text(shape, input_data.name());
-  let text_position = get_text_position(&shape.bounds);
-  let shape_class = get_shape_shared_style_id(shape);
-  let label_class = get_shape_label_shared_style_id(shape);
-
-  let mut svg_input_data = format!(
-    "<rect width=\"{}\" height=\"{}\" x=\"{}\" y=\"{}\" rx=\"{}\" ry=\"{}\" class=\"{}\"/>",
-    shape.bounds.width, shape.bounds.height, shape.bounds.x, shape.bounds.y, rxy, rxy, shape_class
-  );
-  svg_input_data = format!(
-    "{}<text x=\"{}\" y=\"{}\" dominant-baseline=\"middle\" text-anchor=\"middle\" class=\"{}\" style=\"fill:black\">{}</text>",
-    svg_input_data, text_position.0, text_position.1, label_class, text
-  );
-  svg_input_data
-}
-
 /// Generate svg element for Business Knowledge.
 fn svg_business_knowledge(shape: &DmnShape, business_knowledge: &BusinessKnowledgeModel) -> String {
   let text = get_text(shape, business_knowledge.name());
@@ -145,10 +109,9 @@ fn svg_business_knowledge(shape: &DmnShape, business_knowledge: &BusinessKnowled
   let points = get_points_for_business_knowledge(&shape.bounds);
   let shape_class = get_shape_shared_style_id(shape);
   let label_class = get_shape_label_shared_style_id(shape);
-
   let mut svg_business_knowledge = format!("<polygon points=\"{}\" class=\"{}\"/>", points, shape_class);
   svg_business_knowledge = format!(
-    "{}<text x=\"{}\" y=\"{}\" dominant-baseline=\"middle\" text-anchor=\"middle\" class=\"{}\" style=\"fill:black\">{}</text>",
+    r#"{}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>"#,
     svg_business_knowledge, text_position.0, text_position.1, label_class, text
   );
   svg_business_knowledge
@@ -175,7 +138,7 @@ fn svg_knowledge_source(shape: &DmnShape, knowledge_source: &KnowledgeSource) ->
 
   let mut svg_knowledge_source = format!("<path d=\"{}\" class=\"{}\"/>", path, shape_class);
   svg_knowledge_source = format!(
-    "{}<text x=\"{}\" y=\"{}\" dominant-baseline=\"middle\" text-anchor=\"middle\" class=\"{}\" style=\"fill:black\">{}</text>",
+    r#"{}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>"#,
     svg_knowledge_source, text_position.0, text_position.1, label_class, text
   );
   svg_knowledge_source
@@ -211,7 +174,6 @@ fn get_path_to_knowledge_source(bounds: &DcBounds) -> String {
     curve_base_height
   );
   path = format!("{} L {} {} Z", path, bounds.x, bounds.y);
-
   path
 }
 
@@ -223,15 +185,14 @@ fn svg_edge(edge: &DmnEdge) -> String {
 
   let points_for_arrowhead = format!(
     "{},{} {},{} {},{}",
-    end_point.x,
+    end_point.x + 1.0,
     end_point.y,
-    end_point.x - 5.0,
-    end_point.y - 10.0,
-    end_point.x + 5.0,
-    end_point.y - 10.0
+    end_point.x + 10.0,
+    end_point.y - 3.0,
+    end_point.x + 10.0,
+    end_point.y + 3.0
   );
   let angle = get_angle(start_point, end_point);
-
   let mut edge = format!("<polyline points=\"{}\"/>", points);
   edge = format!(
     "{}<polygon points=\"{}\" transform=\"rotate({},{},{})\" style=\"fill:rgb(0,0,0);\" />",
@@ -293,7 +254,7 @@ fn svg_styles(styles: &[DmnStyle]) -> String {
       svg_styles = format!("{}{}", svg_styles, svg_style);
     }
   }
-  svg_styles = format!("{}</style>", svg_styles);
+  svg_styles = format!("{}</style>\n", svg_styles);
   svg_styles
 }
 
@@ -317,20 +278,21 @@ fn get_text(shape: &DmnShape, name: &str) -> String {
   name.to_owned()
 }
 
-/// Calculate angle between two vectors.
+/// Returns the rotation angle of an arrow.
 fn get_angle(start: &DcPoint, end: &DcPoint) -> f64 {
-  let vec1x = end.x - start.x;
-  let vec1y = end.y - start.y;
-  let vec2x = 0.0;
-  let vec2y = 1.0;
-
-  let result = (vec1x * vec2x + vec1y * vec2y)
-    .div((vec1x.powf(2.0) + vec1y.powf(2.0)).sqrt() * (vec2x.powf(2.0) + vec2y.powf(2.0)).sqrt())
-    .acos()
-    .to_degrees();
-  if vec1x > 0.0 {
-    -result
+  let x = end.x - start.x;
+  let y = end.y - start.y;
+  if x == 0.0 {
+    return if y >= 0.0 { -90.0 } else { 90.0 };
+  }
+  let angle = ((y / x).atan() * 360.0) / PI_2;
+  if x > 0.0 {
+    if y >= 0.0 {
+      angle - 180.0
+    } else {
+      angle + 180.0
+    }
   } else {
-    result
+    angle
   }
 }
