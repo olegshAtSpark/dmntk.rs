@@ -32,27 +32,26 @@
 
 //! Generator of DMN documentation.
 
-use dmntk_model::model::{
-  BusinessKnowledgeModel, DcBounds, DcColor, DcDimension, DcPoint, Decision, Definitions, DmnDiagramElement, DmnEdge, DmnShape, DmnStyle, InputData,
-  KnowledgeSource, NamedElement,
-};
+use crate::svg::*;
+use dmntk_model::model::*;
 use std::ops::Div;
 
 const HTML_TEMPLATE: &str = include_str!("template.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
 
-/// Generates documentation for DMN model.
+/// Generates HTML documentation for DMN model.
 pub fn generate(definitions: &Definitions) -> String {
   add_svg_content(HTML_TEMPLATE, definitions)
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
   let mut svg = String::new();
+  let indent = 0_usize;
 
   if let Some(dmndi) = definitions.dmndi() {
     let styles = svg_styles(&dmndi.styles);
     for diagram in &dmndi.diagrams {
-      svg = format!("{}{}", svg, svg_begin(&diagram.size));
+      svg.push_str(&svg_begin(indent, &diagram.size));
       svg = format!("{}{}", svg, styles);
 
       for diagram_element in &diagram.diagram_elements {
@@ -76,25 +75,10 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
         }
       }
 
-      svg = format!("{}{}", svg, svg_end());
+      svg.push_str(&svg_end(indent));
     }
   }
-
-  html.replace(SVG_CONTENT, svg.as_str())
-}
-
-/// Generate begin svg element
-fn svg_begin(size_opt: &Option<DcDimension>) -> String {
-  if let Some(size) = size_opt {
-    format!("<svg width=\"{}\" height=\"{}\">", size.width, size.height)
-  } else {
-    String::from("<svg>")
-  }
-}
-
-/// Generate end svg element
-fn svg_end() -> String {
-  String::from("</svg>")
+  html.replace(SVG_CONTENT, &svg)
 }
 
 fn get_shape_shared_style_id(shape: &DmnShape) -> String {

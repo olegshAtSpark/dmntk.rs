@@ -30,13 +30,23 @@
  * limitations under the License.
  */
 
-extern crate dmntk_examples;
-extern crate dmntk_model;
+//! SVG utilities.
 
-mod generator;
-mod svg;
+use dmntk_model::model::DcDimension;
 
-#[cfg(test)]
-mod tests;
+const NL: char = '\n';
+const WS: &str = "";
 
-pub use generator::generate;
+/// Prepares `<svg>` element with specified dimension.
+pub fn svg_begin(indent: usize, dimension: &Option<DcDimension>) -> String {
+  if let Some(size) = dimension {
+    format!(r#"{:i$}<svg width="{}" height="{}">{}"#, WS, size.width, size.height, NL, i = indent)
+  } else {
+    format!(r#"{:i$}<svg>{}"#, WS, NL, i = indent)
+  }
+}
+
+/// Prepares `</svg>` element.
+pub fn svg_end(indent: usize) -> String {
+  format!(r#"{:i$}</svg>{}"#, WS, NL, i = indent)
+}
