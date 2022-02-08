@@ -64,7 +64,7 @@ pub fn abs(value: &Value) -> Value {
   }
 }
 
-/// TBD
+/// Returns `true` when value2 `>>` value1.
 pub fn after(value1: &Value, value2: &Value) -> Value {
   match value1 {
     Value::Number(point1) => match value2 {
@@ -80,6 +80,15 @@ pub fn after(value1: &Value, value2: &Value) -> Value {
       Value::Date(point2) => return Value::Boolean(point1 > point2),
       Value::Range(_, _, range_end, closed_end) => {
         if let Value::Date(point2) = range_end.borrow() {
+          return Value::Boolean(point1 > point2 || (point1 == point2 && !*closed_end));
+        }
+      }
+      _ => {}
+    },
+    Value::Time(point1) => match value2 {
+      Value::Time(point2) => return Value::Boolean(point1 > point2),
+      Value::Range(_, _, range_end, closed_end) => {
+        if let Value::Time(point2) = range_end.borrow() {
           return Value::Boolean(point1 > point2 || (point1 == point2 && !*closed_end));
         }
       }
@@ -245,6 +254,15 @@ pub fn before(value1: &Value, value2: &Value) -> Value {
       Value::Date(point2) => return Value::Boolean(point1 < point2),
       Value::Range(range_start2, closed_start2, _, _) => {
         if let Value::Date(start2) = range_start2.borrow() {
+          return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
+        }
+      }
+      _ => {}
+    },
+    Value::Time(point1) => match value2 {
+      Value::Time(point2) => return Value::Boolean(point1 < point2),
+      Value::Range(range_start2, closed_start2, _, _) => {
+        if let Value::Time(start2) = range_start2.borrow() {
           return Value::Boolean(point1 < start2 || (point1 == start2 && !*closed_start2));
         }
       }
