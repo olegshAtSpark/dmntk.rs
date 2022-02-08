@@ -181,39 +181,27 @@ impl FeelDate {
   }
   ///
   pub fn day_of_week(&self) -> Option<DayOfWeek> {
-    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
-      Some(match naive_date.weekday() {
-        Weekday::Mon => ("Monday".to_string(), 1_u8),
-        Weekday::Tue => ("Tuesday".to_string(), 2_u8),
-        Weekday::Wed => ("Wednesday".to_string(), 3_u8),
-        Weekday::Thu => ("Thursday".to_string(), 4_u8),
-        Weekday::Fri => ("Friday".to_string(), 5_u8),
-        Weekday::Sat => ("Saturday".to_string(), 6_u8),
-        Weekday::Sun => ("Sunday".to_string(), 7_u8),
-      })
-    } else {
-      None
-    }
+    NaiveDate::from_ymd_opt(self.0, self.1, self.2).map(|naive_date| match naive_date.weekday() {
+      Weekday::Mon => ("Monday".to_string(), 1_u8),
+      Weekday::Tue => ("Tuesday".to_string(), 2_u8),
+      Weekday::Wed => ("Wednesday".to_string(), 3_u8),
+      Weekday::Thu => ("Thursday".to_string(), 4_u8),
+      Weekday::Fri => ("Friday".to_string(), 5_u8),
+      Weekday::Sat => ("Saturday".to_string(), 6_u8),
+      Weekday::Sun => ("Sunday".to_string(), 7_u8),
+    })
   }
   ///
   pub fn day_of_year(&self) -> Option<DayOfYear> {
-    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
-      Some(naive_date.ordinal() as u16)
-    } else {
-      None
-    }
+    NaiveDate::from_ymd_opt(self.0, self.1, self.2).map(|naive_date| naive_date.ordinal() as u16)
   }
   ///
   pub fn week_of_year(&self) -> Option<WeekOfYear> {
-    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
-      Some(naive_date.iso_week().week() as u8)
-    } else {
-      None
-    }
+    NaiveDate::from_ymd_opt(self.0, self.1, self.2).map(|naive_date| naive_date.iso_week().week() as u8)
   }
   ///
-  pub fn as_tuple(&self) -> (i32, u32, u32) {
-    (self.0, self.1 as u32, self.2 as u32)
+  pub fn as_tuple(&self) -> (Year, Month, Day) {
+    (self.0, self.1, self.2)
   }
 }
 
