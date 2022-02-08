@@ -34,7 +34,6 @@
 
 use crate::svg::*;
 use dmntk_model::model::*;
-use std::ops::Div;
 
 const HTML_TEMPLATE: &str = include_str!("template.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
@@ -64,9 +63,9 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
               } else if let Some(input_data) = definitions.input_data_by_id(dmn_element_ref.as_str()) {
                 svg_content.push_str(&svg_input_data(indent, shape, input_data));
               } else if let Some(business_knowledge) = definitions.business_knowledge_model_by_id(dmn_element_ref.as_str()) {
-                svg_content = format!("{}\n{}", svg_content, svg_business_knowledge(shape, business_knowledge));
+                svg_content.push_str(&svg_business_knowledge_model(indent, shape, business_knowledge));
               } else if let Some(knowledge_source) = definitions.knowledge_source_by_id(dmn_element_ref.as_str()) {
-                svg_content = format!("{}\n{}", svg_content, svg_knowledge_source(shape, knowledge_source));
+                svg_content.push_str(&svg_knowledge_source(indent, shape, knowledge_source));
               }
             }
           }
@@ -80,101 +79,6 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
     }
   }
   html.replace(SVG_CONTENT, &svg_content)
-}
-
-fn get_shape_shared_style_id(shape: &DmnShape) -> String {
-  if let Some(style_id) = &shape.shared_style {
-    style_id.to_string()
-  } else {
-    String::new()
-  }
-}
-
-fn get_shape_label_shared_style_id(shape: &DmnShape) -> String {
-  if let Some(label) = &shape.label {
-    if let Some(style_id) = &label.shared_style {
-      style_id.to_string()
-    } else {
-      String::new()
-    }
-  } else {
-    String::new()
-  }
-}
-
-/// Generate svg element for Business Knowledge.
-fn svg_business_knowledge(shape: &DmnShape, business_knowledge: &BusinessKnowledgeModel) -> String {
-  let text = get_text(shape, business_knowledge.name());
-  let text_position = get_text_position(&shape.bounds);
-  let points = get_points_for_business_knowledge(&shape.bounds);
-  let shape_class = get_shape_shared_style_id(shape);
-  let label_class = get_shape_label_shared_style_id(shape);
-  let mut svg_business_knowledge = format!("<polygon points=\"{}\" class=\"{}\"/>", points, shape_class);
-  svg_business_knowledge = format!(
-    r#"{}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>"#,
-    svg_business_knowledge, text_position.0, text_position.1, label_class, text
-  );
-  svg_business_knowledge
-}
-
-fn get_points_for_business_knowledge(bounds: &DcBounds) -> String {
-  let mut points = format!("{},{}", bounds.x, bounds.y + 15.0);
-  points = format!("{} {},{}", points, bounds.x + 15.0, bounds.y);
-  points = format!("{} {},{}", points, bounds.x + bounds.width, bounds.y);
-  points = format!("{} {},{}", points, bounds.x + bounds.width, bounds.y + bounds.height - 15.0);
-  points = format!("{} {},{}", points, bounds.x + bounds.width - 15.0, bounds.y + bounds.height);
-  points = format!("{} {},{}", points, bounds.x, bounds.y + bounds.height);
-
-  points
-}
-
-/// Generate svg element for Knowledge Source.
-fn svg_knowledge_source(shape: &DmnShape, knowledge_source: &KnowledgeSource) -> String {
-  let text = get_text(shape, knowledge_source.name());
-  let text_position = get_text_position(&shape.bounds);
-  let path = get_path_to_knowledge_source(&shape.bounds);
-  let shape_class = get_shape_shared_style_id(shape);
-  let label_class = get_shape_label_shared_style_id(shape);
-
-  let mut svg_knowledge_source = format!("<path d=\"{}\" class=\"{}\"/>", path, shape_class);
-  svg_knowledge_source = format!(
-    r#"{}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>"#,
-    svg_knowledge_source, text_position.0, text_position.1, label_class, text
-  );
-  svg_knowledge_source
-}
-
-fn get_path_to_knowledge_source(bounds: &DcBounds) -> String {
-  let period = 20.0;
-  let period_div_2 = period.div(2.0);
-  let curve_base_height = bounds.y + bounds.height - period_div_2;
-  let width_div_4: f64 = bounds.width.div(4.0);
-
-  let mut path = format!("M {} {}", bounds.x, bounds.y);
-  path = format!("{} L {} {}", path, bounds.x + bounds.width, bounds.y);
-  path = format!("{} L {} {}", path, bounds.x + bounds.width, curve_base_height);
-  path = format!(
-    "{} C {},{} {},{} {},{}",
-    path,
-    bounds.x + bounds.width,
-    curve_base_height,
-    bounds.x + bounds.width - width_div_4,
-    curve_base_height - period,
-    bounds.x + bounds.width - width_div_4 * 2.0,
-    curve_base_height
-  );
-  path = format!(
-    "{} C {},{} {},{} {},{}",
-    path,
-    bounds.x + bounds.width - width_div_4 * 2.0,
-    curve_base_height,
-    bounds.x + width_div_4,
-    curve_base_height + period,
-    bounds.x,
-    curve_base_height
-  );
-  path = format!("{} L {} {} Z", path, bounds.x, bounds.y);
-  path
 }
 
 /// Generate svg element for edge.
@@ -260,22 +164,6 @@ fn svg_styles(styles: &[DmnStyle]) -> String {
 
 fn get_rgb_color(color: &DcColor) -> String {
   format!("rgb({},{},{})", color.red, color.green, color.blue)
-}
-
-/// Calculate text position inside a shape.
-fn get_text_position(bounds: &DcBounds) -> (f64, f64) {
-  let text_x = bounds.x + bounds.width.div(2.0);
-  let text_y = bounds.y + bounds.height.div(2.0);
-  (text_x, text_y)
-}
-
-fn get_text(shape: &DmnShape, name: &str) -> String {
-  if let Some(label) = &shape.label {
-    if let Some(label_text) = &label.text {
-      return label_text.to_owned();
-    }
-  }
-  name.to_owned()
 }
 
 /// Returns the rotation angle of an arrow.

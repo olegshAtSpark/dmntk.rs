@@ -2331,7 +2331,7 @@ pub struct DmnLabel {
 }
 
 /// Defines RGB color.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct DcColor {
   pub red: u8,
   pub green: u8,
@@ -2339,14 +2339,14 @@ pub struct DcColor {
 }
 
 /// Defines point.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct DcPoint {
   pub x: f64,
   pub y: f64,
 }
 
 /// Defines bounds.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct DcBounds {
   pub x: f64,
   pub y: f64,
@@ -2355,14 +2355,14 @@ pub struct DcBounds {
 }
 
 /// Defines dimensions.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct DcDimension {
   pub width: f64,
   pub height: f64,
 }
 
 /// Defines element kind alignment.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum DcAlignmentKind {
   Start,
   End,
@@ -2370,7 +2370,7 @@ pub enum DcAlignmentKind {
 }
 
 /// Defines known colors.
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum DcKnownColor {
   Maroon = 0x800000,
   Red = 0xFF0000,

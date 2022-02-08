@@ -36,6 +36,7 @@ use dmntk_model::model::*;
 
 const NL: char = '\n';
 const WS: &str = "";
+const AMPLITUDE: f64 = 20.0;
 
 /// Prepares `<svg>` element with specified dimension.
 pub fn svg_begin(indent: usize, dimension: &Option<DcDimension>) -> String {
@@ -56,9 +57,8 @@ pub fn svg_decision(mut indent: usize, shape: &DmnShape, decision: &Decision) ->
   indent += 4;
   let mut svg_content = String::new();
   let text = get_label_text(shape, decision.name());
-  let _text_position = get_text_center_position(&shape.bounds);
   let shape_class = get_shape_shared_style_id(shape);
-  let _label_class = get_shape_label_shared_style_id(shape);
+  let label_class = get_shape_label_shared_style_id(shape);
   svg_content.push_str(&format!(
     r#"{:i$}<rect width="{}" height="{}" x="{}" y="{}" class="{}"/>{}"#,
     WS,
@@ -70,41 +70,94 @@ pub fn svg_decision(mut indent: usize, shape: &DmnShape, decision: &Decision) ->
     NL,
     i = indent
   ));
-
-  // svg_content.push_str(&format!(
-  //   r#"{:i$}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>{}"#,
-  //   WS,
-  //   text_position.0,
-  //   text_position.1,
-  //   label_class,
-  //   text,
-  //   NL,
-  //   i = indent
-  // ));
-
-  //<foreignObject x="20" y="20" width="160" height="160"><div>kuku</div></foreignObject>
-  svg_content.push_str(&format!(
-    r#"{:i$}<foreignObject width="{}" height="{}" x="{}" y="{}"><div style="display:table;height:100%;width:100%;text-align:center;"><span style="display:table-cell;vertical-align:middle;">{}</span></div></foreignObject>{}"#,
-    WS,
-    shape.bounds.width,
-    shape.bounds.height,
-    shape.bounds.x,
-    shape.bounds.y,
-    text,
-    NL,
-    i = indent
-  ));
-
+  svg_content.push_str(&svg_multiline_text(indent, &shape.bounds, &label_class, &text));
   svg_content
+}
+
+/// Prepares business knowledge model shape.
+pub fn svg_business_knowledge_model(mut indent: usize, shape: &DmnShape, business_knowledge: &BusinessKnowledgeModel) -> String {
+  indent += 4;
+  let mut svg_content = String::new();
+  let text = get_label_text(shape, business_knowledge.name());
+  let shape_class = get_shape_shared_style_id(shape);
+  let label_class = get_shape_label_shared_style_id(shape);
+  let (x, y, w, h) = (shape.bounds.x, shape.bounds.y, shape.bounds.width, shape.bounds.height);
+  let points = format!(
+    "{},{} {},{} {},{} {},{} {},{} {},{}",
+    x,
+    y + 15.0,
+    x + 15.0,
+    y,
+    x + w,
+    y,
+    x + w,
+    y + h - 15.0,
+    x + w - 15.0,
+    y + h,
+    x,
+    y + h
+  );
+  svg_content.push_str(&format!(r#"{:i$}<polygon points="{}" class="{}"/>{}"#, WS, points, shape_class, NL, i = indent));
+  svg_content.push_str(&svg_multiline_text(indent, &shape.bounds, &label_class, &text));
+  svg_content
+}
+
+/// Prepares knowledge source shape.
+pub fn svg_knowledge_source(mut indent: usize, shape: &DmnShape, knowledge_source: &KnowledgeSource) -> String {
+  indent += 4;
+  let mut svg_content = String::new();
+  let text = get_label_text(shape, knowledge_source.name());
+  let path = get_path_to_knowledge_source(&shape.bounds);
+  let shape_class = get_shape_shared_style_id(shape);
+  let label_class = get_shape_label_shared_style_id(shape);
+  svg_content.push_str(&format!("<path d=\"{}\" class=\"{}\"/>", path, shape_class));
+  let bounds = DcBounds {
+    height: shape.bounds.height - AMPLITUDE / 2.0,
+    ..shape.bounds
+  };
+  svg_content.push_str(&svg_multiline_text(indent, &bounds, &label_class, &text));
+  svg_content
+}
+
+fn get_path_to_knowledge_source(bounds: &DcBounds) -> String {
+  let period_div_2 = AMPLITUDE / 2.0;
+  let curve_base_height = bounds.y + bounds.height - period_div_2;
+  let width_div_4: f64 = bounds.width / 4.0;
+  let width_div_2: f64 = bounds.width / 2.0;
+
+  let mut path = format!("M {} {}", bounds.x, bounds.y);
+  path = format!("{} L {} {}", path, bounds.x + bounds.width, bounds.y);
+  path = format!("{} L {} {}", path, bounds.x + bounds.width, curve_base_height);
+  path = format!(
+    "{} C {},{} {},{} {},{}",
+    path,
+    bounds.x + bounds.width,
+    curve_base_height,
+    bounds.x + bounds.width - width_div_4,
+    curve_base_height - AMPLITUDE,
+    bounds.x + bounds.width - width_div_2,
+    curve_base_height
+  );
+  path = format!(
+    "{} C {},{} {},{} {},{}",
+    path,
+    bounds.x + bounds.width - width_div_2,
+    curve_base_height,
+    bounds.x + width_div_4,
+    curve_base_height + AMPLITUDE,
+    bounds.x,
+    curve_base_height
+  );
+  path = format!("{} L {} {} Z", path, bounds.x, bounds.y);
+  path
 }
 
 /// Prepares input data shape.
 pub fn svg_input_data(mut indent: usize, shape: &DmnShape, input_data: &InputData) -> String {
   indent += 4;
   let mut svg_content = String::new();
-  let rxy = shape.bounds.height / 2.0;
+  let radius = shape.bounds.height / 2.0;
   let text = get_label_text(shape, input_data.name());
-  let text_position = get_text_center_position(&shape.bounds);
   let shape_class = get_shape_shared_style_id(shape);
   let label_class = get_shape_label_shared_style_id(shape);
   svg_content.push_str(&format!(
@@ -114,30 +167,43 @@ pub fn svg_input_data(mut indent: usize, shape: &DmnShape, input_data: &InputDat
     shape.bounds.height,
     shape.bounds.x,
     shape.bounds.y,
-    rxy,
-    rxy,
+    radius,
+    radius,
     shape_class,
     NL,
     i = indent
   ));
-  svg_content.push_str(&format!(
-    r#"{:i$}<text x="{}" y="{}" dominant-baseline="middle" text-anchor="middle" class="{}" fill="black" stroke="none">{}</text>{}"#,
+  svg_content.push_str(&svg_multiline_text(indent, &shape.bounds, &label_class, &text));
+  svg_content
+}
+
+/// Prepares SVG object containing multiline text.
+///
+/// Text given in argument `text` is placed in the following construct:
+///
+/// ```text
+/// <foreignObject>
+///   <div>
+///     <span>...text...</span>
+///   </div>
+/// </foreignObject>
+/// ```
+/// The `div` and `span` elements have such styles set, that the content is displayed as a table cell.
+/// Text in table cell is centered horizontally and middle aligned vertically.
+///
+pub fn svg_multiline_text(indent: usize, bounds: &DcBounds, label_class: &str, text: &str) -> String {
+  format!(
+    r#"{:i$}<foreignObject x="{}" y="{}" width="{}" height="{}"><div style="display:table;height:100%;width:100%;text-align:center;"><span style="display:table-cell;vertical-align:middle;" class="{}">{}</span></div></foreignObject>{}"#,
     WS,
-    text_position.0,
-    text_position.1,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
     label_class,
     text,
     NL,
     i = indent
-  ));
-  svg_content
-}
-
-/// Calculates the position of the centered text inside a shape.
-fn get_text_center_position(bounds: &DcBounds) -> (f64, f64) {
-  let x = bounds.x + (bounds.width / 2.0);
-  let y = bounds.y + (bounds.height / 2.0);
-  (x, y)
+  )
 }
 
 /// Returns the text of the label associated with the shape,
