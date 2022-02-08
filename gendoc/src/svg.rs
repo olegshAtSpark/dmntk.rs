@@ -195,9 +195,9 @@ pub fn svg_multiline_text(indent: usize, bounds: &DcBounds, label_class: &str, t
   format!(
     r#"{:i$}<foreignObject x="{}" y="{}" width="{}" height="{}"><div style="display:table;height:100%;width:100%;text-align:center;"><span style="display:table-cell;vertical-align:middle;" class="{}">{}</span></div></foreignObject>{}"#,
     WS,
-    bounds.x,
+    bounds.x + 4.0,
     bounds.y,
-    bounds.width,
+    bounds.width - 8.0,
     bounds.height,
     label_class,
     text,

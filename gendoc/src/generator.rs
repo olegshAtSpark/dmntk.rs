@@ -70,7 +70,7 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
             }
           }
           DmnDiagramElement::DmnEdge(edge) => {
-            svg_content = format!("{}\n{}", svg_content, svg_edge(edge));
+            svg_content = format!("{}\n{}", svg_content, svg_edge_solid_arrow(&edge.way_points));
           }
         }
       }
@@ -81,28 +81,31 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
   html.replace(SVG_CONTENT, &svg_content)
 }
 
-/// Generate svg element for edge.
-fn svg_edge(edge: &DmnEdge) -> String {
-  let points: String = edge.way_points.iter().map(|w| format!("{},{} ", w.x, w.y)).collect();
-  let start_point = &edge.way_points[edge.way_points.len() - 2];
-  let end_point = &edge.way_points[edge.way_points.len() - 1];
-
-  let points_for_arrowhead = format!(
+/// Prepare solid edge line with black filled arrow.  
+fn svg_edge_solid_arrow(way_points: &[DcPoint]) -> String {
+  //TODO what happens when way_points have less than 2 elements?
+  let mut svg_content = String::new();
+  // prepare line
+  let points = way_points.iter().map(|w| format!("{},{} ", w.x, w.y)).collect::<String>();
+  svg_content.push_str(&format!(r#"<polyline points="{}"/>"#, points));
+  // prepare arrow
+  let start_point = &way_points[way_points.len() - 2]; // starting point of the last segment
+  let end_point = &way_points[way_points.len() - 1]; // ending point of the last segment
+  let points_ending = format!(
     "{},{} {},{} {},{}",
-    end_point.x + 1.0,
+    end_point.x,
     end_point.y,
-    end_point.x + 10.0,
-    end_point.y - 3.0,
-    end_point.x + 10.0,
-    end_point.y + 3.0
+    end_point.x + 12.0,
+    end_point.y - 4.0,
+    end_point.x + 12.0,
+    end_point.y + 4.0
   );
   let angle = get_angle(start_point, end_point);
-  let mut edge = format!("<polyline points=\"{}\"/>", points);
-  edge = format!(
-    "{}<polygon points=\"{}\" transform=\"rotate({},{},{})\" style=\"fill:rgb(0,0,0);\" />",
-    edge, points_for_arrowhead, angle, end_point.x, end_point.y
-  );
-  edge
+  svg_content.push_str(&format!(
+    r#"<polygon points="{}" transform="rotate({},{},{})" fill="black" stroke="none"/>"#,
+    points_ending, angle, end_point.x, end_point.y
+  ));
+  svg_content
 }
 
 fn svg_styles(styles: &[DmnStyle]) -> String {

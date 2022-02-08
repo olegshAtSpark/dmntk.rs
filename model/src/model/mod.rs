@@ -2249,7 +2249,7 @@ pub struct DmnEdge {
   /// the connected line segments of the edge. At least two (2) waypoints MUST be specified.
   pub way_points: Vec<DcPoint>,
   /// A reference to a [InformationRequirement], [KnowledgeRequirement],
-  /// [AuthorityRequirement] or an [Association] MUST be specified.
+  /// [AuthorityRequirement] or an [Association], MUST be specified.
   pub dmn_element_ref: Option<String>,
   /// The actual [DmnDiagramElement] this [DmnEdge] is connecting from.
   /// MUST be specified when the [DmnEdge] has a source.
