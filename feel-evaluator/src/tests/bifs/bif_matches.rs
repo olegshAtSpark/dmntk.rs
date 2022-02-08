@@ -115,3 +115,13 @@ fn _0013() {
 fn _0014() {
   te_null(false, &scope!(), r#"matches(input: "foobar", p: "^fo*b")"#, r#"parameter 'pattern' not found"#);
 }
+
+#[test]
+fn _0015() {
+  te_null(false, &scope!(), r#"matches(input: 10, pattern: "^fo*b")"#, r#"matches"#);
+}
+
+#[test]
+fn _0016() {
+  te_null(false, &scope!(), r#"matches(input: "foobar", pattern: true)"#, r#"matches"#);
+}
