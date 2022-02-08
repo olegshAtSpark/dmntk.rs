@@ -39,22 +39,22 @@ fn _0001() {
 }
 
 #[test]
-fn _00011() {
+fn _0002() {
   te_number(false, &scope!(), r#"day of year(date: date(2019,9,17))"#, 260, 0);
 }
 
 #[test]
-fn _0002() {
+fn _0003() {
   te_number(false, &scope!(), r#"day of year(date and time("2019-09-17T00:00:00"))"#, 260, 0);
 }
 
 #[test]
-fn _00021() {
+fn _0004() {
   te_number(false, &scope!(), r#"day of year(date: date and time("2019-09-17T00:00:00"))"#, 260, 0);
 }
 
 #[test]
-fn _00022() {
+fn _0005() {
   te_null(
     false,
     &scope!(),
@@ -64,12 +64,12 @@ fn _00022() {
 }
 
 #[test]
-fn _00023() {
+fn _0006() {
   te_null(false, &scope!(), r#"day of year(date: date(999999999,9,17))"#, "[day of year] no day of year");
 }
 
 #[test]
-fn _00011234() {
+fn _0007() {
   te_null(
     false,
     &scope!(),

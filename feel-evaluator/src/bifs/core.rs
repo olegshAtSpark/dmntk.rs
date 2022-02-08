@@ -38,7 +38,7 @@ use dmntk_feel::values::Value::YearsAndMonthsDuration;
 use dmntk_feel::values::{Value, Values, VALUE_FALSE, VALUE_TRUE};
 use dmntk_feel::{
   value_null, value_number, value_string, DayOfWeek, DayOfYear, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime,
-  FeelYearsAndMonthsDuration, Name, Scope, ToFeelString,
+  FeelYearsAndMonthsDuration, Name, Scope, ToFeelString, WeekOfYear,
 };
 use regex::Regex;
 use std::borrow::Borrow;
@@ -1498,6 +1498,22 @@ pub fn upper_case(input_string_value: &Value) -> Value {
     Value::String(input_string.to_uppercase().trim().to_string())
   } else {
     invalid_argument_type!("upper case", "string", input_string_value.type_of())
+  }
+}
+
+/// Returns the ISO week number of the year.
+pub fn week_of_year(value: &Value) -> Value {
+  fn iso_week_of_year(opt_week_of_year: Option<WeekOfYear>) -> Value {
+    if let Some(week_of_year) = opt_week_of_year {
+      value_number!(week_of_year as i128)
+    } else {
+      value_null!("[week of year] no week of year")
+    }
+  }
+  match value {
+    Value::Date(date) => iso_week_of_year(date.week_of_year()),
+    Value::DateTime(date_time) => iso_week_of_year(date_time.week_of_year()),
+    _ => invalid_argument_type!("week of year", "date, date and time", value.type_of()),
   }
 }
 

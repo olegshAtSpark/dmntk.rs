@@ -36,7 +36,7 @@ use super::errors::{err_invalid_date, err_invalid_date_literal};
 use super::ym_duration::FeelYearsAndMonthsDuration;
 use super::{Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
 use crate::temporal::DayOfWeek;
-use crate::{DayOfYear, FeelNumber};
+use crate::{DayOfYear, FeelNumber, WeekOfYear};
 use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, Weekday};
 use dmntk_common::DmntkError;
 use std::cmp::Ordering;
@@ -199,6 +199,14 @@ impl FeelDate {
   pub fn day_of_year(&self) -> Option<DayOfYear> {
     if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
       Some(naive_date.ordinal() as u16)
+    } else {
+      None
+    }
+  }
+  ///
+  pub fn week_of_year(&self) -> Option<WeekOfYear> {
+    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
+      Some(naive_date.iso_week().week() as u8)
     } else {
       None
     }

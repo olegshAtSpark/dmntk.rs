@@ -818,8 +818,12 @@ fn bif_upper_case(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_week_of_year(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_week_of_year")
+fn bif_week_of_year(parameters: &NamedParameters) -> Value {
+  if let Some((value, _)) = get_param(parameters, &NAME_DATE) {
+    core::week_of_year(value)
+  } else {
+    parameter_not_found!(&NAME_DATE)
+  }
 }
 
 fn bif_years_and_months_duration(parameters: &NamedParameters) -> Value {

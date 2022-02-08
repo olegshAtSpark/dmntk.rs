@@ -628,8 +628,11 @@ fn bif_upper_case(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_week_of_year(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'week_of_year'")
+fn bif_week_of_year(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    1 => core::week_of_year(&parameters[0]),
+    n => invalid_number_of_parameters!(1, n),
+  }
 }
 
 fn bif_years_and_months_duration(parameters: &[Value]) -> Value {

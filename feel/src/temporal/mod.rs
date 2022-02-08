@@ -68,6 +68,8 @@ pub type Day = u32;
 pub type DayOfWeek = (String, u8);
 /// Type alias for ordinal number of a day in year.
 pub type DayOfYear = u16;
+/// Type alias for ordinal number of a week in year.
+pub type WeekOfYear = u8;
 
 lazy_static! {
   /// Regular expression pattern for parsing time zone.

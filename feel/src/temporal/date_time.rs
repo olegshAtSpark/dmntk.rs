@@ -39,7 +39,7 @@ use super::zone::FeelZone;
 use crate::temporal::{
   date_time_offset_dt, feel_time_offset, feel_time_zone, get_local_offset_dt, get_zone_offset_dt, is_valid_time, Day, Month, Year, RE_DATE_AND_TIME,
 };
-use crate::{subtract, DayOfWeek, DayOfYear, FeelYearsAndMonthsDuration};
+use crate::{subtract, DayOfWeek, DayOfYear, FeelYearsAndMonthsDuration, WeekOfYear};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 use std::cmp::Ordering;
@@ -218,6 +218,10 @@ impl FeelDateTime {
   ///
   pub fn day_of_year(&self) -> Option<DayOfYear> {
     self.0.day_of_year()
+  }
+  ///
+  pub fn week_of_year(&self) -> Option<WeekOfYear> {
+    self.0.week_of_year()
   }
   ///
   pub fn hour(&self) -> u8 {

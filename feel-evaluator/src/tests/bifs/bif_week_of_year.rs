@@ -30,46 +30,50 @@
  * limitations under the License.
  */
 
-//! FEEL definitions.
+use super::super::*;
+use dmntk_feel::scope;
 
-extern crate ascii_tree;
-extern crate chrono;
-extern crate chrono_tz;
-#[macro_use]
-extern crate derivative;
-extern crate dmntk_common;
-extern crate dmntk_feel_number;
-#[macro_use]
-extern crate lazy_static;
-extern crate regex;
+#[test]
+fn _0001() {
+  te_number(false, &scope!(), r#"week of year(date(2019,9,17))"#, 38, 0);
+}
 
-pub use ast::{AstNode, OptAstNode};
-pub use dmntk_feel_number::FeelNumber;
-pub use evaluator::Evaluator;
-pub use function::FunctionBody;
-pub use names::Name;
-pub use qualified_names::QualifiedName;
-pub use scope::Scope;
-pub use strings::ToFeelString;
-pub use temporal::date::FeelDate;
-pub use temporal::date_time::FeelDateTime;
-pub use temporal::dt_duration::FeelDaysAndTimeDuration;
-pub use temporal::time::FeelTime;
-pub use temporal::ym_duration::FeelYearsAndMonthsDuration;
-pub use temporal::zone::FeelZone;
-pub use temporal::{subtract, Day, DayOfWeek, DayOfYear, Month, WeekOfYear, Year};
-pub use types::{is_built_in_type_name, FeelType};
+#[test]
+fn _0002() {
+  te_number(false, &scope!(), r#"week of year(date and time("2019-09-17T00:00:00"))"#, 38, 0);
+}
 
-mod ast;
-mod ast_tree;
-pub mod bif;
-pub mod context;
-mod evaluator;
-mod function;
-mod names;
-mod qualified_names;
-mod scope;
-mod strings;
-mod temporal;
-mod types;
-pub mod values;
+#[test]
+fn _0003() {
+  te_number(false, &scope!(), r#"week of year(date: date(2019,9,17))"#, 38, 0);
+}
+
+#[test]
+fn _0004() {
+  te_number(false, &scope!(), r#"week of year(date: date and time("2019-09-17T00:00:00"))"#, 38, 0);
+}
+
+#[test]
+fn _0005() {
+  te_null(
+    false,
+    &scope!(),
+    r#"week of year(date: date(999999999,9,17))"#,
+    "[week of year] no week of year",
+  );
+}
+
+#[test]
+fn _0006() {
+  te_null(false, &scope!(), r#"week of year(d: date(2021,9,17))"#, "parameter 'date' not found");
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"week of year(date: 10)"#,
+    "[core::week of year] invalid argument type, expected date, date and time, actual type is number",
+  );
+}

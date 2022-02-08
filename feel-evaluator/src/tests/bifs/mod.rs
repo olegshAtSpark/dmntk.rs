@@ -90,4 +90,5 @@ mod bif_sum;
 mod bif_time;
 mod bif_union;
 mod bif_upper_case;
+mod bif_week_of_year;
 mod bif_ym_duration;
