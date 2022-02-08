@@ -36,7 +36,10 @@ use crate::evaluate_equals;
 use dmntk_feel::context::FeelContext;
 use dmntk_feel::values::Value::YearsAndMonthsDuration;
 use dmntk_feel::values::{Value, Values, VALUE_FALSE, VALUE_TRUE};
-use dmntk_feel::{value_null, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime, FeelYearsAndMonthsDuration, Name, Scope, ToFeelString};
+use dmntk_feel::{
+  value_null, value_number, value_string, DayOfWeek, DayOfYear, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime,
+  FeelYearsAndMonthsDuration, Name, Scope, ToFeelString,
+};
 use regex::Regex;
 use std::borrow::Borrow;
 use std::cmp::Ordering;
@@ -481,6 +484,39 @@ pub fn date_and_time_2(date_value: &Value, time_value: &Value) -> Value {
       invalid_argument_type!("date and time", "time", time_value.type_of())
     }
     _ => invalid_argument_type!("date and time", "date and time or date", date_value.type_of()),
+  }
+}
+
+/// Returns the day of the week according to the Gregorian calendar enumeration:
+/// `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`.
+pub fn day_of_week(value: &Value) -> Value {
+  fn gregorian_day(opt_day_of_week: Option<DayOfWeek>) -> Value {
+    if let Some(day_of_week) = opt_day_of_week {
+      value_string!(day_of_week.0)
+    } else {
+      value_null!("[day of week] no weekday")
+    }
+  }
+  match value {
+    Value::Date(date) => gregorian_day(date.day_of_week()),
+    Value::DateTime(date_time) => gregorian_day(date_time.day_of_week()),
+    _ => invalid_argument_type!("day of week", "date, date and time", value.type_of()),
+  }
+}
+
+/// Returns the day of the year.
+pub fn day_of_year(value: &Value) -> Value {
+  fn gregorian_day_of_year(opt_day_of_year: Option<DayOfYear>) -> Value {
+    if let Some(day_of_year) = opt_day_of_year {
+      value_number!(day_of_year as i128)
+    } else {
+      value_null!("[day of year] no day of year")
+    }
+  }
+  match value {
+    Value::Date(date) => gregorian_day_of_year(date.day_of_year()),
+    Value::DateTime(date_time) => gregorian_day_of_year(date_time.day_of_year()),
+    _ => invalid_argument_type!("day of year", "date, date and time", value.type_of()),
   }
 }
 

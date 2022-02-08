@@ -30,64 +30,50 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_after;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_coincides;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_day_of_week;
-mod bif_day_of_year;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_duration;
-mod bif_ends_with;
-mod bif_even;
-mod bif_exp;
-mod bif_flatten;
-mod bif_floor;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_index_of;
-mod bif_insert_before;
-mod bif_list_contains;
-mod bif_log;
-mod bif_lower_case;
-mod bif_matches;
-mod bif_max;
-mod bif_mean;
-mod bif_median;
-mod bif_min;
-mod bif_mode;
-mod bif_modulo;
-mod bif_not;
-mod bif_number;
-mod bif_odd;
-mod bif_remove;
-mod bif_replace;
-mod bif_reverse;
-mod bif_sort;
-mod bif_split;
-mod bif_sqrt;
-mod bif_starts_with;
-mod bif_stddev;
-mod bif_string;
-mod bif_string_length;
-mod bif_sublist;
-mod bif_substring;
-mod bif_substring_after;
-mod bif_substring_before;
-mod bif_sum;
-mod bif_time;
-mod bif_union;
-mod bif_upper_case;
-mod bif_ym_duration;
+#[test]
+fn _0001() {
+  te_number(false, &scope!(), r#"day of year(date(2019,9,17))"#, 260, 0);
+}
+
+#[test]
+fn _00011() {
+  te_number(false, &scope!(), r#"day of year(date: date(2019,9,17))"#, 260, 0);
+}
+
+#[test]
+fn _0002() {
+  te_number(false, &scope!(), r#"day of year(date and time("2019-09-17T00:00:00"))"#, 260, 0);
+}
+
+#[test]
+fn _00021() {
+  te_number(false, &scope!(), r#"day of year(date: date and time("2019-09-17T00:00:00"))"#, 260, 0);
+}
+
+#[test]
+fn _00022() {
+  te_null(
+    false,
+    &scope!(),
+    r#"day of year(d: date and time("2019-09-17T00:00:00"))"#,
+    "parameter 'date' not found",
+  );
+}
+
+#[test]
+fn _00023() {
+  te_null(false, &scope!(), r#"day of year(date: date(999999999,9,17))"#, "[day of year] no day of year");
+}
+
+#[test]
+fn _00011234() {
+  te_null(
+    false,
+    &scope!(),
+    r#"day of year(10)"#,
+    "[core::day of year] invalid argument type, expected date, date and time, actual type is number",
+  );
+}

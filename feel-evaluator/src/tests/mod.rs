@@ -31,7 +31,7 @@
  */
 
 use dmntk_feel::values::Value;
-use dmntk_feel::{AstNode, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime, FeelYearsAndMonthsDuration, Scope};
+use dmntk_feel::{AstNode, Day, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime, FeelYearsAndMonthsDuration, Month, Scope, Year};
 
 use crate::builders::build_evaluator;
 
@@ -83,26 +83,26 @@ pub fn te_bool(trace: bool, scope: &Scope, s: &str, expected: bool) {
 }
 
 /// Utility function that tests evaluation of date value.
-pub fn te_date(trace: bool, scope: &Scope, s: &str, year: i32, month: u8, day: u8) {
+pub fn te_date(trace: bool, scope: &Scope, s: &str, year: Year, month: Month, day: Day) {
   textual_expression(trace, scope, s, Value::Date(FeelDate::new(year, month, day)));
 }
 
 /// Utility function that tests evaluation of local date and time value.
-pub fn te_date_time_local(trace: bool, scope: &Scope, s: &str, date: (i32, u8, u8), time: (u8, u8, u8, u64)) {
+pub fn te_date_time_local(trace: bool, scope: &Scope, s: &str, date: (Year, Month, Day), time: (u8, u8, u8, u64)) {
   let (year, month, day) = date;
   let (hour, min, sec, nano) = time;
   textual_expression(trace, scope, s, Value::DateTime(FeelDateTime::local(year, month, day, hour, min, sec, nano)));
 }
 
 /// Utility function that tests evaluation of UTC date and time value.
-pub fn te_date_time_utc(trace: bool, scope: &Scope, s: &str, date: (i32, u8, u8), time: (u8, u8, u8, u64)) {
+pub fn te_date_time_utc(trace: bool, scope: &Scope, s: &str, date: (Year, Month, Day), time: (u8, u8, u8, u64)) {
   let (year, month, day) = date;
   let (hour, min, sec, nano) = time;
   textual_expression(trace, scope, s, Value::DateTime(FeelDateTime::utc(year, month, day, hour, min, sec, nano)));
 }
 
 /// Utility function that tests evaluation of date and time value with explicit offset.
-pub fn te_date_time_offset(trace: bool, scope: &Scope, s: &str, date: (i32, u8, u8), time: (u8, u8, u8, u64), offset: i32) {
+pub fn te_date_time_offset(trace: bool, scope: &Scope, s: &str, date: (Year, Month, Day), time: (u8, u8, u8, u64), offset: i32) {
   textual_expression(trace, scope, s, Value::DateTime(FeelDateTime::offset(date, time, offset)));
 }
 

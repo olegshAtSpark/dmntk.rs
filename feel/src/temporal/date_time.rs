@@ -36,8 +36,10 @@ use super::date::{is_valid_date, FeelDate};
 use super::errors::err_invalid_date_time_literal;
 use super::time::FeelTime;
 use super::zone::FeelZone;
-use crate::temporal::{date_time_offset_dt, feel_time_offset, feel_time_zone, get_local_offset_dt, get_zone_offset_dt, is_valid_time, RE_DATE_AND_TIME};
-use crate::{subtract, FeelYearsAndMonthsDuration};
+use crate::temporal::{
+  date_time_offset_dt, feel_time_offset, feel_time_zone, get_local_offset_dt, get_zone_offset_dt, is_valid_time, Day, Month, Year, RE_DATE_AND_TIME,
+};
+use crate::{subtract, DayOfWeek, DayOfYear, FeelYearsAndMonthsDuration};
 use chrono::{DateTime, FixedOffset};
 use dmntk_common::{DmntkError, Result};
 use std::cmp::Ordering;
@@ -59,14 +61,14 @@ impl TryFrom<&str> for FeelDateTime {
   fn try_from(value: &str) -> Result<Self, Self::Error> {
     if let Some(captures) = RE_DATE_AND_TIME.captures(value) {
       if let Some(year_match) = captures.name("year") {
-        if let Ok(mut year) = year_match.as_str().parse::<i32>() {
+        if let Ok(mut year) = year_match.as_str().parse::<Year>() {
           if captures.name("sign").is_some() {
             year = -year;
           }
           if let Some(month_match) = captures.name("month") {
-            if let Ok(month) = month_match.as_str().parse::<u8>() {
+            if let Ok(month) = month_match.as_str().parse::<Month>() {
               if let Some(day_match) = captures.name("day") {
-                if let Ok(day) = day_match.as_str().parse::<u8>() {
+                if let Ok(day) = day_match.as_str().parse::<Day>() {
                   if let Some(hour_match) = captures.name("hours") {
                     if let Ok(hour) = hour_match.as_str().parse::<u8>() {
                       if let Some(min_match) = captures.name("minutes") {
@@ -166,17 +168,17 @@ impl FeelDateTime {
   }
 
   /// Creates UTC date and time from specified date and time values.
-  pub fn utc(year: i32, month: u8, day: u8, hour: u8, minute: u8, second: u8, nanosecond: u64) -> Self {
+  pub fn utc(year: Year, month: Month, day: Day, hour: u8, minute: u8, second: u8, nanosecond: u64) -> Self {
     Self(FeelDate::new(year, month, day), FeelTime::utc(hour, minute, second, nanosecond))
   }
 
   /// Creates local date and time from specified date and time values.
-  pub fn local(year: i32, month: u8, day: u8, hour: u8, min: u8, sec: u8, nanos: u64) -> Self {
+  pub fn local(year: Year, month: Month, day: Day, hour: u8, min: u8, sec: u8, nanos: u64) -> Self {
     Self(FeelDate::new(year, month, day), FeelTime::local(hour, min, sec, nanos))
   }
 
   /// Creates  date and time from specified date, time and offset values.
-  pub fn offset(date: (i32, u8, u8), time: (u8, u8, u8, u64), offset: i32) -> Self {
+  pub fn offset(date: (Year, Month, Day), time: (u8, u8, u8, u64), offset: i32) -> Self {
     Self(FeelDate::new(date.0, date.1, date.2), FeelTime::offset(time.0, time.1, time.2, time.3, offset))
   }
 
@@ -198,22 +200,26 @@ impl FeelDateTime {
     self.0.ym_duration(other)
   }
 
-  pub fn year(&self) -> i32 {
+  pub fn year(&self) -> Year {
     self.0.year()
   }
 
-  pub fn month(&self) -> u8 {
+  pub fn month(&self) -> Month {
     self.0.month()
   }
 
-  pub fn day(&self) -> u8 {
+  pub fn day(&self) -> Day {
     self.0.day()
   }
-
-  pub fn weekday(&self) -> Option<u32> {
-    self.0.weekday()
+  ///
+  pub fn day_of_week(&self) -> Option<DayOfWeek> {
+    self.0.day_of_week()
   }
-
+  ///
+  pub fn day_of_year(&self) -> Option<DayOfYear> {
+    self.0.day_of_year()
+  }
+  ///
   pub fn hour(&self) -> u8 {
     self.1 .0
   }

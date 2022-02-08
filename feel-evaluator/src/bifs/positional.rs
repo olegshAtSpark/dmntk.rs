@@ -224,12 +224,18 @@ fn bif_date_and_time(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_day_of_week(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'day_of_week'")
+fn bif_day_of_week(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    1 => core::day_of_week(&parameters[0]),
+    n => invalid_number_of_parameters!(1, n),
+  }
 }
 
-fn bif_day_of_year(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'day_of_year'")
+fn bif_day_of_year(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    1 => core::day_of_year(&parameters[0]),
+    n => invalid_number_of_parameters!(1, n),
+  }
 }
 
 fn bif_decimal(parameters: &[Value]) -> Value {

@@ -89,6 +89,16 @@ macro_rules! value_number {
   };
 }
 
+#[macro_export]
+macro_rules! value_string {
+  ($s:literal) => {{
+    Value::String($s.to_string())
+  }};
+  ($s:expr) => {{
+    Value::String($s)
+  }};
+}
+
 /// Utility constant for value `true `of type `Boolean`.
 pub const VALUE_TRUE: Value = Value::Boolean(true);
 

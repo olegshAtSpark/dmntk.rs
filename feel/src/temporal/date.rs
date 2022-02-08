@@ -34,9 +34,10 @@
 
 use super::errors::{err_invalid_date, err_invalid_date_literal};
 use super::ym_duration::FeelYearsAndMonthsDuration;
-use super::{weekday, Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
-use crate::FeelNumber;
-use chrono::{DateTime, Datelike, FixedOffset, Local};
+use super::{Day, FeelDateTime, FeelTime, Month, Year, RE_DATE};
+use crate::temporal::DayOfWeek;
+use crate::{DayOfYear, FeelNumber};
+use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, Weekday};
 use dmntk_common::DmntkError;
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
@@ -87,7 +88,7 @@ impl TryFrom<(FeelNumber, FeelNumber, FeelNumber)> for FeelDate {
   fn try_from(value: (FeelNumber, FeelNumber, FeelNumber)) -> Result<Self, Self::Error> {
     let year = value.0.into();
     if value.1 > FeelNumber::zero() && value.2 > FeelNumber::zero() {
-      let month = value.1.into();
+      let month: u32 = value.1.into();
       let day = value.2.into();
       if is_valid_date(year, month, day) {
         return Ok(Self(year, month, day));
@@ -179,8 +180,28 @@ impl FeelDate {
     self.2
   }
   ///
-  pub fn weekday(&self) -> Option<u32> {
-    weekday(&FeelDateTime(self.clone(), FeelTime::utc(0, 0, 0, 0)))
+  pub fn day_of_week(&self) -> Option<DayOfWeek> {
+    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
+      Some(match naive_date.weekday() {
+        Weekday::Mon => ("Monday".to_string(), 1_u8),
+        Weekday::Tue => ("Tuesday".to_string(), 2_u8),
+        Weekday::Wed => ("Wednesday".to_string(), 3_u8),
+        Weekday::Thu => ("Thursday".to_string(), 4_u8),
+        Weekday::Fri => ("Friday".to_string(), 5_u8),
+        Weekday::Sat => ("Saturday".to_string(), 6_u8),
+        Weekday::Sun => ("Sunday".to_string(), 7_u8),
+      })
+    } else {
+      None
+    }
+  }
+  ///
+  pub fn day_of_year(&self) -> Option<DayOfYear> {
+    if let Some(naive_date) = NaiveDate::from_ymd_opt(self.0, self.1, self.2) {
+      Some(naive_date.ordinal() as u16)
+    } else {
+      None
+    }
   }
   ///
   pub fn as_tuple(&self) -> (i32, u32, u32) {
@@ -204,7 +225,7 @@ pub fn is_leap_year(year: Year) -> bool {
 }
 
 ///
-pub fn last_day_of_month(year: Year, month: Month) -> Option<u8> {
+pub fn last_day_of_month(year: Year, month: Month) -> Option<Day> {
   match month {
     1 | 3 | 5 | 7 | 8 | 10 | 12 => Some(31),
     4 | 6 | 9 | 11 => Some(30),

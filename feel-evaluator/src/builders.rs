@@ -1379,8 +1379,8 @@ fn build_path(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
             "month" => Value::Number(date.month().into()),
             "day" => Value::Number(date.day().into()),
             "weekday" => {
-              if let Some(day_num) = date.weekday() {
-                Value::Number(day_num.into())
+              if let Some(day_of_week) = date.day_of_week() {
+                Value::Number(day_of_week.1.into())
               } else {
                 value_null!("could not retrieve weekday for date")
               }
@@ -1394,8 +1394,8 @@ fn build_path(lhs: &AstNode, rhs: &AstNode) -> Result<Evaluator> {
             "month" => Value::Number(date_time.month().into()),
             "day" => Value::Number(date_time.day().into()),
             "weekday" => {
-              if let Some(day_num) = date_time.weekday() {
-                Value::Number(day_num.into())
+              if let Some(day_of_week) = date_time.day_of_week() {
+                Value::Number(day_of_week.1.into())
               } else {
                 value_null!("could not retrieve weekday for date and time")
               }

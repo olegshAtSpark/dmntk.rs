@@ -59,11 +59,15 @@ const ZONE_PATTERN: &str = r#"@(?P<zone>[a-zA-Z_/]+)"#;
 const OFFSET_PATTERN: &str = r#"(?P<offSign>[+-])(?P<offHours>[0-9]{2}):(?P<offMinutes>[0-9]{2})(:(?P<offSeconds>[0-9]{2}))?"#;
 
 /// Type alias for year.
-type Year = i32;
+pub type Year = i32;
 /// Type alias for month.
-type Month = u8;
+pub type Month = u32;
 /// Type alias for day.
-type Day = u8;
+pub type Day = u32;
+/// Type alias for weekday.
+pub type DayOfWeek = (String, u8);
+/// Type alias for ordinal number of a day in year.
+pub type DayOfYear = u16;
 
 lazy_static! {
   /// Regular expression pattern for parsing time zone.
@@ -98,23 +102,6 @@ pub fn subtract(me: &FeelDateTime, other: &FeelDateTime) -> Option<i64> {
     let other_date_opt = date_time_offset_dt(other_date_tuple, other_time_tuple, other_offset);
     if let Some((me_date, other_date)) = me_date_opt.zip(other_date_opt) {
       return me_date.sub(other_date).num_nanoseconds();
-    }
-  }
-  None
-}
-
-fn weekday(me: &FeelDateTime) -> Option<u32> {
-  let me_date_tuple = me.0.as_tuple();
-  let me_time_tuple = ((me.1).0 as u32, (me.1).1 as u32, (me.1).2 as u32, (me.1).3 as u32);
-  let me_offset_opt = match &(me.1).4 {
-    FeelZone::Utc => Some(0),
-    FeelZone::Local => get_local_offset_dt(me_date_tuple, me_time_tuple),
-    FeelZone::Offset(offset) => Some(*offset),
-    FeelZone::Zone(zone_name) => get_zone_offset_dt(zone_name, me_date_tuple, me_time_tuple),
-  };
-  if let Some(me_offset) = me_offset_opt {
-    if let Some(me_date) = date_time_offset_dt(me_date_tuple, me_time_tuple, me_offset) {
-      return Some(me_date.weekday().number_from_monday());
     }
   }
   None
@@ -275,7 +262,7 @@ fn is_valid_time(hour: u8, minute: u8, second: u8) -> bool {
 
 #[cfg(test)]
 mod tests {
-  use super::{get_local_offset_dt, get_zone_offset_dt};
+  use super::*;
   use crate::temporal::nanos_to_string;
   use crate::FeelDate;
   use std::str::FromStr;
@@ -283,43 +270,14 @@ mod tests {
   const SECONDS_IN_HOUR: i32 = 3_600;
   const SECONDS_IN_MIN: i32 = 60;
 
-  fn eq_date(year: i32, month: u8, day: u8, s: &str) {
+  fn eq_date(year: Year, month: Month, day: Day, s: &str) {
     assert_eq!(Ok(FeelDate::new(year, month, day)), FeelDate::from_str(s));
   }
-
-  // fn eq_date_time_loc(date: (i32, u8, u8), time: (u8, u8, u8), s: &str) {
-  //   let feel_date = FeelDate::new(date.0, date.1, date.2);
-  //   let feel_time = FeelTime(time.0, time.1, time.2, 0, FeelZone::Local);
-  //   let expected = FeelDateTime(feel_date, feel_time);
-  //   let actual = FeelDateTime::try_from(s).expect("should not fail");
-  //   assert_eq!(Some(true), expected.equal(&actual));
-  // }
-  //
-  // fn eq_date_time_utc(date: (i32, u8, u8), time: (u8, u8, u8), s: &str) {
-  //   let feel_date = FeelDate::new(date.0, date.1, date.2);
-  //   let feel_time = FeelTime(time.0, time.1, time.2, 0, FeelZone::Utc);
-  //   let expected = FeelDateTime(feel_date, feel_time);
-  //   let actual = FeelDateTime::try_from(s).expect("should not fail");
-  //   assert_eq!(Some(true), expected.equal(&actual));
-  // }
 
   #[test]
   fn test_parse_date() {
     eq_date(2020, 9, 28, "2020-09-28");
   }
-
-  // #[test]
-  // fn test_parse_date_time() {
-  //   eq_date_time_loc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09z");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09Z");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T16:37:09@Etc/UTC");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T18:37:09@Africa/Johannesburg");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T17:37:09@Europe/London");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T09:37:09@America/Vancouver");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T12:37:09@America/New_York");
-  //   eq_date_time_utc((2020, 9, 28), (16, 37, 9), "2020-09-28T18:37:09@Europe/Warsaw");
-  // }
 
   #[test]
   fn test_get_local_offset_dt() {
