@@ -52,7 +52,7 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
     for diagram in &dmndi.diagrams {
       let mut svg_content = String::new();
       // prepare the name of the diagram
-      svg_content.push_str(&format!(r#"<section>"#));
+      svg_content.push_str(r#"<section>"#);
       svg_content.push_str(&format!(r#"<h2>{}</h2>"#, diagram.name));
       // prepare diagram graphics
       svg_content.push_str(&svg_begin(indent, &diagram.size));
@@ -96,7 +96,7 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
         }
       }
       svg_content.push_str(&svg_end(indent));
-      svg_content.push_str(&format!(r#"</section>"#));
+      svg_content.push_str(r#"</section>"#);
       svg_content.push_str("\n<br/>");
       diagrams_content.push_str(&svg_content);
     }
