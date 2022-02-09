@@ -140,6 +140,7 @@ pub fn evaluate_bif(bif: Bif, parameters: &NamedParameters) -> Value {
     Bif::Not => bif_not(parameters),
     Bif::Number => bif_number(parameters),
     Bif::Odd => bif_odd(parameters),
+    Bif::Overlaps => bif_overlaps(parameters),
     Bif::OverlapsAfter => bif_overlaps_after(parameters),
     Bif::OverlapsBefore => bif_overlaps_before(parameters),
     Bif::Product => bif_product(parameters),
@@ -343,8 +344,14 @@ fn bif_duration(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_during(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_during")
+fn bif_during(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::during(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::during(value1, value2)
+  } else {
+    value_null!("[named::during] invalid named parameters")
+  }
 }
 
 fn bif_ends_with(parameters: &NamedParameters) -> Value {
@@ -375,12 +382,24 @@ fn bif_exp(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_finished_by(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_finished_by")
+fn bif_finished_by(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::finished_by(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::finished_by(value1, value2)
+  } else {
+    value_null!("[named::finished by] invalid named parameters")
+  }
 }
 
-fn bif_finishes(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_finishes")
+fn bif_finishes(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::finishes(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::finishes(value1, value2)
+  } else {
+    value_null!("[named::finishes] invalid named parameters")
+  }
 }
 
 fn bif_flatten(parameters: &NamedParameters) -> Value {
@@ -419,8 +438,14 @@ fn bif_get_value(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_includes(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_includes")
+fn bif_includes(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::includes(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::includes(value1, value2)
+  } else {
+    value_null!("[named::includes] invalid named parameters")
+  }
 }
 
 fn bif_index_of(parameters: &NamedParameters) -> Value {
@@ -623,12 +648,40 @@ fn bif_odd(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_overlaps_after(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_overlaps_after")
+fn bif_overlaps(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_RANGE_1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_RANGE_2) {
+      core::overlaps(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_RANGE_2)
+    }
+  } else {
+    parameter_not_found!(&NAME_RANGE_1)
+  }
 }
 
-fn bif_overlaps_before(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_overlaps_before")
+fn bif_overlaps_after(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_RANGE_1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_RANGE_2) {
+      core::overlaps_after(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_RANGE_2)
+    }
+  } else {
+    parameter_not_found!(&NAME_RANGE_1)
+  }
+}
+
+fn bif_overlaps_before(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_RANGE_1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_RANGE_2) {
+      core::overlaps_after(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_RANGE_2)
+    }
+  } else {
+    parameter_not_found!(&NAME_RANGE_1)
+  }
 }
 
 fn bif_product(parameters: &NamedParameters) -> Value {
@@ -714,12 +767,24 @@ fn bif_sqrt(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_started_by(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_started_by")
+fn bif_started_by(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::started_by(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::started_by(value1, value2)
+  } else {
+    value_null!("[named::started_by] invalid named parameters")
+  }
 }
 
-fn bif_starts(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_starts")
+fn bif_starts(parameters: &NamedParameters) -> Value {
+  if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_POINT).zip(get_param(parameters, &NAME_RANGE)) {
+    core::starts(value1, value2)
+  } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
+    core::starts(value1, value2)
+  } else {
+    value_null!("[named::starts] invalid named parameters")
+  }
 }
 
 fn bif_starts_with(parameters: &NamedParameters) -> Value {

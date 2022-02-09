@@ -85,6 +85,7 @@ pub enum Bif {
   Not,
   Number,
   Odd,
+  Overlaps,
   OverlapsAfter,
   OverlapsBefore,
   Product,

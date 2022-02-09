@@ -93,6 +93,7 @@ pub fn evaluate_bif(bif: Bif, parameters: &[Value]) -> Value {
     Bif::Not => bif_not(parameters),
     Bif::Number => bif_number(parameters),
     Bif::Odd => bif_odd(parameters),
+    Bif::Overlaps => bif_overlaps(parameters),
     Bif::OverlapsAfter => bif_overlaps_after(parameters),
     Bif::OverlapsBefore => bif_overlaps_before(parameters),
     Bif::Product => bif_product(parameters),
@@ -259,8 +260,11 @@ fn bif_duration(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_during(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'during'")
+fn bif_during(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::during(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_ends_with(parameters: &[Value]) -> Value {
@@ -284,12 +288,18 @@ fn bif_exp(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_finished_by(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'finished by'")
+fn bif_finished_by(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::finished_by(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
-fn bif_finishes(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'finishes'")
+fn bif_finishes(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::finishes(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_flatten(parameters: &[Value]) -> Value {
@@ -320,8 +330,11 @@ fn bif_get_value(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_includes(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'includes'")
+fn bif_includes(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::includes(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_index_of(parameters: &[Value]) -> Value {
@@ -478,12 +491,25 @@ fn bif_odd(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_overlaps_after(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'overlaps_after'")
+fn bif_overlaps(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::overlaps(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
-fn bif_overlaps_before(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'overlaps_before'")
+fn bif_overlaps_after(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::overlaps_after(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
+}
+
+fn bif_overlaps_before(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::overlaps_before(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_product(parameters: &[Value]) -> Value {
@@ -540,12 +566,18 @@ fn bif_sqrt(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_started_by(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'started_by'")
+fn bif_started_by(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::started_by(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
-fn bif_starts(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'starts'")
+fn bif_starts(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::starts(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_starts_with(parameters: &[Value]) -> Value {

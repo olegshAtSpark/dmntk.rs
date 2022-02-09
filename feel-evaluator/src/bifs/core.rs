@@ -646,6 +646,11 @@ pub fn duration(value: &Value) -> Value {
   }
 }
 
+/// ???
+pub fn during(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
 /// Returns `true` when the input string ends with specified match string.
 pub fn ends_with(input_string_value: &Value, match_string_value: &Value) -> Value {
   if let Value::String(input_string) = input_string_value {
@@ -674,6 +679,16 @@ pub fn exp(value: &Value) -> Value {
     return Value::Number(num.exp());
   }
   value_null!("exp")
+}
+
+/// ???
+pub fn finishes(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
+/// ???
+pub fn finished_by(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
 }
 
 /// Returns new list with flattened nested lists.
@@ -743,6 +758,11 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
   } else {
     invalid_argument_type!("get value", "context", context.type_of())
   }
+}
+
+/// ???
+pub fn includes(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
 }
 
 /// Return ascending list of list positions containing match.
@@ -1230,6 +1250,21 @@ pub fn odd(value: &Value) -> Value {
   }
 }
 
+/// ???
+pub fn overlaps(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
+/// ???
+pub fn overlaps_after(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
+/// ???
+pub fn overlaps_before(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
 /// Returns the product of numbers.
 pub fn product(values: &[Value]) -> Value {
   if values.is_empty() {
@@ -1402,6 +1437,16 @@ pub fn sqrt(value: &Value) -> Value {
   } else {
     value_null!("sqrt")
   }
+}
+
+/// ???
+pub fn started_by(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
+}
+
+/// ???
+pub fn starts(_value1: &Value, _value2: &Value) -> Value {
+  value_null!()
 }
 
 /// Returns **true** when the input string starts with specified match string.
