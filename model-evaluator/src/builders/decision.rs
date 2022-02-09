@@ -41,6 +41,7 @@ use dmntk_feel::values::Value;
 use dmntk_feel::{Name, Scope};
 use dmntk_model::model::{Decision, Definitions, DmnElement, KnowledgeRequirement, NamedElement, RequiredVariable};
 use std::collections::HashMap;
+use std::sync::Arc;
 
 /// Type of closure that evaluates a decision.
 ///
@@ -194,7 +195,11 @@ fn build_decision_evaluator(definitions: &Definitions, decision: &Decision, mode
 }
 
 ///
-fn bring_knowledge_requirements_into_context(definitions: &Definitions, knowledge_requirements: &[KnowledgeRequirement], ctx: &mut FeelContext) -> Result<()> {
+fn bring_knowledge_requirements_into_context(
+  definitions: &Definitions,
+  knowledge_requirements: &[Arc<KnowledgeRequirement>],
+  ctx: &mut FeelContext,
+) -> Result<()> {
   for knowledge_requirement in knowledge_requirements {
     let href = knowledge_requirement.required_knowledge().as_ref().ok_or_else(err_empty_reference)?;
     let required_knowledge_id: &str = href.into();

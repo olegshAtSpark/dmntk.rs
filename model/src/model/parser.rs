@@ -142,11 +142,16 @@ const ATTR_X: &str = "x";
 const ATTR_Y: &str = "y";
 
 #[derive(Default)]
-pub struct ModelParser {}
+pub struct ModelParser {
+  requirements_by_id: HashMap<String, Requirement>,
+}
 
 impl ModelParser {
   /// Parses the XML document containing [Definitions] serialized to interchange format.
   pub fn parse(&mut self, xml: &str) -> Result<Definitions> {
+    // clear all properties
+    self.requirements_by_id.clear();
+    // parse document
     match roxmltree::Document::parse(xml) {
       Ok(document) => {
         let definitions_node = document.root_element();
@@ -185,8 +190,14 @@ impl ModelParser {
       drg_elements_by_id,
       business_context_elements: self.parse_business_context_elements(node)?,
       imports: self.parse_imports(node)?,
-      dmndi: None, // DMNDI (if present) is parsed in next step below //FIXME maybe this could be done here?
+      dmndi: None, // diagram (if present) is parsed below
+      requirements_by_id: HashMap::new(),
     };
+    // assign requirements found in definitions
+    for (id, requirement) in self.requirements_by_id.drain() {
+      definitions.requirements_by_id.insert(id, requirement);
+    }
+    // parse diagram if present
     self.parse_dmndi(node, &mut definitions)?;
     Ok(definitions)
   }
@@ -243,7 +254,7 @@ impl ModelParser {
     }
   }
 
-  fn parse_drg_elements(&self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
+  fn parse_drg_elements(&mut self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
     let mut drg_elements = vec![];
     drg_elements.append(&mut self.parse_input_data(node)?);
     drg_elements.append(&mut self.parse_decisions(node)?);
@@ -271,7 +282,7 @@ impl ModelParser {
     Ok(input_data_items)
   }
 
-  fn parse_decisions(&self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
+  fn parse_decisions(&mut self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
     let mut decision_items = vec![];
     for ref child_node in node.children().filter(|n| n.tag_name().name() == NODE_DECISION) {
       let decision = Decision {
@@ -294,7 +305,7 @@ impl ModelParser {
     Ok(decision_items)
   }
 
-  fn parse_business_knowledge_models(&self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
+  fn parse_business_knowledge_models(&mut self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
     let mut parsed_items = vec![];
     for ref child_node in node.children().filter(|n| n.tag_name().name() == NODE_BUSINESS_KNOWLEDGE_MODEL) {
       let business_knowledge_model = BusinessKnowledgeModel {
@@ -470,7 +481,7 @@ impl ModelParser {
     })
   }
 
-  fn parse_information_requirements(&self, node: &Node, child_name: &str) -> Result<Vec<InformationRequirement>> {
+  fn parse_information_requirements(&mut self, node: &Node, child_name: &str) -> Result<Vec<Arc<InformationRequirement>>> {
     let mut information_requirement_items = vec![];
     for child_node in node.children().filter(|n| n.tag_name().name() == child_name) {
       information_requirement_items.push(self.parse_information_requirement(&child_node)?);
@@ -478,8 +489,8 @@ impl ModelParser {
     Ok(information_requirement_items)
   }
 
-  fn parse_information_requirement(&self, node: &Node) -> Result<InformationRequirement> {
-    Ok(InformationRequirement {
+  fn parse_information_requirement(&mut self, node: &Node) -> Result<Arc<InformationRequirement>> {
+    let req = Arc::new(InformationRequirement {
       id: optional_attribute(node, ATTR_ID),
       description: optional_child_optional_content(node, NODE_DESCRIPTION),
       label: optional_attribute(node, ATTR_LABEL),
@@ -487,10 +498,14 @@ impl ModelParser {
       extension_attributes: self.parse_extension_attributes(node),
       required_decision: optional_child_required_href(node, NODE_REQUIRED_DECISION)?,
       required_input: optional_child_required_href(node, NODE_REQUIRED_INPUT)?,
-    })
+    });
+    if let Some(id) = req.id() {
+      self.requirements_by_id.insert(id.clone(), Requirement::Information(Arc::clone(&req)));
+    }
+    Ok(req)
   }
 
-  fn parse_knowledge_requirements(&self, node: &Node, child_name: &str) -> Result<Vec<KnowledgeRequirement>> {
+  fn parse_knowledge_requirements(&mut self, node: &Node, child_name: &str) -> Result<Vec<Arc<KnowledgeRequirement>>> {
     let mut knowledge_requirement_items = vec![];
     for child_node in node.children().filter(|n| n.tag_name().name() == child_name) {
       knowledge_requirement_items.push(self.parse_knowledge_requirement(&child_node)?);
@@ -498,15 +513,19 @@ impl ModelParser {
     Ok(knowledge_requirement_items)
   }
 
-  fn parse_knowledge_requirement(&self, node: &Node) -> Result<KnowledgeRequirement> {
-    Ok(KnowledgeRequirement {
+  fn parse_knowledge_requirement(&mut self, node: &Node) -> Result<Arc<KnowledgeRequirement>> {
+    let req = Arc::new(KnowledgeRequirement {
       id: optional_attribute(node, ATTR_ID),
       description: optional_child_optional_content(node, NODE_DESCRIPTION),
       label: optional_attribute(node, ATTR_LABEL),
       extension_elements: self.parse_extension_elements(node),
       extension_attributes: self.parse_extension_attributes(node),
       required_knowledge: optional_child_required_href(node, NODE_REQUIRED_KNOWLEDGE)?,
-    })
+    });
+    if let Some(id) = req.id() {
+      self.requirements_by_id.insert(id.clone(), Requirement::Knowledge(Arc::clone(&req)));
+    }
+    Ok(req)
   }
 
   fn parse_required_expression_instance(&self, node: &Node) -> Result<ExpressionInstance> {

@@ -367,6 +367,13 @@ impl DrgElement {
   }
 }
 
+#[derive(Debug, Clone)]
+pub enum Requirement {
+  Information(Arc<InformationRequirement>),
+  Knowledge(Arc<KnowledgeRequirement>),
+  Authority(Arc<AuthorityRequirement>),
+}
+
 /// [Definitions] element is the outermost containing object
 /// for all elements of a DMN decision model.
 /// It defines the scope of visibility and the namespace
@@ -419,6 +426,8 @@ pub struct Definitions {
   imports: Vec<Import>,
   /// Optional Diagram Interchange information contained within this [Definitions].
   dmndi: Option<Dmndi>,
+  /// Collection of requirements contained in this [Definitions] indexed by identifiers.
+  requirements_by_id: HashMap<String, Requirement>,
 }
 
 impl Definitions {
@@ -628,8 +637,12 @@ impl Definitions {
     &mut self.drg_elements
   }
   /// Returns reference to [DrgElements](DrgElement) indexed by identifiers.
-  pub fn drg_elements_by_id(&mut self) -> &HashMap<String, Arc<DrgElement>> {
+  pub fn drg_elements_by_id(&self) -> &HashMap<String, Arc<DrgElement>> {
     &self.drg_elements_by_id
+  }
+  /// Returns reference to [Requirements](Requirement) indexed by identifiers.
+  pub fn requirements_by_id(&self) -> &HashMap<String, Requirement> {
+    &self.requirements_by_id
   }
 }
 
@@ -1073,9 +1086,9 @@ pub struct Decision {
   /// The instance of the [Expression] for the [Decision].
   decision_logic: Option<ExpressionInstance>,
   /// Collection of the instances of [InformationRequirement] that compose this [Decision].
-  information_requirements: Vec<InformationRequirement>,
+  information_requirements: Vec<Arc<InformationRequirement>>,
   /// Collection of the instances of [KnowledgeRequirement] that compose this [Decision].
-  knowledge_requirements: Vec<KnowledgeRequirement>,
+  knowledge_requirements: Vec<Arc<KnowledgeRequirement>>,
   //TODO add the following:
   // authority_requirements
   // supported_objectives
@@ -1104,11 +1117,11 @@ impl Decision {
     &self.decision_logic
   }
   /// Returns a reference to collection of [InformationRequirement].
-  pub fn information_requirements(&self) -> &Vec<InformationRequirement> {
+  pub fn information_requirements(&self) -> &Vec<Arc<InformationRequirement>> {
     &self.information_requirements
   }
   /// Returns a reference to collection of [KnowledgeRequirement].
-  pub fn knowledge_requirements(&self) -> &Vec<KnowledgeRequirement> {
+  pub fn knowledge_requirements(&self) -> &Vec<Arc<KnowledgeRequirement>> {
     &self.knowledge_requirements
   }
 }
@@ -1400,7 +1413,7 @@ pub struct BusinessKnowledgeModel {
   /// The function that encapsulates the logic encapsulated by this [BusinessKnowledgeModel].
   encapsulated_logic: Option<FunctionDefinition>,
   /// This attribute lists the instances of [KnowledgeRequirement] that compose this [BusinessKnowledgeModel].
-  knowledge_requirements: Vec<KnowledgeRequirement>,
+  knowledge_requirements: Vec<Arc<KnowledgeRequirement>>,
   /// This attribute lists the instances of [AuthorityRequirement] that compose this [BusinessKnowledgeModel].
   authority_requirements: Vec<AuthorityRequirement>,
 }
@@ -1411,7 +1424,7 @@ impl BusinessKnowledgeModel {
     &self.encapsulated_logic
   }
   /// Returns reference to the collection of instances of [KnowledgeRequirement] that compose this [BusinessKnowledgeModel].
-  pub fn knowledge_requirements(&self) -> &Vec<KnowledgeRequirement> {
+  pub fn knowledge_requirements(&self) -> &Vec<Arc<KnowledgeRequirement>> {
     &self.knowledge_requirements
   }
   /// Returns reference to the collection of instances of [AuthorityRequirement] that compose this [BusinessKnowledgeModel].

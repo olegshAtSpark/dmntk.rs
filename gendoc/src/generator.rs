@@ -47,13 +47,11 @@ pub fn generate(definitions: &Definitions) -> String {
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
   let mut svg_content = String::new();
   let indent = 0_usize;
-
   if let Some(dmndi) = definitions.dmndi() {
     let styles = svg_styles(&dmndi.styles);
     for diagram in &dmndi.diagrams {
       svg_content.push_str(&svg_begin(indent, &diagram.size));
       svg_content = format!("{}{}", svg_content, styles);
-
       for diagram_element in &diagram.diagram_elements {
         match diagram_element {
           DmnDiagramElement::DmnShape(shape) => {
@@ -70,11 +68,28 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
             }
           }
           DmnDiagramElement::DmnEdge(edge) => {
-            svg_content = format!("{}\n{}", svg_content, svg_edge_solid_arrow(&edge.way_points));
+            if let Some(id) = &edge.dmn_element_ref {
+              if let Some(requirement) = definitions.requirements_by_id().get(id) {
+                match requirement {
+                  Requirement::Information(_) => {
+                    // information requirement is depicted as solid line with dark-filled arrow
+                    svg_content = format!("{}\n{}", svg_content, svg_edge_solid_with_black_arrow(&edge.way_points))
+                  }
+                  Requirement::Knowledge(_) => {
+                    // knowledge requirement is depicted as dashed line with thin arrow, or
+                    // with dashed line with black-filled arrow when required knowledge is decision service
+                    svg_content = format!("{}\n{}", svg_content, svg_edge_dashed_with_thin_arrow(&edge.way_points))
+                  }
+                  Requirement::Authority(_) => {
+                    // authority requirement is depicted as dashed line with dark-filled end-point
+                    svg_content = format!("{}\n{}", svg_content, svg_edge_dashed_with_end_point(&edge.way_points))
+                  }
+                }
+              }
+            }
           }
         }
       }
-
       svg_content.push_str(&svg_end(indent));
     }
   }
@@ -82,15 +97,14 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
 }
 
 /// Prepare solid edge line with black filled arrow.  
-fn svg_edge_solid_arrow(way_points: &[DcPoint]) -> String {
-  //TODO what happens when way_points have less than 2 elements?
+fn svg_edge_solid_with_black_arrow(way_points: &[DcPoint]) -> String {
   let mut svg_content = String::new();
   // prepare line
   let points = way_points.iter().map(|w| format!("{},{} ", w.x, w.y)).collect::<String>();
-  svg_content.push_str(&format!(r#"<polyline points="{}"/>"#, points));
+  svg_content.push_str(&format!(r#"<polyline points="{}" stroke="black"/>"#, points));
   // prepare arrow
-  let start_point = &way_points[way_points.len() - 2]; // starting point of the last segment
-  let end_point = &way_points[way_points.len() - 1]; // ending point of the last segment
+  let start_point = &way_points[way_points.len() - 2];
+  let end_point = &way_points[way_points.len() - 1];
   let points_ending = format!(
     "{},{} {},{} {},{}",
     end_point.x,
@@ -104,6 +118,41 @@ fn svg_edge_solid_arrow(way_points: &[DcPoint]) -> String {
   svg_content.push_str(&format!(
     r#"<polygon points="{}" transform="rotate({},{},{})" fill="black" stroke="none"/>"#,
     points_ending, angle, end_point.x, end_point.y
+  ));
+  svg_content
+}
+
+/// Prepare dashed edge line with thin arrow.  
+fn svg_edge_dashed_with_thin_arrow(way_points: &[DcPoint]) -> String {
+  let mut svg_content = String::new();
+  // prepare line
+  let points = way_points.iter().map(|w| format!("{},{} ", w.x, w.y)).collect::<String>();
+  svg_content.push_str(&format!(r#"<polyline points="{}" stroke-dasharray="5 3"/>"#, points));
+  // prepare arrow
+  let start_point = &way_points[way_points.len() - 2];
+  let end_point = &way_points[way_points.len() - 1];
+  let path = format!(
+    "M {},{} l {},{} M {},{} l {}, {}",
+    end_point.x, end_point.y, 12.0, -4.0, end_point.x, end_point.y, 12.0, 4.0
+  );
+  let angle = get_angle(start_point, end_point);
+  svg_content.push_str(&format!(
+    r#"<path d="{}" transform="rotate({},{},{})" fill="none" stroke="black"/>"#,
+    path, angle, end_point.x, end_point.y
+  ));
+  svg_content
+}
+
+/// Prepare dashed edge line with black end-point.  
+fn svg_edge_dashed_with_end_point(way_points: &[DcPoint]) -> String {
+  let mut svg_content = String::new();
+  // prepare line
+  let points = way_points.iter().map(|w| format!("{},{} ", w.x, w.y)).collect::<String>();
+  svg_content.push_str(&format!(r#"<polyline points="{}" stroke="black" stroke-dasharray="5 3"/>"#, points));
+  let end_point = &way_points[way_points.len() - 1];
+  svg_content.push_str(&format!(
+    r#"<circle cx="{}" cy="{}" r="5" fill="black" stroke="none"/>"#,
+    end_point.x, end_point.y
   ));
   svg_content
 }
