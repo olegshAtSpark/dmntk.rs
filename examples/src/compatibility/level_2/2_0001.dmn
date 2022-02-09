@@ -20,7 +20,7 @@
         <variable typeRef="string" name="Full Name"/>
     </inputData>
     <dmndi:DMNDI>
-        <dmndi:DMNDiagram id="_d3a3312e-5924-4f7b-ac0e-232ef9203ff6">
+        <dmndi:DMNDiagram id="_d3a3312e-5924-4f7b-ac0e-232ef9203ff6" name="DRD for generating greeting message">
             <dmndi:Size height="650.0" width="650.0"/>
             <dmndi:DMNShape dmnElementRef="_75b3add2-4d36-4a19-a76c-268b49b2f436" id="_ebf33cfc-0ee3-4708-af8b-91c52237b7d6">
                 <dc:Bounds x="150.0" y="150.0" width="150.0" height="60.0"/>

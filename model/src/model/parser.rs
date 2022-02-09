@@ -40,6 +40,7 @@ use roxmltree::Node;
 
 const NODE_ALLOWED_ANSWERS: &str = "allowedAnswers";
 const NODE_ALLOWED_VALUES: &str = "allowedValues";
+const NODE_AUTHORITY_REQUIREMENT: &str = "authorityRequirement";
 const NODE_BINDING: &str = "binding";
 const NODE_BUSINESS_KNOWLEDGE_MODEL: &str = "businessKnowledgeModel";
 const NODE_COLUMN: &str = "column";
@@ -94,6 +95,7 @@ const NODE_OUTPUT_VALUES: &str = "outputValues";
 const NODE_PARAMETER: &str = "parameter";
 const NODE_QUESTION: &str = "question";
 const NODE_RELATION: &str = "relation";
+const NODE_REQUIRED_AUTHORITY: &str = "requiredAuthority";
 const NODE_REQUIRED_DECISION: &str = "requiredDecision";
 const NODE_REQUIRED_KNOWLEDGE: &str = "requiredKnowledge";
 const NODE_REQUIRED_INPUT: &str = "requiredInput";
@@ -299,6 +301,7 @@ impl ModelParser {
         decision_logic: self.parse_optional_expression_instance(child_node)?,
         information_requirements: self.parse_information_requirements(child_node, NODE_INFORMATION_REQUIREMENT)?,
         knowledge_requirements: self.parse_knowledge_requirements(child_node, NODE_KNOWLEDGE_REQUIREMENT)?,
+        authority_requirements: self.parse_authority_requirements(child_node, NODE_AUTHORITY_REQUIREMENT)?,
       };
       decision_items.push(Arc::new(DrgElement::Decision(decision)));
     }
@@ -319,7 +322,7 @@ impl ModelParser {
         variable: self.parse_information_item_child(child_node, NODE_VARIABLE)?,
         encapsulated_logic: self.parse_function_definition_child(child_node, NODE_ENCAPSULATED_LOGIC)?,
         knowledge_requirements: self.parse_knowledge_requirements(child_node, NODE_KNOWLEDGE_REQUIREMENT)?,
-        authority_requirements: vec![],
+        authority_requirements: self.parse_authority_requirements(child_node, NODE_AUTHORITY_REQUIREMENT)?,
       };
       parsed_items.push(Arc::new(DrgElement::BusinessKnowledgeModel(business_knowledge_model)));
     }
@@ -348,7 +351,7 @@ impl ModelParser {
     Ok(drg_elements)
   }
 
-  fn parse_knowledge_sources(&self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
+  fn parse_knowledge_sources(&mut self, node: &Node) -> Result<Vec<Arc<DrgElement>>> {
     let mut drg_elements = vec![];
     for ref child_node in node.children().filter(|n| n.tag_name().name() == NODE_KNOWLEDGE_SOURCE) {
       let knowledge_source = KnowledgeSource {
@@ -359,6 +362,7 @@ impl ModelParser {
         extension_attributes: self.parse_extension_attributes(child_node),
         name: required_name(child_node)?,
         feel_name: optional_feel_name(child_node)?,
+        authority_requirements: self.parse_authority_requirements(child_node, NODE_AUTHORITY_REQUIREMENT)?,
       };
       drg_elements.push(Arc::new(DrgElement::KnowledgeSource(knowledge_source)));
     }
@@ -524,6 +528,31 @@ impl ModelParser {
     });
     if let Some(id) = req.id() {
       self.requirements_by_id.insert(id.clone(), Requirement::Knowledge(Arc::clone(&req)));
+    }
+    Ok(req)
+  }
+
+  fn parse_authority_requirements(&mut self, node: &Node, child_name: &str) -> Result<Vec<Arc<AuthorityRequirement>>> {
+    let mut authority_requirement_items = vec![];
+    for child_node in node.children().filter(|n| n.tag_name().name() == child_name) {
+      authority_requirement_items.push(self.parse_authority_requirement(&child_node)?);
+    }
+    Ok(authority_requirement_items)
+  }
+
+  fn parse_authority_requirement(&mut self, node: &Node) -> Result<Arc<AuthorityRequirement>> {
+    let req = Arc::new(AuthorityRequirement {
+      id: optional_attribute(node, ATTR_ID),
+      description: optional_child_optional_content(node, NODE_DESCRIPTION),
+      label: optional_attribute(node, ATTR_LABEL),
+      extension_elements: self.parse_extension_elements(node),
+      extension_attributes: self.parse_extension_attributes(node),
+      required_authority: optional_child_required_href(node, NODE_REQUIRED_AUTHORITY)?,
+      required_decision: optional_child_required_href(node, NODE_REQUIRED_DECISION)?,
+      required_input: optional_child_required_href(node, NODE_REQUIRED_INPUT)?,
+    });
+    if let Some(id) = req.id() {
+      self.requirements_by_id.insert(id.clone(), Requirement::Authority(Arc::clone(&req)));
     }
     Ok(req)
   }

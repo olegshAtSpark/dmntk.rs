@@ -45,13 +45,17 @@ pub fn generate(definitions: &Definitions) -> String {
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
-  let mut svg_content = String::new();
+  let mut diagrams_content = String::new();
   let indent = 0_usize;
   if let Some(dmndi) = definitions.dmndi() {
     let styles = svg_styles(&dmndi.styles);
     for diagram in &dmndi.diagrams {
+      let mut svg_content = String::new();
+      // prepare the name of the diagram
+      svg_content.push_str(&format!(r#"<h2>{}</h2>"#, diagram.name));
+      // prepare diagram graphics
       svg_content.push_str(&svg_begin(indent, &diagram.size));
-      svg_content = format!("{}{}", svg_content, styles);
+      svg_content.push_str(&styles);
       for diagram_element in &diagram.diagram_elements {
         match diagram_element {
           DmnDiagramElement::DmnShape(shape) => {
@@ -91,9 +95,11 @@ fn add_svg_content(html: &str, definitions: &Definitions) -> String {
         }
       }
       svg_content.push_str(&svg_end(indent));
+      svg_content.push_str("\n<br/>");
+      diagrams_content.push_str(&svg_content);
     }
   }
-  html.replace(SVG_CONTENT, &svg_content)
+  html.replace(SVG_CONTENT, &diagrams_content)
 }
 
 /// Prepare solid edge line with black filled arrow.  
@@ -151,7 +157,7 @@ fn svg_edge_dashed_with_end_point(way_points: &[DcPoint]) -> String {
   svg_content.push_str(&format!(r#"<polyline points="{}" stroke="black" stroke-dasharray="5 3"/>"#, points));
   let end_point = &way_points[way_points.len() - 1];
   svg_content.push_str(&format!(
-    r#"<circle cx="{}" cy="{}" r="5" fill="black" stroke="none"/>"#,
+    r#"<circle cx="{}" cy="{}" r="4" fill="black" stroke="none"/>"#,
     end_point.x, end_point.y
   ));
   svg_content

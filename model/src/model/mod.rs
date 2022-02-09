@@ -1089,8 +1089,9 @@ pub struct Decision {
   information_requirements: Vec<Arc<InformationRequirement>>,
   /// Collection of the instances of [KnowledgeRequirement] that compose this [Decision].
   knowledge_requirements: Vec<Arc<KnowledgeRequirement>>,
+  /// Collection of the instances of [AuthorityRequirement] that compose this [Decision].
+  authority_requirements: Vec<Arc<AuthorityRequirement>>,
   //TODO add the following:
-  // authority_requirements
   // supported_objectives
   // impacted_performance_indicator
   // decision_maker
@@ -1123,6 +1124,10 @@ impl Decision {
   /// Returns a reference to collection of [KnowledgeRequirement].
   pub fn knowledge_requirements(&self) -> &Vec<Arc<KnowledgeRequirement>> {
     &self.knowledge_requirements
+  }
+  /// Returns a reference to collection of [AuthorityRequirement].
+  pub fn authority_requirements(&self) -> &Vec<Arc<AuthorityRequirement>> {
+    &self.authority_requirements
   }
 }
 
@@ -1281,26 +1286,26 @@ pub struct AuthorityRequirement {
   extension_attributes: Vec<ExtensionAttribute>,
   /// The instance of [KnowledgeSource] that this [AuthorityRequirement] associates
   /// with its containing [KnowledgeSource], [Decision] or [BusinessKnowledgeModel] element.
-  required_authority: Option<KnowledgeSource>,
+  required_authority: OptHRef,
   /// The instance of [Decision] that this [AuthorityRequirement] associates
   /// with its containing [KnowledgeSource] element.
-  required_decision: Option<Decision>,
+  required_decision: OptHRef,
   /// The instance of [InputData] that this [AuthorityRequirement] associates
   /// with its containing [KnowledgeSource] element.
-  required_input: Option<InputData>,
+  required_input: OptHRef,
 }
 
 impl AuthorityRequirement {
   /// Returns reference to optional [KnowledgeSource].
-  pub fn required_authority(&self) -> &Option<KnowledgeSource> {
+  pub fn required_authority(&self) -> &OptHRef {
     &self.required_authority
   }
   /// Returns reference to optional [Decision].
-  pub fn required_decision(&self) -> &Option<Decision> {
+  pub fn required_decision(&self) -> &OptHRef {
     &self.required_decision
   }
   /// Returns reference to optional [InputData].
-  pub fn required_input(&self) -> &Option<InputData> {
+  pub fn required_input(&self) -> &OptHRef {
     &self.required_input
   }
 }
@@ -1346,6 +1351,15 @@ pub struct KnowledgeSource {
   name: String,
   /// Optional `FEEL` name of this [KnowledgeSource].
   feel_name: Option<Name>,
+  /// Collection of the instances of [AuthorityRequirement] that compose this [Decision].
+  authority_requirements: Vec<Arc<AuthorityRequirement>>,
+}
+
+impl KnowledgeSource {
+  /// Returns a reference to collection of [AuthorityRequirement].
+  pub fn authority_requirements(&self) -> &Vec<Arc<AuthorityRequirement>> {
+    &self.authority_requirements
+  }
 }
 
 impl DmnElement for KnowledgeSource {
@@ -1415,7 +1429,7 @@ pub struct BusinessKnowledgeModel {
   /// This attribute lists the instances of [KnowledgeRequirement] that compose this [BusinessKnowledgeModel].
   knowledge_requirements: Vec<Arc<KnowledgeRequirement>>,
   /// This attribute lists the instances of [AuthorityRequirement] that compose this [BusinessKnowledgeModel].
-  authority_requirements: Vec<AuthorityRequirement>,
+  authority_requirements: Vec<Arc<AuthorityRequirement>>,
 }
 
 impl BusinessKnowledgeModel {
@@ -1428,7 +1442,7 @@ impl BusinessKnowledgeModel {
     &self.knowledge_requirements
   }
   /// Returns reference to the collection of instances of [AuthorityRequirement] that compose this [BusinessKnowledgeModel].
-  pub fn authority_requirements(&self) -> &Vec<AuthorityRequirement> {
+  pub fn authority_requirements(&self) -> &Vec<Arc<AuthorityRequirement>> {
     &self.authority_requirements
   }
 }
