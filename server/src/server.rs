@@ -61,7 +61,7 @@ struct ApplicationData {
 
 /// Data transfer object for an error.
 #[derive(Serialize)]
-pub struct ErrorDto {
+struct ErrorDto {
   /// Error details.
   #[serde(rename = "details")]
   details: String,
@@ -69,7 +69,7 @@ pub struct ErrorDto {
 
 /// Data transfer object for a result.
 #[derive(Serialize)]
-pub struct ResultDto<T> {
+struct ResultDto<T> {
   /// Result containing data.
   #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
   data: Option<T>,
@@ -94,14 +94,14 @@ impl<T: serde::Serialize> ToString for ResultDto<T> {
 
 impl<T> ResultDto<T> {
   /// Creates [ResultDto] with some data inside.
-  pub fn data(d: T) -> ResultDto<T> {
+  fn data(d: T) -> ResultDto<T> {
     ResultDto {
       data: Some(d),
       ..Default::default()
     }
   }
   /// Creates [ResultDto] with single error inside.
-  pub fn error(err: DmntkError) -> ResultDto<T> {
+  fn error(err: DmntkError) -> ResultDto<T> {
     ResultDto {
       errors: vec![ErrorDto { details: format!("{}", err) }],
       ..Default::default()
@@ -111,7 +111,7 @@ impl<T> ResultDto<T> {
 
 /// System information structure.
 #[derive(Serialize)]
-pub struct SystemInfoDto {
+struct SystemInfoDto {
   /// System name.
   #[serde(rename = "name")]
   name: String,
@@ -136,56 +136,56 @@ impl Default for SystemInfoDto {
 
 /// Parameters for adding DMN™ model definitions to workspace.
 #[derive(Deserialize)]
-pub struct AddDefinitionsParams {
+struct AddDefinitionsParams {
   /// Content of the DMN™ model, encoded in `Base64`.
   #[serde(rename = "content")]
-  pub content: Option<String>,
+  content: Option<String>,
 }
 
 /// Result data sent back to caller after adding definitions.
-#[derive(Debug, Serialize)]
-pub struct AddDefinitionsResult {
+#[derive(Serialize)]
+struct AddDefinitionsResult {
   /// Namespace of added definitions.
   #[serde(rename = "namespace")]
-  pub namespace: String,
+  namespace: String,
   /// Name of added definitions.
   #[serde(rename = "name")]
-  pub name: String,
+  name: String,
 }
 
 /// Parameters for replacing DMN™ model definitions in workspace.
 #[derive(Deserialize)]
-pub struct ReplaceDefinitionsParams {
+struct ReplaceDefinitionsParams {
   /// Content of the DMN™ model, encoded in `Base64`.
   #[serde(rename = "content")]
-  pub content: Option<String>,
+  content: Option<String>,
 }
 
 /// Parameters for removing DMN™ model definitions from workspace.
 #[derive(Deserialize)]
-pub struct RemoveDefinitionsParams {
+struct RemoveDefinitionsParams {
   /// Namespace of the definitions to be removed.
   #[serde(rename = "namespace")]
-  pub namespace: Option<String>,
+  namespace: Option<String>,
   /// Name of the definitions to be removed.
   #[serde(rename = "name")]
-  pub name: Option<String>,
+  name: Option<String>,
 }
 
 /// Operation status sent back to caller after request completion.
-#[derive(Debug, Serialize)]
-pub struct StatusResult {
+#[derive(Serialize)]
+struct StatusResult {
   /// Operation status.
   #[serde(rename = "status")]
-  pub status: String,
+  status: String,
 }
 
 /// Parameters for evaluating invocable in DMN™ model definitions.
 /// The format of input data is compatible with test cases
 /// defined in [Technology Compatibility Kit for DMN standard](https://github.com/dmn-tck/tck).
 #[cfg(feature = "tck")]
-#[derive(Debug, Deserialize)]
-pub struct TckEvaluateParams {
+#[derive(Deserialize)]
+struct TckEvaluateParams {
   /// Name of the model where the invocable will be searched.
   #[serde(rename = "model")]
   model_name: Option<String>,
@@ -198,7 +198,7 @@ pub struct TckEvaluateParams {
 }
 
 /// Parameters for evaluating invocable in DMN™ model definitions.
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct EvaluateParams {
   /// Name of the model.
   #[serde(rename = "model")]
@@ -474,7 +474,7 @@ fn do_replace_definitions(workspace: &mut Workspace, params: &ReplaceDefinitions
       if let Ok(xml) = String::from_utf8(bytes) {
         match dmntk_model::parse(&xml) {
           Ok(definitions) => {
-            workspace.add(definitions)?;
+            workspace.replace(definitions)?;
             Ok(StatusResult {
               status: "definitions replaced".to_string(),
             })
