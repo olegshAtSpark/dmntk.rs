@@ -369,9 +369,93 @@ pub fn ceiling(value: &Value) -> Value {
   }
 }
 
-/// TBD
+/// Returns `true` when two point are equal or two ranges are equal.
 pub fn coincides(value1: &Value, value2: &Value) -> Value {
-  value_null!("[core::coincides] under construction: {} | {}", value1, value2)
+  match value1 {
+    Value::Number(point1) => match value2 {
+      Value::Number(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::Date(point1) => match value2 {
+      Value::Date(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::Time(point1) => match value2 {
+      Value::Time(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::DateTime(point1) => match value2 {
+      Value::DateTime(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::DaysAndTimeDuration(point1) => match value2 {
+      Value::DaysAndTimeDuration(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::YearsAndMonthsDuration(point1) => match value2 {
+      Value::YearsAndMonthsDuration(point2) => return Value::Boolean(point1 == point2),
+      _ => {}
+    },
+    Value::Range(range1_start, closed1_start, range1_end, closed1_end) => match (range1_start.borrow(), range1_end.borrow()) {
+      (Value::Number(point1_start), Value::Number(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::Number(point2_start), Value::Number(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      (Value::Date(point1_start), Value::Date(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::Date(point2_start), Value::Date(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      (Value::Time(point1_start), Value::Time(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::Time(point2_start), Value::Time(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      (Value::DateTime(point1_start), Value::DateTime(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::DateTime(point2_start), Value::DateTime(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      (Value::DaysAndTimeDuration(point1_start), Value::DaysAndTimeDuration(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::DaysAndTimeDuration(point2_start), Value::DaysAndTimeDuration(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      (Value::YearsAndMonthsDuration(point1_start), Value::YearsAndMonthsDuration(point1_end)) => match value2 {
+        Value::Range(range2_start, closed2_start, range2_end, closed2_end) => match (range2_start.borrow(), range2_end.borrow()) {
+          (Value::YearsAndMonthsDuration(point2_start), Value::YearsAndMonthsDuration(point2_end)) => {
+            return Value::Boolean(point1_start == point2_start && point1_end == point2_end && closed1_start == closed2_start && closed1_end == closed2_end);
+          }
+          _ => {}
+        },
+        _ => {}
+      },
+      _ => {}
+    },
+    _ => {}
+  }
+  invalid_argument_type!("coincides", "scalar or range of scalars", value1.type_of())
 }
 
 /// Returns new list that is a concatenation of the arguments.
