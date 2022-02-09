@@ -523,8 +523,16 @@ fn bif_mean(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_meets(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_meets")
+fn bif_meets(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_RANGE_1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_RANGE_2) {
+      core::meets(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_RANGE_2)
+    }
+  } else {
+    parameter_not_found!(&NAME_RANGE_1)
+  }
 }
 
 fn bif_median(parameters: &NamedParameters) -> Value {

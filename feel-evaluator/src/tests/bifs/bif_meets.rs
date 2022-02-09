@@ -30,69 +30,45 @@
  * limitations under the License.
  */
 
-//! Test cases for built-in functions.  
+use super::super::*;
+use dmntk_feel::scope;
 
-mod bif_abs;
-mod bif_after;
-mod bif_all;
-mod bif_any;
-mod bif_append;
-mod bif_before;
-mod bif_ceiling;
-mod bif_coincides;
-mod bif_concatenate;
-mod bif_contains;
-mod bif_count;
-mod bif_date;
-mod bif_date_time;
-mod bif_day_of_week;
-mod bif_day_of_year;
-mod bif_decimal;
-mod bif_distinct_values;
-mod bif_duration;
-mod bif_ends_with;
-mod bif_even;
-mod bif_exp;
-mod bif_flatten;
-mod bif_floor;
-mod bif_get_entries;
-mod bif_get_value;
-mod bif_index_of;
-mod bif_insert_before;
-mod bif_is;
-mod bif_list_contains;
-mod bif_log;
-mod bif_lower_case;
-mod bif_matches;
-mod bif_max;
-mod bif_mean;
-mod bif_median;
-mod bif_meets;
-mod bif_min;
-mod bif_mode;
-mod bif_modulo;
-mod bif_month_of_year;
-mod bif_not;
-mod bif_number;
-mod bif_odd;
-mod bif_product;
-mod bif_remove;
-mod bif_replace;
-mod bif_reverse;
-mod bif_sort;
-mod bif_split;
-mod bif_sqrt;
-mod bif_starts_with;
-mod bif_stddev;
-mod bif_string;
-mod bif_string_length;
-mod bif_sublist;
-mod bif_substring;
-mod bif_substring_after;
-mod bif_substring_before;
-mod bif_sum;
-mod bif_time;
-mod bif_union;
-mod bif_upper_case;
-mod bif_week_of_year;
-mod bif_ym_duration;
+#[test]
+fn _0001() {
+  te_bool(false, &scope!(), r#"meets([1..10],[10..20])"#, true);
+}
+
+#[test]
+fn _0002() {
+  te_bool(false, &scope!(), r#"meets([1..10),[10..20])"#, false);
+}
+
+#[test]
+fn _0003() {
+  te_bool(false, &scope!(), r#"meets([1..10],(10..20])"#, false);
+}
+
+#[test]
+fn _0004() {
+  te_bool(false, &scope!(), r#"meets([1..10],[9..20])"#, false);
+}
+
+#[test]
+fn _0005() {
+  te_bool(false, &scope!(), r#"meets([1..10],[11..20])"#, false);
+}
+
+#[test]
+fn _0006() {
+  te_bool(false, &scope!(), r#"meets(range1: [1..10], range2: [10..20])"#, true);
+}
+
+#[test]
+fn _0007() {
+  te_bool(false, &scope!(), r#"meets(range2: [1..10], range1: [10..20])"#, false);
+}
+
+#[test]
+fn _0008() {
+  te_bool(false, &scope!(), r#"meets(range2: [10..20], range1: [1..10])"#, true);
+}

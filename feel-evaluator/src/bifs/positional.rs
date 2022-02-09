@@ -396,8 +396,11 @@ fn bif_mean(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_meats(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'meats'")
+fn bif_meats(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    2 => core::meets(&parameters[0], &parameters[1]),
+    n => invalid_number_of_parameters!(2, n),
+  }
 }
 
 fn bif_median(parameters: &[Value]) -> Value {
