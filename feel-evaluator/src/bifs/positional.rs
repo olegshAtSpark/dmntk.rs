@@ -480,8 +480,15 @@ fn bif_overlaps_before(_parameters: &[Value]) -> Value {
   value_null!("not implemented bif 'overlaps_before'")
 }
 
-fn bif_product(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'product'")
+fn bif_product(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    0 => invalid_number_of_parameters!("1+", 0),
+    1 => match &parameters[0] {
+      Value::List(values) => core::product(values.as_vec()),
+      _ => core::product(parameters),
+    },
+    _ => core::product(parameters),
+  }
 }
 
 fn bif_remove(parameters: &[Value]) -> Value {

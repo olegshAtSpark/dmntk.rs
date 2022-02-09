@@ -517,7 +517,7 @@ fn bif_max(parameters: &NamedParameters) -> Value {
 
 fn bif_mean(parameters: &NamedParameters) -> Value {
   if let Some((Value::List(list), _)) = get_param(parameters, &NAME_LIST) {
-    core::median(list.as_vec())
+    core::mean(list.as_vec())
   } else {
     parameter_not_found!(&NAME_LIST)
   }
@@ -615,8 +615,12 @@ fn bif_overlaps_before(_parameters: &NamedParameters) -> Value {
   value_null!("unimplemented bif_overlaps_before")
 }
 
-fn bif_product(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_product")
+fn bif_product(parameters: &NamedParameters) -> Value {
+  if let Some((Value::List(list), _)) = get_param(parameters, &NAME_LIST) {
+    core::product(list.as_vec())
+  } else {
+    parameter_not_found!(&NAME_LIST)
+  }
 }
 
 fn bif_remove(parameters: &NamedParameters) -> Value {

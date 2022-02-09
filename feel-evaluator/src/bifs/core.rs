@@ -1048,6 +1048,22 @@ pub fn odd(value: &Value) -> Value {
   }
 }
 
+/// Returns the product of numbers.
+pub fn product(values: &[Value]) -> Value {
+  if values.is_empty() {
+    return value_null!();
+  }
+  let mut list = vec![];
+  for value in values {
+    if let Value::Number(n) = value {
+      list.push(*n);
+    } else {
+      return invalid_argument_type!("product", "number", value.type_of());
+    }
+  }
+  Value::Number(list.iter().fold(FeelNumber::one(), |acc, n| acc * (*n)))
+}
+
 /// ???
 pub fn remove(list: &Value, position_value: &Value) -> Value {
   if let Value::List(mut items) = list.clone() {
