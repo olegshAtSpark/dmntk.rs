@@ -75,6 +75,8 @@ lazy_static! {
   static ref NAME_STRING: Name = Name::from("string");
   static ref NAME_TIME: Name = Name::from("time");
   static ref NAME_TO: Name = Name::from("to");
+  static ref NAME_VALUE1: Name = Name::from("value1");
+  static ref NAME_VALUE2: Name = Name::from("value2");
   static ref NAME_YEAR: Name = Name::from("year");
 }
 
@@ -449,8 +451,16 @@ fn bif_insert_before(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_is(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_is")
+fn bif_is(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_VALUE1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_VALUE2) {
+      core::is(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_VALUE2)
+    }
+  } else {
+    parameter_not_found!(&NAME_VALUE1)
+  }
 }
 
 fn bif_list_contains(parameters: &NamedParameters) -> Value {

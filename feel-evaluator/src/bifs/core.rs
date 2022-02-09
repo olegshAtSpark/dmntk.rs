@@ -707,6 +707,26 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item_value: &Valu
   value_null!("index is out of range")
 }
 
+/// Returns `true` if both values are the same element in the FEEL semantic domain.
+///
+/// This function is rudimentary described in the specification,
+/// so the current version compares only `date` and `time` types
+/// for equality. This function may be easily extended for other types
+/// when more details are available.
+pub fn is(value1: &Value, value2: &Value) -> Value {
+  match value1 {
+    Value::Date(date1) => match value2 {
+      Value::Date(date2) => return Value::Boolean(date1 == date2),
+      _ => invalid_argument_type!("is", "date", value2.type_of()),
+    },
+    Value::Time(time1) => match value2 {
+      Value::Time(time2) => return Value::Boolean(time1 == time2),
+      _ => invalid_argument_type!("is", "time", value2.type_of()),
+    },
+    _ => invalid_argument_type!("is", "date or time", value1.type_of()),
+  }
+}
+
 /// Returns `true` when the list contain the specified element.
 pub fn list_contains(list: &Value, element: &Value) -> Value {
   if let Value::List(items) = list {
