@@ -70,6 +70,7 @@ mod bif_median;
 mod bif_min;
 mod bif_mode;
 mod bif_modulo;
+mod bif_month_of_year;
 mod bif_not;
 mod bif_number;
 mod bif_odd;

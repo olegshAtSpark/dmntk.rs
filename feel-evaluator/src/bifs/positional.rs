@@ -444,8 +444,11 @@ fn bif_modulo(parameters: &[Value]) -> Value {
   }
 }
 
-fn bif_month_of_year(_parameters: &[Value]) -> Value {
-  value_null!("not implemented bif 'month_of_year'")
+fn bif_month_of_year(parameters: &[Value]) -> Value {
+  match parameters.len() {
+    1 => core::month_of_year(&parameters[0]),
+    n => invalid_number_of_parameters!(1, n),
+  }
 }
 
 fn bif_not(parameters: &[Value]) -> Value {

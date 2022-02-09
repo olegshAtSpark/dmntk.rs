@@ -559,8 +559,12 @@ fn bif_modulo(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_month_of_year(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_month_of_year")
+fn bif_month_of_year(parameters: &NamedParameters) -> Value {
+  if let Some((value, _)) = get_param(parameters, &NAME_DATE) {
+    core::month_of_year(value)
+  } else {
+    parameter_not_found!(&NAME_DATE)
+  }
 }
 
 fn bif_mode(parameters: &NamedParameters) -> Value {

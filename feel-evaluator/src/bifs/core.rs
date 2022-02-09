@@ -38,7 +38,7 @@ use dmntk_feel::values::Value::YearsAndMonthsDuration;
 use dmntk_feel::values::{Value, Values, VALUE_FALSE, VALUE_TRUE};
 use dmntk_feel::{
   value_null, value_number, value_string, DayOfWeek, DayOfYear, FeelDate, FeelDateTime, FeelDaysAndTimeDuration, FeelNumber, FeelTime,
-  FeelYearsAndMonthsDuration, Name, Scope, ToFeelString, WeekOfYear,
+  FeelYearsAndMonthsDuration, MonthOfYear, Name, Scope, ToFeelString, WeekOfYear,
 };
 use regex::Regex;
 use std::borrow::Borrow;
@@ -716,11 +716,11 @@ pub fn insert_before(list: &Value, position_value: &Value, new_item_value: &Valu
 pub fn is(value1: &Value, value2: &Value) -> Value {
   match value1 {
     Value::Date(date1) => match value2 {
-      Value::Date(date2) => return Value::Boolean(date1 == date2),
+      Value::Date(date2) => Value::Boolean(date1 == date2),
       _ => invalid_argument_type!("is", "date", value2.type_of()),
     },
     Value::Time(time1) => match value2 {
-      Value::Time(time2) => return Value::Boolean(time1 == time2),
+      Value::Time(time2) => Value::Boolean(time1 == time2),
       _ => invalid_argument_type!("is", "time", value2.type_of()),
     },
     _ => invalid_argument_type!("is", "date or time", value1.type_of()),
@@ -952,6 +952,24 @@ pub fn modulo(dividend_value: &Value, divisor_value: &Value) -> Value {
     }
   } else {
     invalid_argument_type!("modulo", "number", dividend_value.type_of())
+  }
+}
+
+/// Returns the month of the year according to the Gregorian calendar enumeration:
+/// `January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`,
+/// `September`, `October`, `November`, `December`.
+pub fn month_of_year(value: &Value) -> Value {
+  fn gregorian_month(opt_month_of_year: Option<MonthOfYear>) -> Value {
+    if let Some(month_of_year) = opt_month_of_year {
+      value_string!(month_of_year.0)
+    } else {
+      value_null!("[month of year] no month")
+    }
+  }
+  match value {
+    Value::Date(date) => gregorian_month(date.month_of_year()),
+    Value::DateTime(date_time) => gregorian_month(date_time.month_of_year()),
+    _ => invalid_argument_type!("month of year", "date, date and time", value.type_of()),
   }
 }
 
