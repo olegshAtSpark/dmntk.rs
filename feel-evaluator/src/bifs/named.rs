@@ -543,8 +543,16 @@ fn bif_median(parameters: &NamedParameters) -> Value {
   }
 }
 
-fn bif_met_by(_parameters: &NamedParameters) -> Value {
-  value_null!("unimplemented bif_met_by")
+fn bif_met_by(parameters: &NamedParameters) -> Value {
+  if let Some((value1, _)) = get_param(parameters, &NAME_RANGE_1) {
+    if let Some((value2, _)) = get_param(parameters, &NAME_RANGE_2) {
+      core::met_by(value1, value2)
+    } else {
+      parameter_not_found!(&NAME_RANGE_2)
+    }
+  } else {
+    parameter_not_found!(&NAME_RANGE_1)
+  }
 }
 
 fn bif_min(parameters: &NamedParameters) -> Value {

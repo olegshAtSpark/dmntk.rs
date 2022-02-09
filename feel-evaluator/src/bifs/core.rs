@@ -912,28 +912,6 @@ pub fn mean(values: &[Value]) -> Value {
   Value::Number(sum / values.len().into())
 }
 
-/// Returns the median of numbers.
-pub fn median(values: &[Value]) -> Value {
-  if values.is_empty() {
-    return value_null!();
-  }
-  let mut list = vec![];
-  for value in values {
-    if let Value::Number(n) = value {
-      list.push(*n);
-    } else {
-      return value_null!("median");
-    }
-  }
-  list.sort_by(|x, y| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal));
-  let index = values.len() / 2;
-  if list.len() % 2 == 0 {
-    Value::Number((list[index - 1] + list[index]) / FeelNumber::two())
-  } else {
-    Value::Number(list[index])
-  }
-}
-
 /// Returns `true` when range1 `meets` range2.
 pub fn meets(value1: &Value, value2: &Value) -> Value {
   if let Value::Range(range1_start, _, range1_end, closed1_end) = value1 {
@@ -977,6 +955,80 @@ pub fn meets(value1: &Value, value2: &Value) -> Value {
         if let Value::Range(range2_start, closed2_start, range2_end, _) = value2 {
           if let (Value::YearsAndMonthsDuration(point2_start), Value::YearsAndMonthsDuration(_)) = (range2_start.borrow(), range2_end.borrow()) {
             return Value::Boolean(point1_end == point2_start && closed1_end == closed2_start);
+          }
+        }
+      }
+      _ => {}
+    }
+  }
+  invalid_argument_type!("meets", "range of scalars", value1.type_of())
+}
+
+/// Returns the median of numbers.
+pub fn median(values: &[Value]) -> Value {
+  if values.is_empty() {
+    return value_null!();
+  }
+  let mut list = vec![];
+  for value in values {
+    if let Value::Number(n) = value {
+      list.push(*n);
+    } else {
+      return value_null!("median");
+    }
+  }
+  list.sort_by(|x, y| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal));
+  let index = values.len() / 2;
+  if list.len() % 2 == 0 {
+    Value::Number((list[index - 1] + list[index]) / FeelNumber::two())
+  } else {
+    Value::Number(list[index])
+  }
+}
+
+/// Returns `true` when range2 is `met by` range1.
+pub fn met_by(value1: &Value, value2: &Value) -> Value {
+  if let Value::Range(range1_start, closed1_start, range1_end, _) = value1 {
+    match (range1_start.borrow(), range1_end.borrow()) {
+      (Value::Number(point1_start), Value::Number(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::Number(_), Value::Number(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
+          }
+        }
+      }
+      (Value::Date(point1_start), Value::Date(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::Date(_), Value::Date(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
+          }
+        }
+      }
+      (Value::Time(point1_start), Value::Time(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::Time(_), Value::Time(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
+          }
+        }
+      }
+      (Value::DateTime(point1_start), Value::DateTime(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::DateTime(_), Value::DateTime(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
+          }
+        }
+      }
+      (Value::DaysAndTimeDuration(point1_start), Value::DaysAndTimeDuration(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::DaysAndTimeDuration(_), Value::DaysAndTimeDuration(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
+          }
+        }
+      }
+      (Value::YearsAndMonthsDuration(point1_start), Value::YearsAndMonthsDuration(_)) => {
+        if let Value::Range(range2_start, _, range2_end, closed2_end) = value2 {
+          if let (Value::YearsAndMonthsDuration(_), Value::YearsAndMonthsDuration(point2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+            return Value::Boolean(point1_start == point2_end && closed1_start == closed2_end);
           }
         }
       }
