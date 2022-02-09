@@ -77,3 +77,18 @@ fn _0007() {
     "[core::day of year] invalid argument type, expected date, date and time, actual type is number",
   );
 }
+
+#[test]
+fn _0008() {
+  te_null(false, &scope!(), r#"day of year()"#, "expected 1 parameters, actual number of parameters is 0");
+}
+
+#[test]
+fn _0009() {
+  te_null(
+    false,
+    &scope!(),
+    r#"day of year(date(2019,9,17),date(2019,9,17))"#,
+    "expected 1 parameters, actual number of parameters is 2",
+  );
+}
