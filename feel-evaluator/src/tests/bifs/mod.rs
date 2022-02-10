@@ -50,6 +50,7 @@ mod bif_day_of_year;
 mod bif_decimal;
 mod bif_distinct_values;
 mod bif_duration;
+mod bif_during;
 mod bif_ends_with;
 mod bif_even;
 mod bif_exp;
