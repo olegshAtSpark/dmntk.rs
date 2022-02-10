@@ -38,3 +38,93 @@ use dmntk_feel::scope;
 fn _0001() {
   te_bool(false, &scope!(), r#"finished by([1..20],20)"#, true);
 }
+
+#[test]
+fn _0002() {
+  te_null(false, &scope!(), r#"finished by([1..20],20)"#, "unimplemented");
+}
+
+#[test]
+fn _0003() {
+  te_null(false, &scope!(), r#"finished by(range: [1..20],point: 20)"#, "unimplemented");
+}
+
+#[test]
+fn _0004() {
+  te_null(false, &scope!(), r#"finished by(range1: [1..20],range2: [5..20])"#, "unimplemented");
+}
+
+#[test]
+fn _0005() {
+  te_null(false, &scope!(), r#"finished by()"#, "expected 2 parameters, actual number of parameters is 0");
+}
+
+#[test]
+fn _0006() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by([1..20],20,10)"#,
+    "expected 2 parameters, actual number of parameters is 3",
+  );
+}
+
+#[test]
+fn _0007() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(range: [1..20],p: 20)"#,
+    "[named::finished by] invalid named parameters",
+  );
+}
+
+#[test]
+fn _0008() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(r: [1..20],point: 20)"#,
+    "[named::finished by] invalid named parameters",
+  );
+}
+
+#[test]
+fn _0009() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(r: [1..20],p: 20)"#,
+    "[named::finished by] invalid named parameters",
+  );
+}
+
+#[test]
+fn _0010() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(range1: [1..20],r2: [1..20])"#,
+    "[named::finished by] invalid named parameters",
+  );
+}
+
+#[test]
+fn _0011() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(r1: [1..20],range2: [1..20])"#,
+    "[named::finished by] invalid named parameters",
+  );
+}
+
+#[test]
+fn _0012() {
+  te_null(
+    false,
+    &scope!(),
+    r#"finished by(r1: [1..20],r2: [1..20])"#,
+    "[named::finished by] invalid named parameters",
+  );
+}

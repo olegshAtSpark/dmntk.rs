@@ -72,3 +72,33 @@ fn _0007() {
 fn _0008() {
   te_bool(false, &scope!(), r#"meets(range2: [10..20], range1: [1..10])"#, true);
 }
+
+#[test]
+fn _0009() {
+  te_null(false, &scope!(), r#"meets()"#, "expected 2 parameters, actual number of parameters is 0");
+}
+
+#[test]
+fn _0010() {
+  te_null(
+    false,
+    &scope!(),
+    r#"meets(20,[1..20],10)"#,
+    "expected 2 parameters, actual number of parameters is 3",
+  );
+}
+
+#[test]
+fn _0011() {
+  te_null(false, &scope!(), r#"meets(range1: [1..5],r2: [3..8])"#, "parameter 'range2' not found");
+}
+
+#[test]
+fn _0012() {
+  te_null(false, &scope!(), r#"meets(r1: [1..5],range2: [3..8])"#, "parameter 'range1' not found");
+}
+
+#[test]
+fn _0013() {
+  te_null(false, &scope!(), r#"meets(r1: [1..5], r2: [3..8])"#, "parameter 'range1' not found");
+}

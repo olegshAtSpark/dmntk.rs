@@ -773,7 +773,7 @@ fn bif_started_by(parameters: &NamedParameters) -> Value {
   } else if let Some(((value1, _), (value2, _))) = get_param(parameters, &NAME_RANGE_1).zip(get_param(parameters, &NAME_RANGE_2)) {
     core::started_by(value1, value2)
   } else {
-    value_null!("[named::started_by] invalid named parameters")
+    value_null!("[named::started by] invalid named parameters")
   }
 }
 

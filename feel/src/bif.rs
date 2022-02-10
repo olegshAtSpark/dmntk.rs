@@ -166,6 +166,7 @@ impl FromStr for Bif {
       "not" => Ok(Self::Not),
       "number" => Ok(Self::Number),
       "odd" => Ok(Self::Odd),
+      "overlaps" => Ok(Self::Overlaps),
       "overlaps after" => Ok(Self::OverlapsAfter),
       "overlaps before" => Ok(Self::OverlapsBefore),
       "product" => Ok(Self::Product),
@@ -303,6 +304,7 @@ mod tests {
     assert_eq!(Bif::Not, Bif::from_str("not").unwrap());
     assert_eq!(Bif::Number, Bif::from_str("number").unwrap());
     assert_eq!(Bif::Odd, Bif::from_str("odd").unwrap());
+    assert_eq!(Bif::Overlaps, Bif::from_str("overlaps").unwrap());
     assert_eq!(Bif::OverlapsAfter, Bif::from_str("overlaps after").unwrap());
     assert_eq!(Bif::OverlapsBefore, Bif::from_str("overlaps before").unwrap());
     assert_eq!(Bif::Product, Bif::from_str("product").unwrap());
@@ -379,6 +381,7 @@ mod tests {
     assert!(is_built_in_function_name("not"));
     assert!(is_built_in_function_name("number"));
     assert!(is_built_in_function_name("odd"));
+    assert!(is_built_in_function_name("overlaps"));
     assert!(is_built_in_function_name("overlaps after"));
     assert!(is_built_in_function_name("overlaps before"));
     assert!(is_built_in_function_name("product"));

@@ -792,29 +792,12 @@ pub fn exp(value: &Value) -> Value {
 
 /// ???
 pub fn finishes(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// ???
-pub fn finished_by(value1: &Value, _value2: &Value) -> Value {
-  // match value1 {
-  //   Value::Range(range1_start, closed1_start, range1_end, closed1_end) => match (range1_start.borrow(), range1_end.borrow()) {
-  //     (Value::Number(r1_start), Value::Number(r1_end)) => match value2 {
-  //       Value::Number(point) => {
-  //         return Value::Boolean(point == r1_end && *closed1_end);
-  //       }
-  //       Value::Range(range2_start, closed2_start, range2_end, closed2_end) => {
-  //         if let (Value::Number(r2_start), Value::Number(r2_end)) = (range2_start.borrow(), range2_end.borrow()) {
-  //           return Value::Boolean(false);
-  //         }
-  //       }
-  //       _ => {}
-  //     },
-  //     _ => {}
-  //   },
-  //   _ => {}
-  // }
-  invalid_argument_type!("finished by", "scalar or range of scalars", value1.type_of())
+pub fn finished_by(_value1: &Value, _value2: &Value) -> Value {
+  value_null!("unimplemented")
 }
 
 /// Returns new list with flattened nested lists.
@@ -888,7 +871,7 @@ pub fn get_value(context: &Value, key: &Value) -> Value {
 
 /// ???
 pub fn includes(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// Return ascending list of list positions containing match.
@@ -1378,17 +1361,17 @@ pub fn odd(value: &Value) -> Value {
 
 /// ???
 pub fn overlaps(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// ???
 pub fn overlaps_after(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// ???
 pub fn overlaps_before(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// Returns the product of numbers.
@@ -1567,12 +1550,12 @@ pub fn sqrt(value: &Value) -> Value {
 
 /// ???
 pub fn started_by(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// ???
 pub fn starts(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+  value_null!("unimplemented")
 }
 
 /// Returns **true** when the input string starts with specified match string.

@@ -34,71 +34,52 @@ use super::super::*;
 use dmntk_feel::scope;
 
 #[test]
+#[ignore]
 fn _0001() {
-  te_bool(false, &scope!(), r#"met by([10..20],[1..10])"#, true);
+  te_bool(false, &scope!(), r#"overlaps([1..5],[3..8])"#, true);
 }
 
 #[test]
 fn _0002() {
-  te_bool(false, &scope!(), r#"met by([10..20],[1..10))"#, false);
+  te_null(false, &scope!(), r#"overlaps([1..5],[3..8])"#, "unimplemented");
 }
 
 #[test]
 fn _0003() {
-  te_bool(false, &scope!(), r#"met by((10..20],[1..10])"#, false);
+  te_null(false, &scope!(), r#"overlaps(range1: [1..5], range2: [3..8])"#, "unimplemented");
 }
 
 #[test]
 fn _0004() {
-  te_bool(false, &scope!(), r#"met by([9..20],[1..10])"#, false);
+  te_null(false, &scope!(), r#"overlaps(range2: [3..8], range1: [1..5])"#, "unimplemented");
 }
 
 #[test]
 fn _0005() {
-  te_bool(false, &scope!(), r#"met by([11..20],[1..10])"#, false);
+  te_null(false, &scope!(), r#"overlaps()"#, "expected 2 parameters, actual number of parameters is 0");
 }
 
 #[test]
 fn _0006() {
-  te_bool(false, &scope!(), r#"met by(range1: [10..20], range2: [1..10])"#, true);
-}
-
-#[test]
-fn _0007() {
-  te_bool(false, &scope!(), r#"met by(range2: [10..20], range1: [1..10])"#, false);
-}
-
-#[test]
-fn _0008() {
-  te_bool(false, &scope!(), r#"met by(range2: [1..10], range1: [10..20])"#, true);
-}
-
-#[test]
-fn _0009() {
-  te_null(false, &scope!(), r#"met by()"#, "expected 2 parameters, actual number of parameters is 0");
-}
-
-#[test]
-fn _0010() {
   te_null(
     false,
     &scope!(),
-    r#"met by([1..20],20,10)"#,
+    r#"overlaps([1..5],[3..8],[9..12])"#,
     "expected 2 parameters, actual number of parameters is 3",
   );
 }
 
 #[test]
-fn _0011() {
-  te_null(false, &scope!(), r#"met by(range1: [1..5],r2: [3..8])"#, "parameter 'range2' not found");
+fn _0007() {
+  te_null(false, &scope!(), r#"overlaps(range1: [1..5],r2: [3..8])"#, "parameter 'range2' not found");
 }
 
 #[test]
-fn _0012() {
-  te_null(false, &scope!(), r#"met by(r1: [1..5],range2: [3..8])"#, "parameter 'range1' not found");
+fn _0008() {
+  te_null(false, &scope!(), r#"overlaps(r1: [1..5],range2: [3..8])"#, "parameter 'range1' not found");
 }
 
 #[test]
-fn _0013() {
-  te_null(false, &scope!(), r#"met by(r1: [1..5], r2: [3..8])"#, "parameter 'range1' not found");
+fn _0009() {
+  te_null(false, &scope!(), r#"overlaps(r1: [1..5], r2: [3..8])"#, "parameter 'range1' not found");
 }
