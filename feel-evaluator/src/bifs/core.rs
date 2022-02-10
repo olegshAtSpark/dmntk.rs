@@ -796,8 +796,25 @@ pub fn finishes(_value1: &Value, _value2: &Value) -> Value {
 }
 
 /// ???
-pub fn finished_by(_value1: &Value, _value2: &Value) -> Value {
-  value_null!()
+pub fn finished_by(value1: &Value, _value2: &Value) -> Value {
+  // match value1 {
+  //   Value::Range(range1_start, closed1_start, range1_end, closed1_end) => match (range1_start.borrow(), range1_end.borrow()) {
+  //     (Value::Number(r1_start), Value::Number(r1_end)) => match value2 {
+  //       Value::Number(point) => {
+  //         return Value::Boolean(point == r1_end && *closed1_end);
+  //       }
+  //       Value::Range(range2_start, closed2_start, range2_end, closed2_end) => {
+  //         if let (Value::Number(r2_start), Value::Number(r2_end)) = (range2_start.borrow(), range2_end.borrow()) {
+  //           return Value::Boolean(false);
+  //         }
+  //       }
+  //       _ => {}
+  //     },
+  //     _ => {}
+  //   },
+  //   _ => {}
+  // }
+  invalid_argument_type!("finished by", "scalar or range of scalars", value1.type_of())
 }
 
 /// Returns new list with flattened nested lists.
