@@ -35,6 +35,7 @@ extern crate dmntk_model;
 
 mod generator;
 mod svg;
+mod decision_table;
 
 #[cfg(test)]
 mod tests;

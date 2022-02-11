@@ -32,16 +32,20 @@
 
 //! Generator of DMN documentation.
 
-use crate::svg::*;
 use dmntk_model::model::*;
+
+use crate::decision_table::generate_decision_table;
+use crate::svg::*;
 
 const HTML_TEMPLATE: &str = include_str!("template.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
+const HTML_CONTENT: &str = "#HTML_CONTENT#";
 const PI_2: f64 = std::f64::consts::PI * 2.0;
 
 /// Generates HTML documentation for DMN model.
 pub fn generate(definitions: &Definitions) -> String {
-  add_svg_content(HTML_TEMPLATE, definitions)
+  let html = add_svg_content(HTML_TEMPLATE, definitions);
+  add_html_content(&html, definitions)
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
@@ -243,4 +247,34 @@ fn get_angle(start: &DcPoint, end: &DcPoint) -> f64 {
   } else {
     angle
   }
+}
+
+fn add_html_content(html: &str, definitions: &Definitions) -> String {
+  let mut html_content = String::new();
+  if let Some(dmndi) = definitions.dmndi() {
+    for diagram in &dmndi.diagrams {
+      for diagram_element in &diagram.diagram_elements {
+        if let DmnDiagramElement::DmnShape(shape) = diagram_element {
+          if let Some(dmn_element_ref) = &shape.dmn_element_ref {
+            if let Some(decision) = definitions.decision_by_id(dmn_element_ref.as_str()) {
+              if let Some(decision_logic) = decision.decision_logic() {
+                match decision_logic {
+                  ExpressionInstance::Context(_) => {}
+                  ExpressionInstance::DecisionTable(decision_table) => {
+                    html_content.push_str(&generate_decision_table(decision_table));
+                  }
+                  ExpressionInstance::FunctionDefinition(_) => {}
+                  ExpressionInstance::Invocation(_) => {}
+                  ExpressionInstance::LiteralExpression(_) => {}
+                  ExpressionInstance::Relation(_) => {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  html.replace(HTML_CONTENT, &html_content)
 }
