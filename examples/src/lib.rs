@@ -73,15 +73,8 @@ mod tests {
               for v_outputs in outputs {
                 for v_annotations in annotations {
                   println!(
-                    "│{:^13}│{:^13}│{:^9}│{:^9}│{:^10}│{:^10}│{:^13}│{:^9}│        │",
-                    v_decision_table_orientation,
-                    v_information_item_name,
-                    v_output_label,
-                    v_allowed_values,
-                    v_inputs,
-                    v_outputs,
-                    v_annotations,
-                    format!("DT_{:04}", counter)
+                    "│{:^13}│{:^13}│{:^9}│{:^9}│{:^10}│{:^10}│{:^13}│ DT_{:04} │        │",
+                    v_decision_table_orientation, v_information_item_name, v_output_label, v_allowed_values, v_inputs, v_outputs, v_annotations, counter
                   );
                   counter += 1;
                 }
