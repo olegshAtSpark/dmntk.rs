@@ -40,3 +40,57 @@ pub mod item_definition;
 pub use compatibility::*;
 pub use examples::valid::*;
 pub use examples::*;
+
+#[cfg(test)]
+mod tests {
+  #[test]
+  fn test_calculate_decision_table_variants() {
+    let decision_table_orientation = ["horizontal", "vertical", "crosstab"];
+    let information_item_name = ["present", "absent"];
+    let output_label = ["present", "absent"];
+    let allowed_values = ["absent", "present"];
+    let inputs = ["absent", "single", "double", "multiple"];
+    let outputs = ["single", "double", "multiple"];
+    let annotations = ["absent", "single", "double", "multiple"];
+    let total_variants = decision_table_orientation.len()
+      * information_item_name.len()
+      * output_label.len()
+      * allowed_values.len()
+      * inputs.len()
+      * outputs.len()
+      * annotations.len();
+    assert_eq!(1152, total_variants);
+    println!("┌─────────────┬─────────────┬─────────┬─────────┬──────────┬──────────┬─────────────┬─────────┬────────┐",);
+    println!("│  Preferred  │ Information │ Output  │ Allowed │  Inputs  │ Outputs  │ Annotations │ Example │ Status │",);
+    println!("│ orientation │  item name  │  label  │ values  │          │          │             │         │        │",);
+    println!("├─────────────┼─────────────┼─────────┼─────────┼──────────┼──────────┼─────────────┼─────────┼────────┤",);
+    let mut counter = 1;
+    for v_decision_table_orientation in decision_table_orientation {
+      for v_information_item_name in information_item_name {
+        for v_output_label in output_label {
+          for v_allowed_values in allowed_values {
+            for v_inputs in inputs {
+              for v_outputs in outputs {
+                for v_annotations in annotations {
+                  println!(
+                    "│{:^13}│{:^13}│{:^9}│{:^9}│{:^10}│{:^10}│{:^13}│{:^9}│        │",
+                    v_decision_table_orientation,
+                    v_information_item_name,
+                    v_output_label,
+                    v_allowed_values,
+                    v_inputs,
+                    v_outputs,
+                    v_annotations,
+                    format!("DT_{:04}", counter)
+                  );
+                  counter += 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    println!("└─────────────┴─────────────┴─────────┴─────────┴──────────┴──────────┴─────────────┴─────────┴────────┘",);
+  }
+}
