@@ -50,7 +50,7 @@ pub fn definitions_to_html(definitions: &Definitions) -> String {
 
 /// Generates HTML documentation for single decision table.
 pub fn decision_table_to_html(_decision_table: &DecisionTable) -> String {
-  "not implemented yet".to_string()
+  "not implemented".to_string()
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {
