@@ -51,11 +51,8 @@ fn size_err(details: &str) -> Result<Size> {
 
 /// Validates the sizes of the individual components of the decision table in relation to each other.
 fn validate_size(recognizer: &Recognizer) -> Result<Size> {
-  // decision table must have minimum one input clauses
+  // decision table may have zero or more input clauses
   let input_clauses_count = recognizer.input_clause_count;
-  if input_clauses_count == 0 {
-    return size_err("decision table must have minimum one input clause");
-  }
   // number of input expressions must be equal to the number of input clauses
   let input_expression_count = recognizer.input_expressions.len();
   if input_expression_count != input_clauses_count {
@@ -258,7 +255,7 @@ pub fn build(text: &str) -> Result<DecisionTable> {
     });
   }
 
-  let decision_table = DecisionTable {
+  Ok(DecisionTable {
     information_item_name,
     input_clauses: inputs,
     output_clauses: outputs,
@@ -268,6 +265,5 @@ pub fn build(text: &str) -> Result<DecisionTable> {
     aggregation,
     preferred_orientation,
     output_label,
-  };
-  Ok(decision_table)
+  })
 }
