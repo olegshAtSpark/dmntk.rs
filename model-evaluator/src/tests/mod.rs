@@ -36,7 +36,11 @@ use dmntk_feel::values::Value;
 use dmntk_feel::Scope;
 use std::sync::Arc;
 
+#[cfg(test)]
 mod compliance;
+
+#[cfg(test)]
+mod model;
 
 /// Utility function that creates a `FEEL` context from specified input expression.
 pub fn context(input: &str) -> FeelContext {

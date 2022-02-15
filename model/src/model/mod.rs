@@ -2080,13 +2080,13 @@ pub enum HitPolicy {
 impl std::fmt::Display for HitPolicy {
   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
     match self {
-      HitPolicy::Unique => write!(f, "UNIQUE"),
-      HitPolicy::Any => write!(f, "ANY"),
-      HitPolicy::Priority => write!(f, "PRIORITY"),
-      HitPolicy::First => write!(f, "FIRST"),
-      HitPolicy::Collect(aggregator) => write!(f, "COLLECT {}", aggregator),
-      HitPolicy::OutputOrder => write!(f, "OUTPUT ORDER"),
-      HitPolicy::RuleOrder => write!(f, "RULE ORDER"),
+      HitPolicy::Unique => write!(f, "U"),
+      HitPolicy::Any => write!(f, "A"),
+      HitPolicy::Priority => write!(f, "P"),
+      HitPolicy::First => write!(f, "F"),
+      HitPolicy::Collect(aggregator) => write!(f, "{}", aggregator),
+      HitPolicy::OutputOrder => write!(f, "O"),
+      HitPolicy::RuleOrder => write!(f, "R"),
     }
   }
 }
@@ -2112,7 +2112,7 @@ impl TryFrom<&str> for HitPolicy {
   }
 }
 
-/// Aggregator function for **COLLECT** hit policy.
+/// Aggregator function for `COLLECT` hit policy.
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum BuiltinAggregator {
   /// The result of the decision table is a list of output entries.
@@ -2134,11 +2134,11 @@ impl std::fmt::Display for BuiltinAggregator {
       f,
       "{}",
       match self {
-        BuiltinAggregator::List => "LIST",
-        BuiltinAggregator::Count => "COUNT",
-        BuiltinAggregator::Sum => "SUM",
-        BuiltinAggregator::Min => "MIN",
-        BuiltinAggregator::Max => "MAX",
+        BuiltinAggregator::List => "C",
+        BuiltinAggregator::Count => "C#",
+        BuiltinAggregator::Sum => "C+",
+        BuiltinAggregator::Min => "C<",
+        BuiltinAggregator::Max => "C>",
       }
     )
   }
