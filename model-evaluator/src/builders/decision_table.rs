@@ -416,13 +416,13 @@ pub fn build_decision_table_evaluator(scope: &Scope, decision_table: &DecisionTa
 mod tests {
   use super::build_decision_table_evaluator;
   use crate::tests::context;
-  use dmntk_examples::decision_tables::DT_0001;
+  use dmntk_examples::decision_tables::DT_0313;
   use dmntk_feel::values::Value;
   use dmntk_feel::{value_number, FeelNumber};
 
   #[test]
   fn test() {
-    let decision_table = dmntk_recognizer::build(DT_0001).unwrap();
+    let decision_table = dmntk_recognizer::build(DT_0313).unwrap();
     let scope = context(r#"{Customer:"Business", Order:-3.23 }"#).into();
     let evaluator = build_decision_table_evaluator(&scope, &decision_table).unwrap();
     assert_eq!(value_number!(10, 2), evaluator(&scope));

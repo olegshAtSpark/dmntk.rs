@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-//!
+//! Examples of decision tables in text format.
 //!
 //! ```text
 //! ┌─────────────┬─────────────┬─────────┬─────────┬──────────┬──────────┬─────────────┬─────────┬────────┐
@@ -1196,4 +1196,4 @@ mod crosstab;
 mod horizontal;
 mod vertical;
 
-//pub const DT_0001: &str = include_str!("0001.dtb");
+pub use horizontal::DT_0313;
