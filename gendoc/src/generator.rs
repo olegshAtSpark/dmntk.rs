@@ -37,20 +37,15 @@ use dmntk_model::model::*;
 use crate::decision_table::generate_decision_table;
 use crate::svg::*;
 
-const HTML_TEMPLATE: &str = include_str!("template.html");
+const DMN_MODEL_TEMPLATE: &str = include_str!("templates/dmn_model_template.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
 const HTML_CONTENT: &str = "#HTML_CONTENT#";
 const PI_2: f64 = std::f64::consts::PI * 2.0;
 
 /// Generates HTML documentation for DMN model.
 pub fn definitions_to_html(definitions: &Definitions) -> String {
-  let html = add_svg_content(HTML_TEMPLATE, definitions);
+  let html = add_svg_content(DMN_MODEL_TEMPLATE, definitions);
   add_html_content(&html, definitions)
-}
-
-/// Generates HTML documentation for single decision table.
-pub fn decision_table_to_html(_decision_table: &DecisionTable) -> String {
-  "not implemented".to_string()
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {

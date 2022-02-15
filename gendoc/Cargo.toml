@@ -11,3 +11,6 @@ edition = "2021"
 [dependencies]
 dmntk-examples = { path = "../examples" }
 dmntk-model = { path = "../model" }
+
+[dev-dependencies]
+dmntk-recognizer = { path = "../recognizer" }

@@ -30,22 +30,15 @@
  * limitations under the License.
  */
 
-extern crate dmntk_examples;
-extern crate dmntk_model;
+use super::*;
+use dmntk_examples::decision_tables::*;
 
-mod dec_tab;
-mod decision_table;
-mod generator;
-mod svg;
-
-#[cfg(test)]
-mod tests;
-
-const NL: char = '\n';
-const WS: &str = "";
-const INDENT: usize = 2;
-const INDENT_2: usize = INDENT + INDENT;
-const INDENT_3: usize = INDENT_2 + INDENT;
-
-pub use dec_tab::decision_table_to_html;
-pub use generator::definitions_to_html;
+#[test]
+fn _0001() {
+  let decision_table = dmntk_recognizer::build(DT_0001).expect("building decision table failed");
+  let html = crate::decision_table_to_html(&decision_table);
+  assert_eq!("<!DOCTYPE html>", &html[0..15]);
+  std::fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");
+  let mut file = File::create(format!("{}/DT_0001.html", TARGET_DIR)).expect("creating HTML file failed");
+  file.write_all(html.as_bytes()).expect("saving HTML file failed");
+}

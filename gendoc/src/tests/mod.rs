@@ -30,6 +30,8 @@
  * limitations under the License.
  */
 
+mod dec_tab;
+
 use std::fs;
 use std::fs::File;
 use std::io::Write;

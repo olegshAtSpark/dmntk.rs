@@ -32,10 +32,9 @@
 
 //! SVG utilities.
 
+use crate::{NL, WS};
 use dmntk_model::model::*;
 
-const NL: char = '\n';
-const WS: &str = "";
 const AMPLITUDE: f64 = 20.0;
 
 /// Prepares `<svg>` element with specified dimension.
