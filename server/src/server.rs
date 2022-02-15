@@ -328,6 +328,20 @@ async fn not_found() -> std::io::Result<Json<ResultDto<()>>> {
   Ok(Json(ResultDto::error(err_endpoint_not_found())))
 }
 
+/*
+/// Handler for mockers.
+async fn mockers(req: HttpRequest) -> std::io::Result<String> {
+  let mut result = String::new();
+  result.push_str(&format!("method={}\n", req.method()));
+  result.push_str(&format!("uri={}\n", req.uri()));
+  result.push_str(&format!("path={}\n", req.path()));
+  result.push_str(&format!("query-string={}\n", req.query_string()));
+  result.push_str(&format!("headers={:?}\n", req.headers().keys().map(|k| k.to_string()).collect::<Vec<String>>()));
+
+  Ok(result)
+}
+*/
+
 /// Starts the server.
 pub async fn start_server(opt_host: Option<String>, opt_port: Option<String>, opt_dir: Option<String>) -> std::io::Result<()> {
   let workspace = Workspace::new(get_workspace_dir(opt_dir));
