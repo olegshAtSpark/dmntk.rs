@@ -34,10 +34,42 @@
 
 use crate::recognizer::Recognizer;
 use crate::tests::{eq_matrices, eq_vectors, EX_01, EX_02, EX_03, EX_05, EX_06, EX_07, EX_08, EX_09, EX_10};
+use dmntk_examples::decision_tables::DT_0001;
 use dmntk_model::model::{BuiltinAggregator, DecisionTableOrientation, HitPolicy};
 
 const EMPTY_VECTOR: &[&str] = &[];
 const EMPTY_MATRIX: &[&[&str]] = &[];
+
+#[test]
+fn test_dt_0001() {
+  let recognizer = &Recognizer::recognize(&String::from(DT_0001)).unwrap();
+  eq_orientation(recognizer, DecisionTableOrientation::RuleAsRow);
+  eq_information_item_name(recognizer, " Weekdays ");
+  eq_hit_policy(recognizer, HitPolicy::Collect(BuiltinAggregator::List));
+  eq_input_expressions(recognizer, EMPTY_VECTOR);
+  eq_input_values(recognizer, EMPTY_VECTOR);
+  eq_input_entries(
+    recognizer,
+    &[EMPTY_VECTOR, EMPTY_VECTOR, EMPTY_VECTOR, EMPTY_VECTOR, EMPTY_VECTOR, EMPTY_VECTOR, EMPTY_VECTOR],
+  );
+  eq_output_label(recognizer, "   Weekday   ");
+  eq_output_components(recognizer, EMPTY_VECTOR);
+  eq_output_values(recognizer, EMPTY_VECTOR);
+  eq_output_entries(
+    recognizer,
+    &[
+      &[r#"  "Monday"   "#],
+      &[r#"  "Tuesday"  "#],
+      &[r#" "Wednesday" "#],
+      &[r#" "Thursday"  "#],
+      &[r#"  "Friday"   "#],
+      &[r#" "Saturday"  "#],
+      &[r#"  "Sunday"   "#],
+    ],
+  );
+  eq_annotations(recognizer, EMPTY_VECTOR);
+  eq_annotation_entries(recognizer, EMPTY_MATRIX);
+}
 
 #[test]
 fn test_example_01() {

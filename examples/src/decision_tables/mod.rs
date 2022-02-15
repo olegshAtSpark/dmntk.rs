@@ -1196,4 +1196,4 @@ mod crosstab;
 mod horizontal;
 mod vertical;
 
-pub use horizontal::DT_0313;
+pub use horizontal::{DT_0001, DT_0313};

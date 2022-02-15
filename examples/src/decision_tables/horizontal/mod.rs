@@ -34,6 +34,20 @@
 ///
 /// ```text
 /// PREFERRED ORIENTATION: horizontal
+/// INFORMATION ITEM NAME: present
+///          OUTPUT LABEL: present
+///        ALLOWED VALUES: absent
+///                INPUTS: absent
+///               OUTPUTS: single
+///           ANNOTATIONS: absent
+/// ```
+pub const DT_0001: &str = DT_0001_DTB;
+const DT_0001_DTB: &str = include_str!("DT_0001.dtb");
+
+/// Horizontal, no information item name, no output label, no allowed values, double inputs, single outputs, no annotations.
+///
+/// ```text
+/// PREFERRED ORIENTATION: horizontal
 /// INFORMATION ITEM NAME: absent
 ///          OUTPUT LABEL: absent
 ///        ALLOWED VALUES: absent

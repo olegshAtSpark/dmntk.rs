@@ -11,3 +11,6 @@ edition = "2021"
 [dependencies]
 dmntk-common = { path = "../common" }
 dmntk-model = { path = "../model" }
+
+[dev-dependencies]
+dmntk-examples = { path = "../examples" }
