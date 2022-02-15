@@ -43,9 +43,14 @@ const HTML_CONTENT: &str = "#HTML_CONTENT#";
 const PI_2: f64 = std::f64::consts::PI * 2.0;
 
 /// Generates HTML documentation for DMN model.
-pub fn generate(definitions: &Definitions) -> String {
+pub fn definitions_to_html(definitions: &Definitions) -> String {
   let html = add_svg_content(HTML_TEMPLATE, definitions);
   add_html_content(&html, definitions)
+}
+
+/// Generates HTML documentation for single decision table.
+pub fn decision_table_to_html(_decision_table: &DecisionTable) -> String {
+  "not implemented yet".to_string()
 }
 
 fn add_svg_content(html: &str, definitions: &Definitions) -> String {

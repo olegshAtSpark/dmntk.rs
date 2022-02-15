@@ -75,7 +75,12 @@ enum Action {
     String,
   ),
   /// Export decision table.
-  ExportDecisionTable(String, String),
+  ExportDecisionTable(
+    /// Decision table file name.
+    String,
+    /// HTML file name.
+    String,
+  ),
   /// Recognize decision table.
   RecognizeDecisionTable(String),
   /// Parse `DMN` model`.
@@ -528,8 +533,19 @@ fn test_decision_table(test_file_name: &str, dectab_file_name: &str, summary_onl
 }
 
 /// Exports decision table loaded from text file to HTML output file.
-fn export_decision_table(_dectab_file_name: &str, html_file_name: &str) {
-  let _ = std::fs::write(html_file_name, "not implemented\n");
+fn export_decision_table(dectab_file_name: &str, html_file_name: &str) {
+  match std::fs::read_to_string(dectab_file_name) {
+    Ok(text) => match dmntk_recognizer::build(&text) {
+      Ok(decision_table) => {
+        let output = dmntk_gendoc::decision_table_to_html(&decision_table);
+        if let Err(reason) = std::fs::write(html_file_name, output) {
+          println!("writing output HTML file `{}` failed with reason: {}", html_file_name, reason)
+        }
+      }
+      Err(reason) => println!("ERROR: {}", reason),
+    },
+    Err(reason) => println!("loading decision table file `{}` failed with reason: {}", dectab_file_name, reason),
+  }
 }
 
 /// Recognizes the decision table loaded from text file.

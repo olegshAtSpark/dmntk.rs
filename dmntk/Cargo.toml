@@ -21,6 +21,7 @@ dmntk-common = { path = "../common" }
 dmntk-evaluator = { path = "../evaluator" }
 dmntk-feel = { path = "../feel" }
 dmntk-feel-parser = { path = "../feel-parser" }
+dmntk-gendoc = { path = "../gendoc" }
 dmntk-model = { path = "../model" }
 dmntk-recognizer = { path = "../recognizer" }
 dmntk-server = { path = "../server" }

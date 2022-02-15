@@ -33,11 +33,11 @@
 extern crate dmntk_examples;
 extern crate dmntk_model;
 
+mod decision_table;
 mod generator;
 mod svg;
-mod decision_table;
 
 #[cfg(test)]
 mod tests;
 
-pub use generator::generate;
+pub use generator::{decision_table_to_html, definitions_to_html};

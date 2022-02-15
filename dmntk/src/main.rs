@@ -40,6 +40,7 @@ extern crate dmntk_common;
 extern crate dmntk_evaluator;
 extern crate dmntk_feel;
 extern crate dmntk_feel_parser;
+extern crate dmntk_gendoc;
 extern crate dmntk_recognizer;
 extern crate serde;
 extern crate serde_derive;
