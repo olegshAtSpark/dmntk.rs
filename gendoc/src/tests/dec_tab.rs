@@ -35,10 +35,10 @@ use dmntk_examples::decision_tables::*;
 
 #[test]
 fn _0001() {
-  let decision_table = dmntk_recognizer::build(DT_0001).expect("building decision table failed");
+  let decision_table = dmntk_recognizer::build(H_000010).expect("building decision table failed");
   let html = crate::decision_table_to_html(&decision_table);
   assert_eq!("<!DOCTYPE html>", &html[0..15]);
   std::fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");
-  let mut file = File::create(format!("{}/DT_0001.html", TARGET_DIR)).expect("creating HTML file failed");
+  let mut file = File::create(format!("{}/H_000010.html", TARGET_DIR)).expect("creating HTML file failed");
   file.write_all(html.as_bytes()).expect("saving HTML file failed");
 }

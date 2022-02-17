@@ -34,7 +34,7 @@
 
 use crate::recognizer::Recognizer;
 use crate::tests::{eq_matrices, eq_vectors, EX_01, EX_02, EX_03, EX_05, EX_06, EX_07, EX_08, EX_09, EX_10};
-use dmntk_examples::decision_tables::DT_0001;
+use dmntk_examples::decision_tables::H_110010;
 use dmntk_model::model::{BuiltinAggregator, DecisionTableOrientation, HitPolicy};
 
 const EMPTY_VECTOR: &[&str] = &[];
@@ -42,7 +42,7 @@ const EMPTY_MATRIX: &[&[&str]] = &[];
 
 #[test]
 fn test_dt_0001() {
-  let recognizer = &Recognizer::recognize(&String::from(DT_0001)).unwrap();
+  let recognizer = &Recognizer::recognize(&String::from(H_110010)).unwrap();
   eq_orientation(recognizer, DecisionTableOrientation::RuleAsRow);
   eq_information_item_name(recognizer, " Weekdays ");
   eq_hit_policy(recognizer, HitPolicy::Collect(BuiltinAggregator::List));

@@ -30,21 +30,36 @@
  * limitations under the License.
  */
 
-/// Horizontal, no information item name, no output label, no allowed values, double inputs, single outputs, no annotations.
+//! Examples of horizontal decision tables in text format.
+//!
+//! Naming convention:
+//!
+//! ```text
+//! ┌────────────── table orientation: h - horizontal (rules as rows)
+//! │ ┌──────────── flag indicating if information item name is: absent (0) or present (1)
+//! │ │┌─────────── flag indicating if output label is: absent (0) or present (1)
+//! │ ││┌────────── flag indicating if allowed values are: absent (0) or present (1)
+//! │ │││┌───────── number of input clauses: 0,1,2...
+//! │ ││││┌──────── number of output clauses: 1,2...
+//! │ │││││┌─────── number of annotation clauses: 0,1,2...  
+//! h_000010.dtb
+//! ```
+
+/// Horizontal, no information item name, no output label, no allowed values, no inputs, single output, no annotations.
 ///
 /// ```text
 /// PREFERRED ORIENTATION: horizontal
-/// INFORMATION ITEM NAME: present
-///          OUTPUT LABEL: present
-///        ALLOWED VALUES: absent
-///                INPUTS: absent
-///               OUTPUTS: single
-///           ANNOTATIONS: absent
+/// INFORMATION ITEM NAME: 0 - absent
+///          OUTPUT LABEL: 0 - absent
+///        ALLOWED VALUES: 0 - absent
+///                INPUTS: 0 - absent
+///               OUTPUTS: 1 - single
+///           ANNOTATIONS: 0 - absent
 /// ```
-pub const DT_0001: &str = DT_0001_DTB;
-const DT_0001_DTB: &str = include_str!("DT_0001.dtb");
+pub const H_000010: &str = H_000010_DTB;
+const H_000010_DTB: &str = include_str!("h_000010.dtb");
 
-/// Horizontal, no information item name, no output label, no allowed values, double inputs, single outputs, no annotations.
+/// Horizontal, no information item name, no output label, no allowed values, double inputs, single output, no annotations.
 ///
 /// ```text
 /// PREFERRED ORIENTATION: horizontal
@@ -55,5 +70,33 @@ const DT_0001_DTB: &str = include_str!("DT_0001.dtb");
 ///               OUTPUTS: single
 ///           ANNOTATIONS: absent
 /// ```
-pub const DT_0313: &str = DT_0313_DTB;
-const DT_0313_DTB: &str = include_str!("DT_0313.dtb");
+pub const H_000210: &str = H_000210_DTB;
+const H_000210_DTB: &str = include_str!("h_000210.dtb");
+
+/// Horizontal, no information item name, output label, no allowed values, no inputs, single output, no annotations.
+///
+/// ```text
+/// PREFERRED ORIENTATION: horizontal
+/// INFORMATION ITEM NAME: 0 - absent
+///          OUTPUT LABEL: 1 - present
+///        ALLOWED VALUES: 0 - absent
+///                INPUTS: 0 - absent
+///               OUTPUTS: 1 - single
+///           ANNOTATIONS: 0 - absent
+/// ```
+pub const H_010010: &str = H_010010_DTB;
+const H_010010_DTB: &str = include_str!("h_010010.dtb");
+
+/// Horizontal, information item name, output label, no allowed values, no inputs, single output, no annotations.
+///
+/// ```text
+/// PREFERRED ORIENTATION: horizontal
+/// INFORMATION ITEM NAME: 1 - present
+///          OUTPUT LABEL: 1 - present
+///        ALLOWED VALUES: 0 - absent
+///                INPUTS: 0 - absent
+///               OUTPUTS: 1 - single
+///           ANNOTATIONS: 0 - absent
+/// ```
+pub const H_110010: &str = H_110010_DTB;
+const H_110010_DTB: &str = include_str!("h_110010.dtb");
