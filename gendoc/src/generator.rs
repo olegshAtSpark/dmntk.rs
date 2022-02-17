@@ -37,7 +37,7 @@ use dmntk_model::model::*;
 use crate::decision_table::generate_decision_table;
 use crate::svg::*;
 
-const DMN_MODEL_TEMPLATE: &str = include_str!("templates/dmn_model_template.html");
+const DMN_MODEL_TEMPLATE: &str = include_str!("templates/dmn-model.html");
 const SVG_CONTENT: &str = "#SVG_CONTENT#";
 const HTML_CONTENT: &str = "#HTML_CONTENT#";
 const PI_2: f64 = std::f64::consts::PI * 2.0;

@@ -33,8 +33,10 @@
 use crate::{INDENT, INDENT_2, INDENT_3, NL, WS};
 use dmntk_model::model::{DecisionTable, DecisionTableOrientation};
 
-const DECISION_TABLE_TEMPLATE: &str = include_str!("templates/decision_table_template.html");
-const HTML_DECISION_TABLE: &str = "#DECISION_TABLE#";
+const DECISION_TABLE_HTML_TEMPLATE: &str = include_str!("templates/decision-table.html");
+const DECISION_TABLE_CSS_TEMPLATE: &str = include_str!("templates/decision-table.css");
+const DECISION_TABLE_STYLES_PLACEHOLDER: &str = "/*#STYLES#*/";
+const DECISION_TABLE_HTML_PLACEHOLDER: &str = "<!--#DECISION_TABLE#-->";
 
 /// Decision table attributes.
 struct DecisionTableAttributes {
@@ -66,16 +68,21 @@ struct RuleNumberAttributes {
 
 /// Generates single decision table in HTML format.
 pub fn decision_table_to_html(decision_table: &DecisionTable) -> String {
-  let attributes = get_decision_table_attributes(decision_table);
-  DECISION_TABLE_TEMPLATE.replace(HTML_DECISION_TABLE, &html_decision_table(decision_table, &attributes))
+  let decision_table_attributes = get_decision_table_attributes(decision_table);
+  DECISION_TABLE_HTML_TEMPLATE
+    .replace(DECISION_TABLE_STYLES_PLACEHOLDER, &indent_css(DECISION_TABLE_CSS_TEMPLATE))
+    .replace(
+      DECISION_TABLE_HTML_PLACEHOLDER,
+      &html_decision_table(decision_table, &decision_table_attributes),
+    )
 }
 
-fn html_decision_table(decision_table: &DecisionTable, attributes: &DecisionTableAttributes) -> String {
+fn html_decision_table(decision_table: &DecisionTable, decision_table_attributes: &DecisionTableAttributes) -> String {
   let mut html = String::new();
-  html.push_str(&format!(r#"<table class="decision-table">{}"#, NL));
+  html.push_str(&format!(r#"<table class="decision-table horizontal">{}"#, NL));
   html.push_str(&format!(r#"  <tbody>{}"#, NL));
   match decision_table.preferred_orientation {
-    DecisionTableOrientation::RuleAsRow => html_horizontal_decision_table(INDENT, &mut html, decision_table, attributes),
+    DecisionTableOrientation::RuleAsRow => html_horizontal_decision_table(INDENT, &mut html, decision_table, decision_table_attributes),
     DecisionTableOrientation::RuleAsColumn => {}
     DecisionTableOrientation::CrossTable => {}
   }
@@ -133,7 +140,7 @@ fn html_horizontal_decision_table(indent: usize, html: &mut String, decision_tab
     html.push_str(&format!(
       r#"{:i$}<td class="{}">{}</td>{}"#,
       WS,
-      "output-entry-last",
+      "output-entry-c",
       rule.output_entries[0].text.trim(),
       NL,
       i = indent + INDENT
@@ -210,14 +217,14 @@ fn get_hit_policy_attributes(decision_table_attributes: &DecisionTableAttributes
     decision_table_attributes.compound_output,
     decision_table_attributes.allowed_values_present,
   ) {
-    (true, true, true) => ("h-hit-policy-A", 3),
-    (false, true, true) => ("h-hit-policy-B", 3),
-    (true, false, true) => ("h-hit-policy-A", 2),
-    (false, false, true) => ("h-hit-policy-B", 2),
-    (true, true, false) => ("h-hit-policy-A", 2),
-    (false, true, false) => ("h-hit-policy-B", 2),
-    (true, false, false) => ("h-hit-policy-A", 1),
-    (false, false, false) => ("h-hit-policy-B", 1),
+    (true, true, true) => ("hit-policy-a", 3),
+    (false, true, true) => ("hit-policy-b", 3),
+    (true, false, true) => ("hit-policy-a", 2),
+    (false, false, true) => ("hit-policy-b", 2),
+    (true, true, false) => ("hit-policy-a", 2),
+    (false, true, false) => ("hit-policy-b", 2),
+    (true, false, false) => ("hit-policy-a", 1),
+    (false, false, false) => ("hit-policy-b", 1),
   };
   HitPolicyAttributes { class_name, row_span }
 }
@@ -232,4 +239,17 @@ fn get_rule_number_attributes(rule_number: usize, decision_table_attributes: &De
     _ => "",
   };
   RuleNumberAttributes { class_name }
+}
+
+fn indent_css(css: &str) -> String {
+  let mut content = String::new();
+  let mut first = true;
+  for line in css.lines() {
+    if !first {
+      content.push('\n');
+    }
+    content.push_str(&format!("    {}", line));
+    first = false;
+  }
+  content
 }
