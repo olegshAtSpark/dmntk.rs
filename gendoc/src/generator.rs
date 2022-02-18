@@ -275,6 +275,5 @@ fn add_html_content(html: &str, definitions: &Definitions) -> String {
       }
     }
   }
-
   html.replace(HTML_CONTENT, &html_content)
 }
