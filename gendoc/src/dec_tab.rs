@@ -30,7 +30,6 @@
  * limitations under the License.
  */
 
-use crate::dec_tab::OutputAttr::{AllowedValues, CompoundNames, EmptyCell, Ignored, OutputLabel};
 use crate::{INDENT, INDENT_2, INDENT_3, NL, WS};
 use dmntk_model::model::{DecisionTable, DecisionTableOrientation};
 
@@ -267,11 +266,11 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
   // prepare three first rows depending on the decision table structure
   let (r1, r2, r3) = get_output_attr(decision_table_attr);
   match r1 {
-    EmptyCell => {
+    OutputAttr::EmptyCell => {
       let output_label_attr = get_output_label_attr(decision_table_attr);
       row1.add(output_label_attr.class.to_string(), output_label_attr.colspan, 0, "".to_string());
     }
-    OutputLabel => {
+    OutputAttr::OutputLabel => {
       let output_label_attr = get_output_label_attr(decision_table_attr);
       row1.add(
         output_label_attr.class.to_string(),
@@ -280,7 +279,7 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
         decision_table.output_label.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
       );
     }
-    CompoundNames => {
+    OutputAttr::CompoundNames => {
       for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
         let output_component_attr = get_output_component_attr(index, decision_table_attr);
         row1.add(
@@ -294,7 +293,7 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
     _ => {}
   }
   match r2 {
-    CompoundNames => {
+    OutputAttr::CompoundNames => {
       for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
         let output_component_attr = get_output_component_attr(index, decision_table_attr);
         row2.add(
@@ -305,7 +304,7 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
         );
       }
     }
-    AllowedValues => {
+    OutputAttr::AllowedValues => {
       for (index, input_clause) in decision_table.input_clauses.iter().enumerate() {
         let input_value_attr = get_input_value_attr(index, decision_table_attr);
         row2.add(
@@ -331,7 +330,7 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
     }
     _ => {}
   }
-  if let AllowedValues = r3 {
+  if let OutputAttr::AllowedValues = r3 {
     for (index, input_clause) in decision_table.input_clauses.iter().enumerate() {
       let input_value_attr = get_input_value_attr(index, decision_table_attr);
       row3.add(
@@ -652,14 +651,14 @@ fn get_output_attr(decision_table_attr: &DecisionTableAttr) -> (OutputAttr, Outp
     decision_table_attr.compound_output,
     decision_table_attr.allowed_values_present,
   ) {
-    (false, false, false) => (EmptyCell, Ignored, Ignored),
-    (true, false, false) => (OutputLabel, Ignored, Ignored),
-    (false, true, false) => (CompoundNames, Ignored, Ignored),
-    (true, true, false) => (OutputLabel, CompoundNames, Ignored),
-    (false, false, true) => (EmptyCell, AllowedValues, Ignored),
-    (true, false, true) => (OutputLabel, AllowedValues, Ignored),
-    (false, true, true) => (CompoundNames, AllowedValues, Ignored),
-    (true, true, true) => (OutputLabel, CompoundNames, AllowedValues),
+    (false, false, false) => (OutputAttr::EmptyCell, OutputAttr::Ignored, OutputAttr::Ignored),
+    (true, false, false) => (OutputAttr::OutputLabel, OutputAttr::Ignored, OutputAttr::Ignored),
+    (false, true, false) => (OutputAttr::CompoundNames, OutputAttr::Ignored, OutputAttr::Ignored),
+    (true, true, false) => (OutputAttr::OutputLabel, OutputAttr::CompoundNames, OutputAttr::Ignored),
+    (false, false, true) => (OutputAttr::EmptyCell, OutputAttr::AllowedValues, OutputAttr::Ignored),
+    (true, false, true) => (OutputAttr::OutputLabel, OutputAttr::AllowedValues, OutputAttr::Ignored),
+    (false, true, true) => (OutputAttr::CompoundNames, OutputAttr::AllowedValues, OutputAttr::Ignored),
+    (true, true, true) => (OutputAttr::OutputLabel, OutputAttr::CompoundNames, OutputAttr::AllowedValues),
   }
 }
 
