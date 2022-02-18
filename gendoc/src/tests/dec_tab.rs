@@ -79,5 +79,10 @@ fn _0005() {
 
 #[test]
 fn _0006() {
+  generate_html!(H_011222);
+}
+
+#[test]
+fn _0007() {
   generate_html!(H_110010);
 }

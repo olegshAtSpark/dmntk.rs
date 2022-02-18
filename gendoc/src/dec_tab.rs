@@ -191,7 +191,7 @@ impl Cell {
       } else {
         "".to_string()
       },
-      if self.colspan > 0 {
+      if self.rowspan > 0 {
         format!(r#" rowspan="{}""#, self.rowspan)
       } else {
         "".to_string()
@@ -534,22 +534,22 @@ fn get_output_component_attr(index: usize, decision_table_attr: &DecisionTableAt
     decision_table_attr.annotations_present,
     index == decision_table_attr.output_clause_count - 1,
   ) {
-    (true, true, true, false) => "input-component-d",
-    (false, true, true, false) => "input-component-g",
-    (true, false, true, false) => "input-component-f",
-    (false, false, true, false) => "input-component-e",
-    (true, true, false, false) => "input-component-d",
-    (false, true, false, false) => "input-component-d",
-    (true, false, false, false) => "input-component-b",
-    (false, false, false, false) => "input-component-b",
-    (true, true, true, true) => "input-component-c",
-    (false, true, true, true) => "input-component-c",
-    (true, false, true, true) => "input-component-a",
-    (false, false, true, true) => "input-component-a",
-    (true, true, false, true) => "input-component-c",
-    (false, true, false, true) => "input-component-c",
-    (true, false, false, true) => "input-component-a",
-    (false, false, false, true) => "input-component-a",
+    (true, true, true, true) => "output-component-d",
+    (false, true, true, true) => "output-component-g",
+    (true, false, true, true) => "output-component-f",
+    (false, false, true, true) => "output-component-e",
+    (true, true, false, true) => "output-component-d",
+    (false, true, false, true) => "output-component-d",
+    (true, false, false, true) => "output-component-b",
+    (false, false, false, true) => "output-component-b",
+    (true, true, true, false) => "output-component-c",
+    (false, true, true, false) => "output-component-c",
+    (true, false, true, false) => "output-component-a",
+    (false, false, true, false) => "output-component-a",
+    (true, true, false, false) => "output-component-c",
+    (false, true, false, false) => "output-component-c",
+    (true, false, false, false) => "output-component-a",
+    (false, false, false, false) => "output-component-a",
   };
   OutputComponentAttr { class }
 }

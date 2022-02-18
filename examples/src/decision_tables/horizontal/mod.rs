@@ -91,15 +91,29 @@ const H_010010_DTB: &str = include_str!("h_010010.dtb");
 ///
 /// ```text
 /// PREFERRED ORIENTATION: horizontal
-/// INFORMATION ITEM NAME: absent
-///          OUTPUT LABEL: present
-///        ALLOWED VALUES: absent
-///                INPUTS: double
-///               OUTPUTS: single
-///           ANNOTATIONS: absent
+/// INFORMATION ITEM NAME: 0 - absent
+///          OUTPUT LABEL: 1 - present
+///        ALLOWED VALUES: 0 - absent
+///                INPUTS: 2 - double
+///               OUTPUTS: 1 - single
+///           ANNOTATIONS: 0 - absent
 /// ```
 pub const H_010210: &str = H_010210_DTB;
 const H_010210_DTB: &str = include_str!("h_010210.dtb");
+
+/// Horizontal, no information item name, output label, allowed values, double inputs, double outputs, double annotations.
+///
+/// ```text
+/// PREFERRED ORIENTATION: horizontal
+/// INFORMATION ITEM NAME: 0 - absent
+///          OUTPUT LABEL: 1 - present
+///        ALLOWED VALUES: 1 - present
+///                INPUTS: 2 - double
+///               OUTPUTS: 2 - double
+///           ANNOTATIONS: 2 - double
+/// ```
+pub const H_011222: &str = H_011222_DTB;
+const H_011222_DTB: &str = include_str!("h_011222.dtb");
 
 /// Horizontal, information item name, output label, no allowed values, no inputs, single output, no annotations.
 ///
