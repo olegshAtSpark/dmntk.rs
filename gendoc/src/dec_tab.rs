@@ -30,6 +30,7 @@
  * limitations under the License.
  */
 
+use crate::dec_tab::OutputAttr::{AllowedValues, CompoundNames, EmptyCell, Ignored, OutputLabel};
 use crate::{INDENT, INDENT_2, INDENT_3, NL, WS};
 use dmntk_model::model::{DecisionTable, DecisionTableOrientation};
 
@@ -39,50 +40,158 @@ const DECISION_TABLE_STYLES_PLACEHOLDER: &str = "/*#STYLES#*/";
 const DECISION_TABLE_HTML_PLACEHOLDER: &str = "<!--#DECISION_TABLE#-->";
 
 /// Decision table attributes.
-struct DecisionTableAttributes {
+struct DecisionTableAttr {
   /// Number of columns in decision table.
   column_count: usize,
   /// Flag indicating if input expressions are present.
   input_expressions_present: bool,
   /// Flag indicating if allowed values are present.
   allowed_values_present: bool,
+  /// Flag indicating if the output label is present.
+  output_label_present: bool,
   /// Flag indicating if there is more than one output clause.
   compound_output: bool,
+  /// Flag indicating if annotations are present.
+  annotations_present: bool,
+  /// Total number of input clauses.
+  input_clause_count: usize,
+  /// Total number of output clauses.
+  output_clause_count: usize,
   /// Total number of rules.
   rule_count: usize,
 }
 
 /// Hit policy attributes.
-struct HitPolicyAttributes {
+struct HitPolicyAttr {
   /// Name of the class used for formatting the cell containing the hit policy.
-  class_name: &'static str,
+  class: &'static str,
   /// Number of rows the hit policy cell spans over.
-  row_span: usize,
+  rowspan: usize,
+}
+
+/// Input expression attributes.
+struct InputExpressionAttr {
+  /// Name of the class used for formatting the cell containing the input expression.
+  class: &'static str,
+  /// Number of rows the input expression spans over.
+  rowspan: usize,
+}
+
+/// Output label attributes.
+struct OutputLabelAttr {
+  /// Name of the class used for formatting the cell containing the output label.
+  class: &'static str,
+  /// Number of columns the output label spans over.
+  colspan: usize,
+}
+
+/// Output component attributes.
+struct OutputComponentAttr {
+  /// Name of the class used for formatting the cell containing the output component.
+  class: &'static str,
 }
 
 /// Rule number attributes.
-struct RuleNumberAttributes {
+struct RuleNumberAttr {
   /// Name of the class used for formatting the cell containing the rule name.
-  class_name: &'static str,
+  class: &'static str,
+}
+
+/// Input entry attributes.
+struct InputEntryAttr {
+  /// Name of the class used for formatting the cell containing the input entry.
+  class: &'static str,
+}
+
+#[derive(Default)]
+struct Row {
+  cells: Vec<Cell>,
+}
+
+impl Row {
+  /// Adds a cell to the row.
+  fn add(&mut self, class: String, colspan: usize, rowspan: usize, content: String) {
+    self.cells.push(Cell {
+      class,
+      colspan,
+      rowspan,
+      content,
+    })
+  }
+  /// Writes a row to HTML output when contains any cells
+  fn write(&self, html: &mut String, indent: usize) {
+    if !self.cells.is_empty() {
+      html.push_str(&format!(r#"{:i$}<tr>{}"#, WS, NL, i = indent));
+      for cell in &self.cells {
+        cell.write(html, indent + INDENT);
+      }
+      html.push_str(&format!(r#"{:i$}</tr>{}"#, WS, NL, i = indent));
+    }
+  }
+}
+
+#[derive(Default)]
+struct Cell {
+  class: String,
+  colspan: usize,
+  rowspan: usize,
+  content: String,
+}
+
+impl Cell {
+  /// Writes the cell to HTML output.
+  fn write(&self, html: &mut String, indent: usize) {
+    html.push_str(&format!(
+      r#"{:i$}<td{}{}{}>{}</td>{}"#,
+      WS,
+      if !self.class.is_empty() {
+        format!(r#" class="{}""#, self.class)
+      } else {
+        "".to_string()
+      },
+      if self.colspan > 0 {
+        format!(r#" colspan="{}""#, self.colspan)
+      } else {
+        "".to_string()
+      },
+      if self.colspan > 0 {
+        format!(r#" rowspan="{}""#, self.rowspan)
+      } else {
+        "".to_string()
+      },
+      self.content,
+      NL,
+      i = indent
+    ));
+  }
+}
+
+enum OutputAttr {
+  EmptyCell,
+  OutputLabel,
+  CompoundNames,
+  AllowedValues,
+  Ignored,
 }
 
 /// Generates single decision table in HTML format.
 pub fn decision_table_to_html(decision_table: &DecisionTable) -> String {
-  let decision_table_attributes = get_decision_table_attributes(decision_table);
+  let decision_table_attributes = get_decision_table_attr(decision_table);
   DECISION_TABLE_HTML_TEMPLATE
-    .replace(DECISION_TABLE_STYLES_PLACEHOLDER, &indent_css(DECISION_TABLE_CSS_TEMPLATE))
+    .replace(DECISION_TABLE_STYLES_PLACEHOLDER, &indent_content(DECISION_TABLE_CSS_TEMPLATE))
     .replace(
       DECISION_TABLE_HTML_PLACEHOLDER,
-      &html_decision_table(decision_table, &decision_table_attributes),
+      &get_decision_table_html(decision_table, &decision_table_attributes),
     )
 }
 
-fn html_decision_table(decision_table: &DecisionTable, decision_table_attributes: &DecisionTableAttributes) -> String {
+/// Returns HTML code containing the definition of decision table.
+fn get_decision_table_html(decision_table: &DecisionTable, decision_table_attr: &DecisionTableAttr) -> String {
   let mut html = String::new();
   html.push_str(&format!(r#"<table class="decision-table horizontal">{}"#, NL));
   html.push_str(&format!(r#"  <tbody>{}"#, NL));
   match decision_table.preferred_orientation {
-    DecisionTableOrientation::RuleAsRow => html_horizontal_decision_table(INDENT, &mut html, decision_table, decision_table_attributes),
+    DecisionTableOrientation::RuleAsRow => write_horizontal_decision_table(INDENT, &mut html, decision_table, decision_table_attr),
     DecisionTableOrientation::RuleAsColumn => {}
     DecisionTableOrientation::CrossTable => {}
   }
@@ -91,71 +200,144 @@ fn html_decision_table(decision_table: &DecisionTable, decision_table_attributes
   html
 }
 
-fn html_horizontal_decision_table(indent: usize, html: &mut String, decision_table: &DecisionTable, decision_table_attributes: &DecisionTableAttributes) {
-  // write one row: information item name
+/// Writes the HTML code for horizontal decision table.
+fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_table: &DecisionTable, decision_table_attr: &DecisionTableAttr) {
+  // write a row with information item name
   if let Some(information_item_name) = &decision_table.information_item_name {
-    html.push_str(&html_information_item_name(
-      indent,
-      information_item_name,
-      decision_table_attributes.column_count,
-    ))
+    html.push_str(&get_information_item_name_html(indent, information_item_name, decision_table_attr.column_count))
   }
-  // write one row: hit policy, input expressions, output label, annotations
-  html.push_str(&format!(r#"{:i$}<tr>{}"#, WS, NL, i = indent));
-  let hit_policy_attributes = get_hit_policy_attributes(decision_table_attributes);
-  html.push_str(&format!(
-    r#"{:i$}<td class="{}" rowspan="{}">{}</td>{}"#,
-    WS,
-    hit_policy_attributes.class_name,
-    hit_policy_attributes.row_span,
-    decision_table.hit_policy,
-    NL,
-    i = indent + INDENT
-  ));
-  html.push_str(&format!(
-    r#"{:i$}<td class="h-output-label-A">{}</td>{}"#,
-    WS,
-    decision_table.output_label.as_ref().unwrap().trim(),
-    NL,
-    i = indent + INDENT
-  ));
-  html.push_str(&format!(r#"{:i$}</tr>{}"#, WS, NL, i = indent));
-  // write one row: compound outputs when present
+  // prepare three starting rows
+  let mut row1 = Row::default();
+  let mut row2 = Row::default();
+  let mut row3 = Row::default();
 
-  // write one row: allowed values when present
-
-  // write multiple rows: rules
+  // add hit policy, always to first row
+  let hit_policy_attributes = get_hit_policy_attr(decision_table_attr);
+  row1.add(
+    hit_policy_attributes.class.to_string(),
+    0,
+    hit_policy_attributes.rowspan,
+    decision_table.hit_policy.to_string(),
+  );
+  // add input expressions, always to first row
+  for (index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+    let input_expression_attributes = get_input_expression_attr(index, decision_table_attr);
+    let content = input_clause.input_expression.trim().to_string();
+    let class = input_expression_attributes.class.to_string();
+    let rowspan = input_expression_attributes.rowspan;
+    row1.add(class, 0, rowspan, content);
+  }
+  // prepare three first rows depending on the decision table structure
+  let (r1, r2, r3) = get_output_attr(decision_table_attr);
+  match r1 {
+    EmptyCell => {
+      let output_label_attr = get_output_label_attr(decision_table_attr);
+      row1.add(output_label_attr.class.to_string(), output_label_attr.colspan, 0, "".to_string());
+    }
+    OutputLabel => {
+      let output_label_attr = get_output_label_attr(decision_table_attr);
+      row1.add(
+        output_label_attr.class.to_string(),
+        output_label_attr.colspan,
+        0,
+        decision_table.output_label.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+      );
+    }
+    CompoundNames => {
+      for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+        let output_component_attr = get_output_component_attr(index, decision_table_attr);
+        row1.add(
+          output_component_attr.class.to_string(),
+          0,
+          0,
+          output_clause.name.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+        );
+      }
+    }
+    _ => {}
+  }
+  match r2 {
+    CompoundNames => {
+      for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+        let output_component_attr = get_output_component_attr(index, decision_table_attr);
+        row2.add(
+          output_component_attr.class.to_string(),
+          0,
+          0,
+          output_clause.name.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+        );
+      }
+    }
+    AllowedValues => {
+      for (_index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+        row2.add(
+          "input-value-a".to_string(),
+          0,
+          0,
+          input_clause.input_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+        );
+      }
+      for (_index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+        row2.add(
+          "output-value-a".to_string(),
+          0,
+          0,
+          output_clause.output_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+        );
+      }
+      for (_index, _) in decision_table.annotations.iter().enumerate() {
+        row2.add("annotation-value-a".to_string(), 0, 0, "".to_string());
+      }
+    }
+    _ => {}
+  }
+  if let AllowedValues = r3 {
+    for (_index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+      row3.add(
+        "input-value-a".to_string(),
+        0,
+        0,
+        input_clause.input_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+      );
+    }
+    for (_index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+      row3.add(
+        "output-value-a".to_string(),
+        0,
+        0,
+        output_clause.output_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
+      );
+    }
+    for (_index, _) in decision_table.annotations.iter().enumerate() {
+      row3.add("annotation-value-a".to_string(), 0, 0, "".to_string());
+    }
+  }
+  // write three starting rows (empty row is simple omitted)
+  row1.write(html, indent);
+  row2.write(html, indent);
+  row3.write(html, indent);
+  // write multiple rows with rules
   for (rule_index, rule) in decision_table.rules.iter().enumerate() {
-    let rule_number = rule_index + 1;
-    let rule_number_attributes = get_rule_number_attributes(rule_number, decision_table_attributes);
-    html.push_str(&format!(r#"{:i$}<tr>{}"#, WS, NL, i = indent));
-    html.push_str(&format!(
-      r#"{:i$}<td class="{}">{}</td>{}"#,
-      WS,
-      rule_number_attributes.class_name,
-      rule_number,
-      NL,
-      i = indent + INDENT
-    ));
-    html.push_str(&format!(
-      r#"{:i$}<td class="{}">{}</td>{}"#,
-      WS,
-      "output-entry-c",
-      rule.output_entries[0].text.trim(),
-      NL,
-      i = indent + INDENT
-    ));
-    html.push_str(&format!(r#"{:i$}</tr>{}"#, WS, NL, i = indent));
+    let mut row = Row::default();
+    let rule_number_attributes = get_rule_number_attr(rule_index, decision_table_attr);
+    row.add(rule_number_attributes.class.to_string(), 0, 0, format!("{}", rule_index + 1));
+    for (index, input_entry) in rule.input_entries.iter().enumerate() {
+      let input_entry_attributes = get_input_entry_attr(index, rule_index, decision_table_attr);
+      row.add(input_entry_attributes.class.to_string(), 0, 0, input_entry.text.trim().to_string());
+    }
+    row.add("output-entry-b".to_string(), 0, 0, rule.output_entries[0].text.trim().to_string());
+    row.write(html, indent);
   }
 }
 
-fn html_information_item_name(indent: usize, information_item_name: &str, col_span: usize) -> String {
+/// Returns HTML code containing a row with information item name.
+fn get_information_item_name_html(indent: usize, content: &str, colspan: usize) -> String {
   let mut html = String::new();
   html.push_str(&format!(r#"{:i$}<tr>{}"#, WS, NL, i = indent));
   html.push_str(&format!(
     r#"{:i$}<td colspan="{}" class="information-item">{}"#,
     WS,
-    col_span,
+    colspan,
     NL,
     i = indent + INDENT
   ));
@@ -168,7 +350,7 @@ fn html_information_item_name(indent: usize, information_item_name: &str, col_sp
   html.push_str(&format!(
     r#"{:i$}<div class="information-item-name">{}</div>{}"#,
     WS,
-    information_item_name.trim(),
+    content.trim(),
     NL,
     i = indent + INDENT_3
   ));
@@ -178,7 +360,7 @@ fn html_information_item_name(indent: usize, information_item_name: &str, col_sp
   html
 }
 
-fn get_decision_table_attributes(decision_table: &DecisionTable) -> DecisionTableAttributes {
+fn get_decision_table_attr(decision_table: &DecisionTable) -> DecisionTableAttr {
   let input_expressions_present = !decision_table.input_clauses.is_empty();
   let mut allowed_values_present = false;
   for input_clause in &decision_table.input_clauses {
@@ -200,22 +382,30 @@ fn get_decision_table_attributes(decision_table: &DecisionTable) -> DecisionTabl
   } else {
     0
   };
+  let output_label_present = !decision_table.output_label.as_ref().unwrap_or(&"".to_string()).trim().is_empty();
+  let annotations_present = !decision_table.annotations.is_empty();
   let compound_output = decision_table.output_clauses.len() > 1;
+  let input_clause_count = decision_table.input_clauses.len();
+  let output_clause_count = decision_table.output_clauses.len();
   let rule_count = decision_table.rules.len();
-  DecisionTableAttributes {
+  DecisionTableAttr {
     column_count,
     input_expressions_present,
     allowed_values_present,
+    output_label_present,
     compound_output,
+    annotations_present,
+    input_clause_count,
+    output_clause_count,
     rule_count,
   }
 }
 
-fn get_hit_policy_attributes(decision_table_attributes: &DecisionTableAttributes) -> HitPolicyAttributes {
-  let (class_name, row_span) = match (
-    decision_table_attributes.input_expressions_present,
-    decision_table_attributes.compound_output,
-    decision_table_attributes.allowed_values_present,
+fn get_hit_policy_attr(decision_table_attr: &DecisionTableAttr) -> HitPolicyAttr {
+  let (class, rowspan) = match (
+    decision_table_attr.input_expressions_present,
+    decision_table_attr.compound_output,
+    decision_table_attr.allowed_values_present,
   ) {
     (true, true, true) => ("hit-policy-a", 3),
     (false, true, true) => ("hit-policy-b", 3),
@@ -226,30 +416,132 @@ fn get_hit_policy_attributes(decision_table_attributes: &DecisionTableAttributes
     (true, false, false) => ("hit-policy-a", 1),
     (false, false, false) => ("hit-policy-b", 1),
   };
-  HitPolicyAttributes { class_name, row_span }
+  HitPolicyAttr { class, rowspan }
 }
 
-fn get_rule_number_attributes(rule_number: usize, decision_table_attributes: &DecisionTableAttributes) -> RuleNumberAttributes {
-  let class_name = match (
-    decision_table_attributes.input_expressions_present,
-    rule_number == decision_table_attributes.rule_count,
+fn get_input_expression_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> InputExpressionAttr {
+  let (class, rowspan) = match (
+    decision_table_attr.output_label_present,
+    decision_table_attr.compound_output,
+    decision_table_attr.allowed_values_present,
+    index == decision_table_attr.input_clause_count - 1,
   ) {
-    (false, false) => "horz-rule-number-no-input",
-    (false, true) => "horz-rule-number-no-input-last",
-    _ => "",
+    (true, true, true, false) => ("input-expression-a", 2),
+    (false, true, true, false) => ("input-expression-a", 1),
+    (_, false, true, false) => ("input-expression-a", 1),
+    (true, true, false, false) => ("input-expression-c", 2),
+    (false, true, false, false) => ("input-expression-c", 1),
+    (_, false, false, false) => ("input-expression-c", 1),
+    (true, true, true, true) => ("input-expression-b", 2),
+    (false, true, true, true) => ("input-expression-b", 1),
+    (_, false, true, true) => ("input-expression-b", 1),
+    (true, true, false, true) => ("input-expression-d", 2),
+    (false, true, false, true) => ("input-expression-d", 1),
+    (_, false, false, true) => ("input-expression-d", 1),
   };
-  RuleNumberAttributes { class_name }
+  InputExpressionAttr { class, rowspan }
 }
 
-fn indent_css(css: &str) -> String {
-  let mut content = String::new();
-  let mut first = true;
-  for line in css.lines() {
-    if !first {
-      content.push('\n');
-    }
-    content.push_str(&format!("    {}", line));
-    first = false;
+fn get_output_label_attr(decision_table_attr: &DecisionTableAttr) -> OutputLabelAttr {
+  let class = match (
+    decision_table_attr.allowed_values_present,
+    decision_table_attr.compound_output,
+    decision_table_attr.annotations_present,
+  ) {
+    (true, true, true) => "output-label-c",
+    (false, true, true) => "output-label-c",
+    (true, false, true) => "output-label-c",
+    (false, false, true) => "output-label-d",
+    (true, true, false) => "output-label-b",
+    (false, true, false) => "output-label-b",
+    (true, false, false) => "output-label-b",
+    (false, false, false) => "output-label-a",
+  };
+  let colspan = if decision_table_attr.output_clause_count > 1 {
+    decision_table_attr.output_clause_count
+  } else {
+    0
+  };
+  OutputLabelAttr { class, colspan }
+}
+
+fn get_output_component_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> OutputComponentAttr {
+  let class = match (
+    decision_table_attr.output_label_present,
+    decision_table_attr.allowed_values_present,
+    decision_table_attr.annotations_present,
+    index == decision_table_attr.output_clause_count - 1,
+  ) {
+    (true, true, true, false) => "input-component-d",
+    (false, true, true, false) => "input-component-g",
+    (true, false, true, false) => "input-component-f",
+    (false, false, true, false) => "input-component-e",
+    (true, true, false, false) => "input-component-d",
+    (false, true, false, false) => "input-component-d",
+    (true, false, false, false) => "input-component-b",
+    (false, false, false, false) => "input-component-b",
+    (true, true, true, true) => "input-component-c",
+    (false, true, true, true) => "input-component-c",
+    (true, false, true, true) => "input-component-a",
+    (false, false, true, true) => "input-component-a",
+    (true, true, false, true) => "input-component-c",
+    (false, true, false, true) => "input-component-c",
+    (true, false, false, true) => "input-component-a",
+    (false, false, false, true) => "input-component-a",
+  };
+  OutputComponentAttr { class }
+}
+
+fn get_rule_number_attr(rule_index: usize, decision_table_attr: &DecisionTableAttr) -> RuleNumberAttr {
+  let class = match (decision_table_attr.input_expressions_present, rule_index == decision_table_attr.rule_count - 1) {
+    (true, true) => "rule-number-b",
+    (false, true) => "rule-number-d",
+    (true, false) => "rule-number-a",
+    (false, false) => "rule-number-c",
+  };
+  RuleNumberAttr { class }
+}
+
+fn get_input_entry_attr(index: usize, rule_index: usize, decision_table_attr: &DecisionTableAttr) -> InputEntryAttr {
+  let class = match (
+    index == decision_table_attr.input_clause_count - 1,
+    rule_index == decision_table_attr.rule_count - 1,
+  ) {
+    (false, false) => "input-entry-a",
+    (false, true) => "input-entry-a",
+    (true, false) => "input-entry-b",
+    (true, true) => "input-entry-c",
+  };
+  InputEntryAttr { class }
+}
+
+fn get_output_attr(decision_table_attr: &DecisionTableAttr) -> (OutputAttr, OutputAttr, OutputAttr) {
+  match (
+    decision_table_attr.output_label_present,
+    decision_table_attr.compound_output,
+    decision_table_attr.allowed_values_present,
+  ) {
+    (false, false, false) => (EmptyCell, Ignored, Ignored),
+    (true, false, false) => (OutputLabel, Ignored, Ignored),
+    (false, true, false) => (CompoundNames, Ignored, Ignored),
+    (true, true, false) => (OutputLabel, CompoundNames, Ignored),
+    (false, false, true) => (EmptyCell, AllowedValues, Ignored),
+    (true, false, true) => (OutputLabel, AllowedValues, Ignored),
+    (false, true, true) => (CompoundNames, AllowedValues, Ignored),
+    (true, true, true) => (OutputLabel, CompoundNames, AllowedValues),
   }
-  content
+}
+
+/// Returns the content indented four spaces.
+fn indent_content(content: &str) -> String {
+  let mut indented_content = String::new();
+  let mut first = true;
+  for line in content.lines() {
+    if !first {
+      indented_content.push('\n');
+    }
+    first = false;
+    indented_content.push_str(&format!("    {}", line));
+  }
+  indented_content
 }

@@ -30,25 +30,54 @@
  * limitations under the License.
  */
 
+//! Test for converting decision tables defined as text into HTML format.
+
 use super::*;
 use dmntk_examples::decision_tables::*;
 
-#[test]
-fn _0001() {
-  let decision_table = dmntk_recognizer::build(H_000010).expect("building decision table failed");
+/// Utility function for generating HTML file for decision table defined as text.
+fn generate_html(dec_tab: &str, output_file_name: &str) {
+  let decision_table = dmntk_recognizer::build(dec_tab).expect("building decision table failed");
   let html = crate::decision_table_to_html(&decision_table);
   assert_eq!("<!DOCTYPE html>", &html[0..15]);
   std::fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");
-  let mut file = File::create(format!("{}/H_000010.html", TARGET_DIR)).expect("creating HTML file failed");
+  let mut file = File::create(format!("{}/{}.html", TARGET_DIR, output_file_name)).expect("creating HTML file failed");
   file.write_all(html.as_bytes()).expect("saving HTML file failed");
+}
+
+/// Utility macro for generating HTML file for decision table defined as text.
+macro_rules! generate_html {
+  ($t:tt) => {{
+    generate_html($t, stringify!($t));
+  }};
+}
+
+#[test]
+fn _0001() {
+  generate_html!(H_000010);
 }
 
 #[test]
 fn _0002() {
-  let decision_table = dmntk_recognizer::build(H_110010).expect("building decision table failed");
-  let html = crate::decision_table_to_html(&decision_table);
-  assert_eq!("<!DOCTYPE html>", &html[0..15]);
-  std::fs::create_dir_all(TARGET_DIR).expect("creating target directories failed");
-  let mut file = File::create(format!("{}/H_110010.html", TARGET_DIR)).expect("creating HTML file failed");
-  file.write_all(html.as_bytes()).expect("saving HTML file failed");
+  generate_html!(H_110010);
+}
+
+#[test]
+fn _0003() {
+  generate_html!(H_000210);
+}
+
+#[test]
+fn _0004() {
+  generate_html!(H_010010);
+}
+
+#[test]
+fn _0005() {
+  generate_html!(H_010210);
+}
+
+#[test]
+fn _0006() {
+  generate_html!(H_110010);
 }

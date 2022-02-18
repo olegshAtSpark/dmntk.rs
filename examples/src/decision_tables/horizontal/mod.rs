@@ -87,6 +87,20 @@ const H_000210_DTB: &str = include_str!("h_000210.dtb");
 pub const H_010010: &str = H_010010_DTB;
 const H_010010_DTB: &str = include_str!("h_010010.dtb");
 
+/// Horizontal, no information item name, output label, no allowed values, double inputs, single output, no annotations.
+///
+/// ```text
+/// PREFERRED ORIENTATION: horizontal
+/// INFORMATION ITEM NAME: absent
+///          OUTPUT LABEL: present
+///        ALLOWED VALUES: absent
+///                INPUTS: double
+///               OUTPUTS: single
+///           ANNOTATIONS: absent
+/// ```
+pub const H_010210: &str = H_010210_DTB;
+const H_010210_DTB: &str = include_str!("h_010210.dtb");
+
 /// Horizontal, information item name, output label, no allowed values, no inputs, single output, no annotations.
 ///
 /// ```text
