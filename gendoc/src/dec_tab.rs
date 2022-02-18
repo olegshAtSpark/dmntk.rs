@@ -57,6 +57,8 @@ struct DecisionTableAttr {
   input_clause_count: usize,
   /// Total number of output clauses.
   output_clause_count: usize,
+  /// Total number of annotation clauses.
+  annotation_clause_count: usize,
   /// Total number of rules.
   rule_count: usize,
 }
@@ -102,6 +104,41 @@ struct InputEntryAttr {
   /// Name of the class used for formatting the cell containing the input entry.
   class: &'static str,
 }
+
+/// Output entry attributes.
+struct OutputEntryAttr {
+  /// Name of the class used for formatting the cell containing the output entry.
+  class: &'static str,
+}
+
+/// Annotation attributes.
+struct AnnotationAttr {
+  /// Name of the class used for formatting the cell containing the annotation names.
+  class: &'static str,
+  /// Number of rows the annotation name spans over.
+  rowspan: usize,
+}
+
+/// Annotation entry attributes.
+struct AnnotationEntryAttr {
+  /// Name of the class used for formatting the cell containing the annotation entry.
+  class: &'static str,
+}
+
+/// Attributes containing only CSS class name.
+struct ClassAttr {
+  /// Name of the class used for styling the cell.
+  class: &'static str,
+}
+
+/// Attributes for styling allowed input values.
+type InputValueAttr = ClassAttr;
+
+/// Attributes for styling allowed output values.
+type OutputValueAttr = ClassAttr;
+
+/// Attributes for styling allowed annotation values (always empty cell).
+type AnnotationValueAttr = ClassAttr;
 
 #[derive(Default)]
 struct Row {
@@ -269,48 +306,64 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
       }
     }
     AllowedValues => {
-      for (_index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+      for (index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+        let input_value_attr = get_input_value_attr(index, decision_table_attr);
         row2.add(
-          "input-value-a".to_string(),
+          input_value_attr.class.to_string(),
           0,
           0,
           input_clause.input_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
         );
       }
-      for (_index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+      for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+        let output_value_attr = get_output_value_attr(index, decision_table_attr);
         row2.add(
-          "output-value-a".to_string(),
+          output_value_attr.class.to_string(),
           0,
           0,
           output_clause.output_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
         );
       }
-      for (_index, _) in decision_table.annotations.iter().enumerate() {
-        row2.add("annotation-value-a".to_string(), 0, 0, "".to_string());
+      for (index, _) in decision_table.annotations.iter().enumerate() {
+        let annotation_value_attr = get_annotation_value_attr(index, decision_table_attr);
+        row2.add(annotation_value_attr.class.to_string(), 0, 0, "".to_string());
       }
     }
     _ => {}
   }
   if let AllowedValues = r3 {
-    for (_index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+    for (index, input_clause) in decision_table.input_clauses.iter().enumerate() {
+      let input_value_attr = get_input_value_attr(index, decision_table_attr);
       row3.add(
-        "input-value-a".to_string(),
+        input_value_attr.class.to_string(),
         0,
         0,
         input_clause.input_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
       );
     }
-    for (_index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+    for (index, output_clause) in decision_table.output_clauses.iter().enumerate() {
+      let output_value_attr = get_output_value_attr(index, decision_table_attr);
       row3.add(
-        "output-value-a".to_string(),
+        output_value_attr.class.to_string(),
         0,
         0,
         output_clause.output_values.as_ref().unwrap_or(&"".to_string()).trim().to_string(),
       );
     }
-    for (_index, _) in decision_table.annotations.iter().enumerate() {
-      row3.add("annotation-value-a".to_string(), 0, 0, "".to_string());
+    for (index, _) in decision_table.annotations.iter().enumerate() {
+      let annotation_value_attr = get_annotation_value_attr(index, decision_table_attr);
+      row3.add(annotation_value_attr.class.to_string(), 0, 0, "".to_string());
     }
+  }
+  // write annotation names
+  for (index, annotation) in decision_table.annotations.iter().enumerate() {
+    let annotation_attr = get_annotation_attr(index, decision_table_attr);
+    row1.add(
+      annotation_attr.class.to_string(),
+      0,
+      annotation_attr.rowspan,
+      annotation.name.trim().to_string(),
+    );
   }
   // write three starting rows (empty row is simple omitted)
   row1.write(html, indent);
@@ -322,10 +375,17 @@ fn write_horizontal_decision_table(indent: usize, html: &mut String, decision_ta
     let rule_number_attributes = get_rule_number_attr(rule_index, decision_table_attr);
     row.add(rule_number_attributes.class.to_string(), 0, 0, format!("{}", rule_index + 1));
     for (index, input_entry) in rule.input_entries.iter().enumerate() {
-      let input_entry_attributes = get_input_entry_attr(index, rule_index, decision_table_attr);
-      row.add(input_entry_attributes.class.to_string(), 0, 0, input_entry.text.trim().to_string());
+      let input_entry_attr = get_input_entry_attr(index, rule_index, decision_table_attr);
+      row.add(input_entry_attr.class.to_string(), 0, 0, input_entry.text.trim().to_string());
     }
-    row.add("output-entry-b".to_string(), 0, 0, rule.output_entries[0].text.trim().to_string());
+    for (index, output_entry) in rule.output_entries.iter().enumerate() {
+      let output_entry_attr = get_output_entry_attr(index, rule_index, decision_table_attr);
+      row.add(output_entry_attr.class.to_string(), 0, 0, output_entry.text.trim().to_string());
+    }
+    for (index, annotation_entry) in rule.annotation_entries.iter().enumerate() {
+      let annotation_entry_attr = get_annotation_entry_attr(index, decision_table_attr);
+      row.add(annotation_entry_attr.class.to_string(), 0, 0, annotation_entry.text.trim().to_string());
+    }
     row.write(html, indent);
   }
 }
@@ -387,6 +447,7 @@ fn get_decision_table_attr(decision_table: &DecisionTable) -> DecisionTableAttr 
   let compound_output = decision_table.output_clauses.len() > 1;
   let input_clause_count = decision_table.input_clauses.len();
   let output_clause_count = decision_table.output_clauses.len();
+  let annotation_clause_count = decision_table.annotations.len();
   let rule_count = decision_table.rules.len();
   DecisionTableAttr {
     column_count,
@@ -397,6 +458,7 @@ fn get_decision_table_attr(decision_table: &DecisionTable) -> DecisionTableAttr 
     annotations_present,
     input_clause_count,
     output_clause_count,
+    annotation_clause_count,
     rule_count,
   }
 }
@@ -513,6 +575,75 @@ fn get_input_entry_attr(index: usize, rule_index: usize, decision_table_attr: &D
     (true, true) => "input-entry-c",
   };
   InputEntryAttr { class }
+}
+
+fn get_output_entry_attr(index: usize, rule_index: usize, decision_table_attr: &DecisionTableAttr) -> OutputEntryAttr {
+  let class = match (
+    index == decision_table_attr.output_clause_count - 1,
+    rule_index == decision_table_attr.rule_count - 1,
+    decision_table_attr.annotations_present,
+  ) {
+    (true, true, true) => "output-entry-c",
+    (false, true, true) => "output-entry-a",
+    (true, false, true) => "output-entry-b",
+    (false, false, true) => "output-entry-a",
+    (true, true, false) => "output-entry-b",
+    (false, true, false) => "output-entry-a",
+    (true, false, false) => "output-entry-b",
+    (false, false, false) => "output-entry-a",
+  };
+  OutputEntryAttr { class }
+}
+
+fn get_annotation_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> AnnotationAttr {
+  let (class, rowspan) = match (
+    index == decision_table_attr.annotation_clause_count - 1,
+    decision_table_attr.allowed_values_present,
+    decision_table_attr.compound_output && decision_table_attr.output_label_present,
+  ) {
+    (true, true, true) => ("annotation-d", 2),
+    (false, true, true) => ("annotation-c", 2),
+    (true, false, true) => ("annotation-b", 2),
+    (false, false, true) => ("annotation-a", 2),
+    (true, true, false) => ("annotation-d", 1),
+    (false, true, false) => ("annotation-c", 1),
+    (true, false, false) => ("annotation-b", 1),
+    (false, false, false) => ("annotation-a", 1),
+  };
+  AnnotationAttr { class, rowspan }
+}
+
+fn get_annotation_entry_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> AnnotationEntryAttr {
+  let class = match index == decision_table_attr.annotation_clause_count - 1 {
+    true => "annotation-entry-b",
+    false => "annotation-entry-a",
+  };
+  AnnotationEntryAttr { class }
+}
+
+fn get_input_value_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> InputValueAttr {
+  let class = match index == decision_table_attr.input_clause_count - 1 {
+    true => "input-value-b",
+    false => "input-value-a",
+  };
+  InputValueAttr { class }
+}
+
+fn get_output_value_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> OutputValueAttr {
+  let class = match (index == decision_table_attr.output_clause_count - 1, decision_table_attr.annotations_present) {
+    (false, _) => "output-value-a",
+    (true, false) => "output-value-b",
+    (true, true) => "output-value-c",
+  };
+  OutputValueAttr { class }
+}
+
+fn get_annotation_value_attr(index: usize, decision_table_attr: &DecisionTableAttr) -> AnnotationValueAttr {
+  let class = match index == decision_table_attr.annotation_clause_count - 1 {
+    true => "annotation-value-b",
+    false => "annotation-value-a",
+  };
+  AnnotationValueAttr { class }
 }
 
 fn get_output_attr(decision_table_attr: &DecisionTableAttr) -> (OutputAttr, OutputAttr, OutputAttr) {
